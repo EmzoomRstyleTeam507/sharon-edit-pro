@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sharon edit-pro</title>
+
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Sharon edit-pro" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="application-name" content="Sharon edit-pro" />
+  <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAIbUlEQVR4nO2dvY4URxRG71pOEAHhIktIjpFMTugMkRCA5MwvAIFzx+QO4AWcWYKABJERkuMXsIRkmQdAhDhYlzzbdPd2ddfPvfWdE7IzQ1fXd+6t6emfsxvnt78YgCjf9N4AgJ4gAEiDACANAoA0CADSIABIgwAgDQKANAgA0iAASIMAIA0CgDQIANIgAEiDACANAoA0CADSIABIgwAgDQKANAgA0iAASPNt7w0YnUcP3h16/4tXdwttCcxxxn2BjnM05HtBjuMgwA56Bf4qECIfBNiI19AvgQzbQIAVooV+CWRYBgEmjBL6JZDhMgjwH6MHfwoiXCAvgFrwp6iLICuAevCnqIogJwDBX0dNBBkBCH4eKiJInAtE+PNR2WdDdwCVSazNUjc4+/2nxfd8+fmPWptTlGEFIPxlOZVgLfhTvIsw5BKI8Jcn7dOc8O95fWuG6gAEvy4vH/62+71eO8EwHYDwwx6G6ADew//82fVd73v85FPhLdnPkeqf8NgFwl8R5in8e4Oe+3mexIhOaAE8hL906HP/T2Q4RkgBege/R+iXQIZjhBOgV/g9hX4JZMgnlAA9wh8h+HOk7UaEdUIJ0JKowZ+CCOuEEaBV9R8l+FMQYZ4QArQI/6jBn4IIl3H/SzDhr4PimOdwLQDhr4vy2BNul0C1w8/kX6C+JHLdAWpB+L9GdZ+4FKBm9Ved6C0o7ht3AhD+vtTcR71PYZnDlQCE3wdKErgSoBaEPx+VfeZGgFqVQWUia1Br33nqAi4EIPx+GV0CFwLUgPCXY+R92V2AGpVg5AkbCQ9dwO0vwXvJCf/5rTuz//7xw/tSm+MKtfFuoWsHKF0Btob//NadxTBs+Xs0PI+3dxcYrgOskTvJ6fVRK6TaePfQrQO0rv5HKlzEbhBpvD27QPcvwSWoGf6Sn9EKtfEeoYsAJY3niM8Y9OoCQ3SANUpWsghVUW28R2kuANUflujRBYbuADUqmOeqWHO8//z466HPefjylwJbU56wAlD9oQRNBej9owccY28XyKn+rTMSsgNQ/fuRK4HXpU9C6pdgWGbuWV5LD7RIEtx8+3Tx89aCP/ewjV6iNBOgVGuj+vthrhuUuL3Kowfvmj2oO+QSaCs1zmnxfJ6M2nhLMLQAAFfRRICey5+SFSxCNSy5jXue8XvVHG192F6ro0F0ADCzvk9w7HmkSEKAElUxQvVPRNrW3oQR4OjRnyOhiBiontsc6UhddQE8/fr78cP7rGDkvt4buds/d1hz7Vh/LrnH/1tkR/KHsBQKlYvE1cabQwgBarVUtYnfO96bb59mnwLx/Nn1Sz+KbT3605ow3wGgDUtBP7IUWgq/h/OEEAC+oqQEnsNvhgCQSY4EXpc9pyAAzLK25r/59umqCFf93Uv1NzM7u3F++0utD+cM0PiUPAxqti/8Nc8Mdd8BCH9fjl4LfIqnyp9wLwD0p4QEHsNvFuR3AOjPlqvA5vAa/AQCQBan3WBJhtPXPH7p+wHcCAC7Kfn9oBd8BwBpEACkQQCQBgFAGgQAaRAApEEAkAYBQBoEAGncC1DiZqvQhwhzV1WAVnf4hXGpnSH3HQCgJggA0iAASIMAIE0IASIcTYDLRJmzEAIA1KL6FWEvXt11dYfoPXy+f6/3Juzm2us3vTdhNy0Oo4fpAD1a6uf790KH36zPGKIsf8y4JniW6KGfI40pckeoQZgO0IoRw3/K6OPLpeqtEU/xdJvE6YMi0n3zlcJx7fWbxf1whFLLHx6U3Ril8JvpjXcJBDDCoEwzAUq1tEhHGNSItvwxowOAOCEFOFpppl/2vv/z70OfF5HpmI9+AY7amZsKwAUycBWtMxKyA5jFrTgjEnkuwgpQGqVlkNJYr6K5ACVb3JHKo/aQ7DX++uG73e8tWf17LJHpACBNFwG8dIFp5VNYGkzHqFz9zQbpACUnYmQJSo4t8hffU7oJUNr4vRNypAJGZ+/YS4e/5+HxITrAXpbOjR+xC6yNSfkaga4CeO4CI0kwNxaq/wXDdYDcCUrVb1QJrgp/TvUfZd1/SncBalQAOsEFniu/Wf/qb+ZAgFrkTNhVVTCiBFu2eWv1H7HyJ1wIUKsS7JFgqUJGkmBpW/csfWqF30P1N2t4TfAWat0/KOc64nR12FrgvR463brNhP9/XHSA2uztBJG6wVrV9xR+b7jqAGb1uoBZ/h0lInSD0lXfrG74PVV/M4cCmPmSwOxChC1Vv5UMOduS+yOXUvjNnApg5k+CxPReOnPUOtW69v+tFn4z0VsjPn7yabcEKWBrYZz7W24wt4T9yOdPUVnzT3HbAczqdoHE0TvN5Qa1NBGC77X6mzkXwCyGBGbtRfB0G8M1PIffLIAAZnEkSNSSoeR3C8J/QQgBzNpIYFZWhFNar+mXaLXWjxB+s0ACmLWTwKyeCL1o+SU3SvjNRI8CbSEFJroIqkd3thKqA5i17QKnRBOhV/AjVX+zgAKY9ZMg4VWG3tU+WvjNggqQ6C2CWX8ZeofeLGbwE6EFMPMhQaKVDB5Cn4gcfrMBBDDzJcEce8XwFPQ5ooffbBABzPxLMBojhN9soAtiRpmQCIy0r4fpAKfQDeowUvATw3SAU0acqN6Muk+HFMBs3Anrwcj7csgl0BSWRPsYOfiJYTvAKQoTWRqVfSbRAU6hG6yjEvyEnAAJRLiMWvATsgIk1EVQDX5CXoCEmgjqwU8gwITRRSD4l0GAFUaRgdAvgwAbiSYDod8GAuzAqwyEPh8EKEAvIQj8cRCgMkflIOR1QQCQRuJcIIAlEACkQQCQBgFAGgQAaRAApEEAkAYBQBoEAGkQAKRBAJAGAUAaBABpEACkQQCQBgFAGgQAaRAApEEAkAYBQBoEAGkQAKT5F+Y/U9S2B35BAAAAAElFTkSuQmCC" />
+  <link rel="apple-touch-icon" sizes="192x192" href="data:image/png;base64,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" />
+  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQW5pbWFkb3IgZGUgQm9jYSIsInNob3J0X25hbWUiOiJCb2NhQW5pbSIsImRlc2NyaXB0aW9uIjoiQW5pbWFkb3IgZGUgYm9jYSB5IGNvcnRvbWV0cmFqZXMgY29uIHBlcnNvbmFqZXMuIiwic3RhcnRfdXJsIjoiLiIsInNjb3BlIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwib3JpZW50YXRpb24iOiJsYW5kc2NhcGUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMTcyYSIsInRoZW1lX2NvbG9yIjoiIzYzNjZmMSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQU1BQUFBREFDQVlBQUFCUzNHd0hBQUFJYlVsRVFWUjRuTzJkdlk0VVJ4Ukc3MXBPRUFIaElrdElqcEZNVHVnTWtSQ0E1TXd2QUlGengrUU80QVdjV1lLQUJKRVJrdU1Yc0lSa21RZEFoRGhZbHp6YmRQZDJkZGZQdmZXZEU3SXpRMWZYZCs2dDZlbWZzeHZudDc4WWdDamY5TjRBZ0o0Z0FFaURBQ0FOQW9BMENBRFNJQUJJZ3dBZ0RRS0FOQWdBMGlBQVNJTUFJQTBDZ0RRSUFOSWdBRWlEQUNBTkFvQTBDQURTSUFCSWd3QWdEUUtBTkFnQTBpQUFTUE50N3cwWW5VY1AzaDE2LzR0WGR3dHRDY3h4eG4yQmpuTTA1SHRCanVNZ3dBNTZCZjRxRUNJZkJOaUkxOUF2Z1F6YlFJQVZvb1YrQ1dSWUJnRW1qQkw2SlpEaE1nandINk1IZndvaVhDQXZnRnJ3cDZpTElDdUFldkNucUlvZ0p3REJYMGROQkJrQkNINGVLaUpJbkF0RStQTlIyV2REZHdDVlNhek5VamM0Ky8ybnhmZDgrZm1QV3B0VGxHRUZJUHhsT1pWZ0xmaFR2SXN3NUJLSThKY243ZE9jOE85NWZXdUc2Z0FFdnk0dkgvNjIrNzFlTzhFd0hZRHd3eDZHNkFEZXcvLzgyZlZkNzN2ODVGUGhMZG5Qa2VxZjhOZ0Z3bDhSNWluOGU0T2UrM21leEloT2FBRThoTDkwNkhQL1QyUTRSa2dCZWdlL1IraVhRSVpqaEJPZ1YvZzloWDRKWk1nbmxBQTl3aDhoK0hPazdVYUVkVUlKMEpLb3daK0NDT3VFRWFCVjlSOGwrRk1RWVo0UUFyUUkvNmpCbjRJSWwzSC9TekRocjRQaW1PZHdMUURocjR2eTJCTnVsMEMxdzgva1g2QytKSExkQVdwQitMOUdkWis0RktCbTlWZWQ2QzBvN2h0M0FoRCt2dFRjUjcxUFlabkRsUUNFM3dkS0VyZ1NvQmFFUHgrVmZlWkdnRnFWUVdVaWExQnIzM25xQWk0RUlQeCtHVjBDRndMVWdQQ1hZK1I5MlYyQUdwVmc1QWtiQ1E5ZHdPMHZ3WHZKQ2YvNXJUdXovLzd4dy90U20rTUt0ZkZ1b1dzSEtGMEJ0b2IvL05hZHhUQnMrWHMwUEkrM2R4Y1lyZ09za1R2SjZmVlJLNlRhZVBmUXJRTzBydjVIS2x6RWJoQnB2RDI3UVBjdndTV29HZjZTbjlFS3RmRWVvWXNBSlkzbmlNOFk5T29DUTNTQU5VcFdzZ2hWVVcyOFIya3VBTlVmbHVqUkJZYnVBRFVxbU9lcVdITzgvL3o0NjZIUGVmanlsd0piVTU2d0FsRDlvUVJOQmVqOW93Y2NZMjhYeUtuK3JUTVNzZ05RL2Z1Uks0SFhwVTlDNnBkZ1dHYnVXVjVMRDdSSUV0eDgrM1R4ODlhQ1AvZXdqVjZpTkJPZ1ZHdWordnRocmh1VXVMM0tvd2Z2bWoyb08rUVNhQ3Mxem1ueGZKNk0ybmhMTUxRQUFGZlJSSUNleTUrU0ZTeENOU3k1alh1ZThYdlZIRzE5MkY2cm8wRjBBREN6dms5dzdIbWtTRUtBRWxVeFF2VlBSTnJXM29RUjRPalJueU9oaUJpb250c2M2VWhkZFFFOC9mcjc4Y1A3ckdEa3Z0NGJ1ZHMvZDFoejdWaC9Mcm5ILzF0a1IvS0hzQlFLbFl2RTFjYWJRd2dCYXJWVXRZbmZPOTZiYjU5bW53THgvTm4xU3orS2JUMzYwNW93M3dHZ0RVdEJQN0lVV2dxL2gvT0VFQUMrb3FRRW5zTnZoZ0NRU1k0RVhwYzlweUFBekxLMjVyLzU5dW1xQ0ZmOTNVdjFOek03dTNGKyswdXREK2NNMFBpVVBBeHF0aS84TmM4TWRkOEJDSDlmamw0TGZJcW55cDl3THdEMHA0UUVIc052RnVSM0FPalBscXZBNXZBYS9BUUNRQmFuM1dCSmh0UFhQSDdwK3dIY0NBQzdLZm45b0JkOEJ3QnBFQUNrUVFDUUJnRkFHZ1FBYVJBQXBFRUFrQVlCUUJvRUFHbmNDMURpWnF2UWh3aHpWMVdBVm5mNGhYR3BuU0gzSFFDZ0pnZ0EwaUFBU0lNQUlFMElBU0ljVFlETFJKbXpFQUlBMUtMNkZXRXZYdDExZFlmb1BYeStmNi8zSnV6bTJ1czN2VGRoTnkwT280ZnBBRDFhNnVmNzkwS0gzNnpQR0tJc2Y4eTRKbmlXNktHZkk0MHBja2VvUVpnTzBJb1J3My9LNk9QTHBlcXRFVS94ZEp2RTZZTWkwbjN6bGNKeDdmV2J4ZjF3aEZMTEh4NlUzUmlsOEp2cGpYY0pCRERDb0V3ekFVcTF0RWhIR05TSXR2d3hvd09BT0NFRk9GcHBwbC8ydnYvejcwT2ZGNUhwbUk5K0FZN2FtWnNLd0FVeWNCV3RNeEt5QTVqRnJUZ2pFbmt1d2dwUUdxVmxrTkpZcjZLNUFDVmIzSkhLby9hUTdEWCsrdUc3M2U4dFdmMTdMSkhwQUNCTkZ3RzhkSUZwNVZOWUdrekhxRno5elFicEFDVW5ZbVFKU280dDhoZmZVN29KVU5yNHZSTnlwQUpHWisvWVM0ZS81K0h4SVRyQVhwYk9qUit4QzZ5TlNma2FnYTRDZU80Q0kwa3dOeGFxL3dYRGRZRGNDVXJWYjFRSnJncC9UdlVmWmQxL1NuY0JhbFFBT3NFRm5pdS9XZi9xYitaQWdGcmtUTmhWVlRDaUJGdTJlV3YxSDdIeUoxd0lVS3NTN0pGZ3FVSkdrbUJwVy9jc2ZXcUYzMFAxTjJ0NFRmQVdhdDAvS09jNjRuUjEyRnJndlI0NjNick5oUDkvWEhTQTJ1enRCSkc2d1ZyVjl4UitiN2pxQUdiMXVvQlovaDBsSW5TRDBsWGZyRzc0UFZWL000Y0NtUG1Td094Q2hDMVZ2NVVNT2R1Uyt5T1hVdmpObkFwZzVrK0N4UFJlT25QVU90VzY5dit0Rm40ejBWc2pQbjd5YWJjRUtXQnJZWno3VzI0d3Q0VDl5T2RQVVZuelQzSGJBY3pxZG9IRTBUdk41UWExTkJHQzc3WDZtemtYd0N5R0JHYnRSZkIwRzhNMVBJZmZMSUFBWm5Fa1NOU1NvZVIzQzhKL1FRZ0J6TnBJWUZaV2hGTmFyK21YYUxYV2p4QitzMEFDbUxXVHdLeWVDTDFvK1NVM1N2ak5SSThDYlNFRkpyb0lxa2QzdGhLcUE1aTE3UUtuUkJPaFYvQWpWWCt6Z0FLWTlaTWc0VldHM3RVK1d2ak5nZ3FRNkMyQ1dYOFplb2ZlTEdid0U2RUZNUE1oUWFLVkRCNUNuNGdjZnJNQkJERHpKY0VjZThYd0ZQUTVvb2ZmYkJBQnpQeExNQm9qaE45c29BdGlScG1RQ0l5MHI0ZnBBS2ZRRGVvd1V2QVR3M1NBVTBhY3FONk11aytIRk1CczNBbnJ3Y2o3Y3NnbDBCU1dSUHNZT2ZpSllUdkFLUW9UV1JxVmZTYlJBVTZoRzZ5akV2eUVuQUFKUkxpTVd2QVRzZ0lrMUVWUURYNUNYb0NFbWdqcXdVOGd3SVRSUlNENGwwR0FGVWFSZ2RBdmd3QWJpU1lEb2Q4R0F1ekFxd3lFUGg4RUtFQXZJUWo4Y1JDZ01rZmxJT1IxUVFDUVJ1SmNJSUFsRUFDa1FRQ1FCZ0ZBR2dRQWFSQUFwRUVBa0FZQlFCb0VBR2tRQUtSQkFKQUdBVUFhQkFCcEVBQ2tRUUNRQmdGQUdnUUFhUkFBcEVFQWtBWUJRQm9FQUdrUUFLVDVGK1kvVTlTMkIzNUJBQUFBQUVsRlRrU3VRbUNDIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBZ0FBQUFJQUNBWUFBQUQwZU5UNkFBQVl5VWxFUVZSNG5PM2R2NDRjMTVYQTRTdUJpZUZBSVlVRkJHd3NZSlVyZENZb1lTQUN6dndDVXJDNVkrVU83QmR3WmtBS2xCak9GRExYdnNBQ0FoYldBd2dLdFFIZFpuUFkwOU4vN3A5enovbSthTEcyT1RXc3FudCtkYXRuK040SHp6Lyt0UUVBcGJ5LytnQUFnUGtFQUFBVUpBQUFvQ0FCQUFBRkNRQUFLRWdBQUVCQkFnQUFDaElBQUZDUUFBQ0FnZ1FBQUJRa0FBQ2dJQUVBQUFVSkFBQW9TQUFBUUVFQ0FBQUtFZ0FBVUpBQUFJQ0NCQUFBRkNRQUFLQWdBUUFBQlFrQUFDaElBQUJBUVFJQUFBb1NBQUJRa0FBQWdJSUVBQUFVSkFBQW9DQUJBQUFGQ1FBQUtFZ0FBRUJCQWdBQUNoSUFBRkNRQUFDQWdnUUFBQlFrQUFDZ0lBRUFBQVVKQUFBb1NBQUFRRUVDQUFBS0VnQUFVSkFBQUlDQ0JBQUFGQ1FBQUtBZ0FRQUFCUWtBQUNoSUFBQkFRUUlBQUFvU0FBQlFrQUFBZ0lJRUFBQVVKQUFBb0NBQkFBQUZDUUFBS0VnQUFFQkJBZ0FBQ2hJQUFGQ1FBQUNBZ2dRQUFCUWtBQUNnSUFFQUFBVTlXMzBBd1AxZXZuZzE5ZXQ5ODkyblU3OGUwTjk3SHp6LytOZlZCd0djTm51dzl5WVVJQzRCQUl2dFB1UnZKUTVnTFFFQWsxUWQ5TmNTQmpDSEFJQUJEUHUrUkFIMEp3Q2dBd04vTGtFQTl4TUFjQU1EUHhaQkFOY1RBSEFoUTM4UFlnQXVJd0RnRVFaK0RvSUFUaE1BY01UUXowME13QnNDZ1BJTS9ackVBTlVKQUVveTlEa21CcWhJQUZDR29jOGx4QUJWQ0FEU00vaTVoUkFnT3dGQVNvWStQWWtCTWhJQXBHTHdNNUlRSUJNQlFBb0dQek1KQVRJUUFHekwwQ2NDTWNDdUJBRGJNZmlKU0Fpd0d3SEFOZ3grZGlBRTJJVUFJRHlEbngwSkFhSVRBSVJsOEpPQkVDQXFBVUE0Qmo4WkNRR2lFUUNFWWZCVGdSQWdpdmRYSHdDMFp2aFRoMnVkS093QXNKVEZrTXJzQnJDU0FHQUpneC9lRUFLc0lBQ1l5dUNIeHdrQlp2SVpBS1l4L09FODl3Z3oyUUZnT0lzYVhNOXVBS01KQUlZeCtPRitRb0JSQkFCREdQN1F6K2dJZU8rdnZ6LzduLy82aDc4Ti9mcXNJUURveXVDSGNYcUZ3Rk1EL3ltQ0lBY0JRRGVHUDR4M1R3VGNPL2dmRWdKN0V3RGN6ZUNIK2E0TmdkN0QvMEFFN0VzQWNCZkRIOWE1SkFKR0RmNkhoTUIrL0I0QWJtYjR3MXBQM1lPemh2L3NyMFVmZGdDNG1zRVA4VHpjRFZnMWtPMEU3TU1PQUZjeC9DR200M3R6NWRPNG5ZQjkyQUhnWW9ZL3hQZnRGMzlhZlFpdE5Uc0JPM2kyK2dDSXorQUh5TWNyQU00eS9HRWZVWjcrVy9NcVlBY0NnRWNaL3JDUFNNUC9RQVRFNWhVQTd6RDRBZkt6QThCYkRIL1lUOFNuL3dPN0FIRUpBUDdOOEFlb3d5c0FXbXVHZnhaLytmTnZoLzc1WDM3MTg5QS9INWhIQUdENGIyTDBjTzkxRENJQjl1QVhBUlZtOE1jVVlkQ1BJQXpHaVB6Ky81aGZEQlNQSFlDaURQOFlzZzc3VTA1OXI2SUExaEVBQlJuKzYxUWErSmQ0K1BjaENHQWVBVkNNNFQrWGdYOGRRUUR6Q0lCQ0RQODVEUDEranY4dXhRRDBKUUNLTVB6SE1mRG5zRHNBZlFtQUFnei8vZ3o5OWV3T3dIMEVRSEtHZjE4R2YweUg4eUlFNEhJQ0lESER2dzlEZng5MkJlQnlBaUFwdy85K0J2L2U3QXJBZVFJZ0ljUC9kb1orUG5ZRjREUUJrSXpoZnh1RHZ3YTdBdkNHQUVqRThMK2V3VitURUFBQmtJYmhmeDJEbjlhRUFMVUpnQVFNLzhzWi9Kd2lCS2hJQUd6TzhMK013YzhsaEFDVkNJQ05HZjVQTS9pNWhSQ2dBZ0d3S2NQL1BJT2ZIb1FBbWIyLytnQzRudUYvbnVGUGI2NHBNcklEUUJvV2FVYXlHMEEyQW1Bem52N2ZaZkF6a3hBZ0M2OEFObUw0djh2d1p4WFhIcnV6QTdBSncvOXRGbDhpc0J2QXp1d0FiTUR3ZjV2aFR6U3VTWFprQnlBNHcvOE5peXlSMlExZ04zWUEySUxoenk1Y3EreENBQVRtNmY4MUN5cTdjYzJ5QTY4QWdqTDhMYUxzelNzQm9yTURFSkRoYi9pVGgydVpxQVFBNFZnd3ljWTFUVVJlQVFSVCtlbmZJa2xtMVY4SnZIenhxbjN6M2FlckQ0TWpkZ0FDTWZ3aHY4clhldVUxTGlJQkVFVGxHNlB5Z2toTmxhLzV5bXRkTkFLQXBTb3ZoTlRtMm1jMW53RUlvR0lSVy95Zzd1Y0NmQjRnQmpzQWl4bitRTVY3b3VMYUY0MEFXS2ppRFZCeG9ZTkxWTHczS3E2QmtRZ0FwcW00d01FMTNDUE1KQUFXcVZhK0ZqYTRUTFY3cGRwYUdJa0FXS0RhQlY5dFFZTjdWYnRucXEySlVRZ0FocXEya0VFdjdoMUdFd0NUVlNwZEN4amNwOUk5VkdsdGpFSUFURlRwQXErMGNNRklsZTZsU210a0JBS0E3aW90V0RDRGU0b1JCTUFrVmNyV1FnVmpWTG0zcXF5VkVRZ0F1cW15UU1FcTdqRjZFZ0FUVkNoYUN4UE1VZUZlcTdCbVJpQUFCcXR3SVZkWWtDQ1NDdmRjaGJWek5RSEFYU29zUkJDUmU0OTdDWUNCc2hlc0JRald5bjRQWmw5RFZ4TUFBRkNRQUJna2U3bG1mL0lBWXNpK2xxNGtBTGlhNFErd1B3RXdRT1ppTmZ5QjJUS3ZxU3M5VzMwQTJXUytVRmNQLytjZmZYTHhmL2VuSDM4WWVDUlU0OXBiNytXTFYrMmI3ejVkZlJpcENBQkN1MmJoZmV4L1owSG1GcTQ5c2hNQUhYbjY3K1BXaGZlU1A4K0N6RG11dmRqc0F2UWxBSGpTck9IZmUvRTk5elVzeGh4ejdWR1JEd0Yya3ZYcGY4YndmLzdSSjFNVzROVmZrM2hjZS92SnV0YXVJQUJZYXZWQ3VQcnJzODdxYzcvNjY0TUE2Q0Jya1k1KytvK3lBRVk1RHVhSmNzNmpITWR1c3E2NXN3a0FUcW95L0EraUhRL2pSRHZYMFk2SE9nVEFuVEtXYUxYaGZ4RDF1T2duNmptT2VseVJaVng3WnhNQVRCVjlvWXQrZk53dStybU5mbnprSXdEdWtMRkFSejc5NzdMQTdYS2NYRzZYYzdyTGNVYVJjUTJlU1FEd2I0Yi9HN3NkTDQvYjdWenVkcnpzU3dEY1NIbGVidGNGYmRmajVvMWR6K0d1eDcyQ3RmaDJBb0RXMnZwLzZBZUF1UVFBdHY3UDJQMzRLOXY5M08xKy9NUW5BRzVneStreVdSYXdMTjlISlZuT1daYnZZelJyOG0wRVFIRzIvbUZ2Ly96ZEgxY2Z3cE8rK1BhL1Z4OENKd2lBS3luTnkyUjdjc24yL1dTVzdWeGwrMzVHc1RaZlR3QVU1dWtmb0M0QmNJVk1oV240QTlsa1dxTm5FQUIwbDNYTE11djNsVW5XYy9UVTl4WDVjd0RlLzhjbEFBcnk5QStBQUxpUXJTVWdzb2k3QUN1ZS9xM1ZseE1BeFhqNmg3d2lSWUN0Ly9nRXdBVVU1ZVd5dm9NOXlQNzk3U3o3dWNuKy9mVmt6YjZNQUNqRTB6L2tGMkVYd05QL0hnUUFRRElySThEdzM0Y0FlRUtXclNSUC8xRExpZ2lJTlB5enJOMGpDUUNBcEdaR1FLVGh6MldlclQ0QXh2UDBEM1VkSXVERDc3OGU4dWNiL1B1eUEzQ0dMU1FnaXhHN0FkR0h2elg4UERzQXlYbjZoemplKyt2dmIvcmYvZnFIdjNYNStyMTJBM29PL20rLytOUHlZNmhLQUFBVTgzQTM0S2tnTUd4ekVnQ1B5TEIxNU9rZnVNUzUxd05mZnZYenhDUHA3K1dMVisyYjd6NWRmUmdoK1F3QVhmMzA0dytyRDJHbzdOL2Z6cktmbSt6ZkgvTUpBQUFvU0FDY1lQc2Y0TFVNYTBtR05YMEVBUUFBQlFtQWhGWVhlOVozbFZtL3IweXlucVBWMzlmcU5ZVXhCQURBSkxmK1BQK28zK0szbXQ4QnNKWUFlTUM3SW9COHJPM3ZFZ0RKUk5tcVc3MWwyVnUyN3ljejUycU1LR3NML1FnQUFDaElBQnpaZllzb1dxRm5lUkxMOG4xVTRweU5FVzJOdWRidWEzeHZBb0NoZGwrSWR6Lyt5cktkdTJ3ZkJMejFBNEQwSXdBQUp1cjFML3RWNVNjQStoRUFTVVRlbXR2MVNXelg0K1lONTdDL3lHc04xeEVBLytMZDBGaTdMY1M3SFMrUHkzUXVzN3dHV0xuOWI2MS9Rd0F3elM0TDhTN0h5ZVdjVTNpWEFHQ3E2QXR4OU9QamRwSE9yYzhCM01iNy83NEVRQUs3dlpPTHRCQWZpM3BjOUpQaEhFZDREWERQbXVQVC8zRUlnT2FkMEFyUkZ1Sm94OE00empYVy9OY0VBTXRFV1lpakhBZnpSRGpuOTd3R2lMQUxjSXQ3bnY1dC8vY25BRGEzMi9iL1E2c1g0dFZmbjNWV24vdlZYLzlldTY4OUNBQUMrT25ISDZZdmhpdStKdkhzZk8zdHRndmczWDg4QW9Bd1ppekdCaituckxyMi92bTdQdzc5bWxuWS9oL2oyZW9EV00ySFFlSTVYaVNmZi9SSjF6OFB6dG50MnZ2dys2KzNpSWlJVC84dlg3eHEzM3ozNmVyRFdPcTlENTUvL092cWcxaHA1d0NvOWc3dW1nWFowS2VuMGRmZXZkdjVLeVBneTY5K1B2dWYzenY4Uno3OVZ3K0E4anNBN01OUVp4WFhIaG41REFEQVl2Yyt3VWY5UUdEa3AzOEVBRUFLMFNJZzRudC8zaVlBTmxYdC9UOWsxK005L29vSU9MVVc5UmorbnY3SEt4MEFPMzhBRU9DVTFUc0JPejM1VjU4QnBRTUFJSkplbitaZkZRRzlocituL3prRUFFQWd1MGFBNGI4ZlB3WUlrTlFoQWtiK25vQVB2Lys2dFMrRy9mRU1aQWRnUXo0QUNMbjFIdGdmZnY5MTl4MkJFWCttcC8rNUJBQkFRQ09lMm5zTTdSR0R2elhEZndXdkFBQ0MrdWZ2L2poazJCNy9tWmVFeHVqUEV4aithNVQ5dHdCMi92RVByd0NnbHRVLzJqZFNoT0ZmOWQ4RThBb0FJTGdkL3NXL1cwUVkvcFVKQUlBTlpJc0F3Mzg5QWJBWjIvOVFWNVlJTVB4akVBQUFHOWs5QWd6L09BUUF3R1oyalFERFB4WUJBTENoM1NMQThJOUhBQUJzYXBjSU1QeGo4b3VBQURaMmlJQ0l2eXZBNEk5TkFBQWtFQ2tFRFA0OWxQeE5nSDRMSUpEZGloRFllZkJYL0cyQWRnQUFFcHE1STNENFdsOSsrL1B3cjBVL0FtQWpudjZCYXgxL1VMQm5ESno2QU9KZi92emI5dVZYSW1BWEFnQ2dpSWREKzVvZzJPVW5EcmljQUFBb3lsQ3Z6ZThCQUlDQ0JBQUFGQ1FBQUtBZ0FRQUFCUWtBQUNoSUFBQkFRUUlBQUFvU0FBQlFrQUFBZ0lJRUFBQVVKQUFBb0NBQkFBQUZDUUFBS0VnQUFFQkJBZ0FBQ2hJQUFGQ1FBQUNBZ2dRQUFCUWtBQUNnSUFFQUFBVUpBQUFvU0FCczVNdXZmbDU5Q0FDUHNrYnRSUUFBUUVFbEErQ2I3ejVkZlFnQUJGRjFKcFFNQUFDb1RnQUFRRUVDQUFBS0VnQUFVSkFBQUlDQ0JBQUFGQ1FBTnVNWGJRQVJXWnYySXdBQW9DQUJBQUFGbFEyQXFyLzVDWUEzS3MrQ3NnRUFBSlVKQUFBb1NBQnN5S2R0Z1Vpc1NYc1NBQUJRa0FBQWdJSUVBQUFVVkRvQUt2LzRCMEIxMVdkQTZRRFltUS9kQUJGWWkvWWxBQUNnSUFFQUFBVUpBQUFvU0FCc3pMczNZQ1ZyME43S0IwRDFUNEVDVkdUdEZ3QUFVSklBQUlDQ0JNRG12SU1EVnJEMjdPL1o2Z09BcUg3NS9MUFZoMEFudi9uN1AxWWZBb1FqQU5yckQ0TzhmUEZxOVdHd2tHR2YyNm56S3dycThnSEExN3dDU01CVzNPMSsrZnd6dzc4bzUvNTIxcHdjN0FCUWprV2ZZOGZYZzEwQktoRUFsR0h3ODVURE5TSUVxTUFyZ0gveFRpZzN3NTlydUY3eXN0YS9JUUNTOEU3dU5POTV1WlZyNXpSclRSNENnTFFzM3ZUZ09pSXJBVUJLRm0xNmNqMlJrUUE0c3Z1N0lWdHpyMW1zR2NGMXRmOGFzL3NhMzV1ZkFpQ001eDk5Y3ZGLzk2Y2Zmemo1LzdkSU05SXZuMzkyOGljRWVseTdNSnNkZ0dSMkwvUjdHUDdNVVBVNnE3eTJaQ1VBSHJCRnRLZXFpekpydU43MlkyMS9sd0JnZXhaalZuRGRzVHNCa0ZDbHJUcUxNQ3RWdWY0cXJTbVZDQUMyVldYeEpUYlhJYnNTQUNka2VGZWsySUVlTXF3bEdkYjBFUVFBVy9MVUJYQWZBVUFZMS94ODlILyt6LzhOUEJLNDNEWFhvdDhCUUNRQzRCRVp0b3d5Yk4wQjYyUllRektzNWFNSUFBQW9TQUFrbDZIZ2dmbXNIZmtKZ0ROc0hRSHN5eHArbmdBb0lHdkoreUFncTJXOUJyT3VHYnhOQUJDS1QwbVRsV3ViYUFUQUU3SnNJU2w2NEJKWjFvb3NhL2RJQWdBQUNoSUFoV1FwKzJOWjM4RVNYOFpyTCtNYXdlTUV3QVZzSmMzbFhTblp1S2Juc21aZlJnQVVvL0NCVTZ3TjlRaUFDeW5LdURKdXhSS2JheTR1YS9YbEJFQkJPNVMrTFZPeTJPRmEzbUZOb0Q4QlFBcWV5SmpGdFVZV0F1QUttYmFXRkQvUVdxNjFJTk1hUFlNQUtDejZqYi9EMWltY0UvMGFqcjRHTUpZQXVKTENqTXZXTEtPNXh1S3lObDlQQUJUbkNRQnFjdThqQUc2Z05PZTVkZ3ZWRXhxalhIdHQvZTkvL2NlZ0krRWhhL0p0QkFEcG5nUkVBTDFsdTZheTNmUGNSZ0RRV291OUlIaVNZamVScjluSTl6cHpDWUFiMlhLS0xkc1RHK3U0bG1LekZ0OU9BUEJ2a1o4TUlqOVJ3YkhJMTJya2U1ejVCTUFkTXBabnBnWENreHYzeW5RTlpicTNEekt1d1RNSkFNTDd6ZC8vMFZxNzdja3Ewd0xPWExkY084Zlg2T0c2aGFnRXdKMHlGbWprSjRYSTI2dlVGdm5hakh4UDN5cmoyanViQU9Da1RBdUdYUUN1bGVtYXlYUXYwNWNBNkNCcmlVWmRPTHdLWUtSN3QvNGppWG9QM3l2cm1qdWJBS0FNRWNCVFhDTlVJZ0E2eVZxa1VaNGdIbjZnNnRZbkxnczhqN24xMmpoMUxVYjRBR0NVZTdlM3JHdnRDZ0tBSjBWZFNLSnV1MUpIMUdzdzZqMUxMQUtnbzh4bEdtRkI2ZlZVWlJlQWgzcGVFNnVmL2lQY3E2TmtYbU5YRUFCc3phc0E3dFZ6Nng5MklnQTZ5MXlvVVo4c1JBQzN5amI4bzk2alBXUmVXMWNSQUFOa3ZsQlhMekNQYmErS0FLNDFZdml2M1A1ZmZXK09sSGxOWFVrQWNMV29DNDBJNEZLZS9FRUFESk85V0ZjdU9DT2Vza1JBSGFQTzlhcW4vK3pEUC90YXVwSUFZRXU5WHdXMDlub3dDSUc4N2oyL1ViZis0VllDWUtEczVScjF5ZVBlYlZvUmtNKzk1OVRXL3hyWjE5RFZCQUIzaWZvcVFBUndNSHI0Mi9wblZ3SmdzQW9GS3dLSXl2RGZWNFcxYzdYM1Buais4YStyRDZLQ2x5OWVyVDZFNGY3eTU5OHUrOXEvZlA3Wm8vOVpqMEVlZFF1WTAyYWNjOE4vSE1OL0Rqc0FkSk4xSjZBMXV3RTdNZnpoTW5ZQUpxcXdDOUJhN3AyQTF1d0dSRFhyL0JyK1kzbjZuOGNPQU4xbDNnbG96VzVBUklZL1hNOE93R1JWZGdGYXk3OFQwSnJkZ05WbW5rdkRmenhQLzNNSmdBVkV3QnpuSXFBMUliQ3oyZWZPOEIvUDhKL1BLd0NHaXZvNm9MVytROXR2RVp5ajk5K3o0VTlsZGdBV3FiUUwwTnJhbllEVzVyMFNPTEFqME5lS2MrUmY5cHZIMC84YUFtQWhFVERYN0Fob1RRamNhOVY1TWZ6bk1melhFUUFMVlF1QTF0WkhRR3RDWUFjVkIzOXI5WVovYXdKZ0pRR3dtQWhZNjFRTWpINlhMd1pPVy9YM3Zucm9IeGorekNZQUFoQUI2d21CZGFvUC90WU1mOVlRQUVGVWpJRFc0b1hBc1Y4Ky8yemFKL3VyeGNEc3Y5ZEl3LzVZeGNIZm11RWZ4YlBWQjBCdFgzNzFjOWdJK00zZi85RisrdGYvL2Z5alQ0WityWWNEOGFjZmZ4ajY5V1liL2ZmMzBBNS9mMVdIUDNIWUFRaWs2aTVBYTdGM0FvN05IbVFIT3d5MFkvNmV6cXM4L0QzOXh5RUFnaEVCOGEwYWJnOUZHWGIrUHE1aitCT0ZBQWlvY2dTMEpnUjY2RDBNSzMydm8xUWUvSzBaL2hINURBRGhSUDVjd0xIRDRJazRIQ01lVTIrN0RQN1dESDlpc2dNUVZQVmRnTmIyMlFrNHFEQjBJOWhwOExkbStMZm02VDhxQVJDWUNIaHR0eEJvVFF6MHR0dlFiODNnUHpEODR4SUF3WW1BMTNhTWdOYUV3TDEySFB5dEdmNEhobjlzUGdQQUZuYjVYTUJEeHdOTURGeG0xNkYvWVBpekN6c0FHN0FMOExZZFErQWhNZkMyM1lkK2F3Yi9RNTcrNHhNQW14QUJiOHNRQVFkVll5REQwRDh3L045bStPOUJBR3hFQkx3clV3aTBsajhHTWczOTFneitVd3ovZlFpQXpZaUFkMldMZ0lkMmpZSnN3LzRody85ZGh2OWVCTUNHUk1CcDJVUGdXTFFveUQ3c2p4bjhweG4rKy9GVEFLUnhXSmdyaE1DNWdUc3FEaW9OK1ZNTWZyS3hBN0FwdXdEblZZZ0E1akg4ei9QMHZ5Y0JzREVSOERRaHdEME0vcWNaL3ZzU0FKc1RBWmNSQWx6RDRMK000YjgzQVpDQUNMaWNFT0FjZy85eWh2LytCRUFTSXVBNlFvQmpCdjkxRFA4Y0JFQWlJdUI2UXFBMmcvOTZobjhlQWlBWkVYQWJJVkNMd1g4Ynd6OFhBWkNRQ0xpZEVNak40TCtkNForUEFFaEtCTnhQRE9SZzZOL1A4TTlKQUNRbUF2b1FBbnN5K1Bzdy9QTVNBTW1KZ0w3RVFHeUdmbCtHZjI0Q29BQVIwSjhRaU1YZzc4L3d6MDhBRkNFQ3hoRURheGo2NHhqK05RaUFRa1RBSElKZ0RBTi9Ec08vRGdGUWpBaVlTd3pjeDlDZnkvQ3ZSUUFVSkFMV0VRVG5HZmpyR1A3MUNJQ2lSRUFNMVlQQXdJL0I4SzlKQUJRbUFtTEtHZ1dHZlV5R2YxMENBQ0d3aVYzQ3dLRGZnOEdQQUtDMUpnS3lHQjBKaG5zT2hqK3RDUUNPaUFESXovRG40UDNWQjBBY0ZnYkl6VDNPTVFIQVd5d1FrSk43bTRlOEF1QlJYZ25BL2d4K0htTUhnRWRaT0dCdjdtSE9FUUNjWlFHQlBibDNlWXBYQUZ6TUt3R0l6K0RuVW5ZQXVKaUZCV0p6ajNJTkFjQlZMREFRazN1VGEza0Z3TTI4RW9EMURINXVaUWVBbTFsNFlDMzNJUGNRQU56RkFnUnJ1UGU0bDFjQWRPT1ZBSXhuOE5PTEhRQzZzVERCV080eGVySUR3QkIyQTZBZmc1OFI3QUF3aEFVTCtuQXZNWW9kQUlhekd3RFhNL2daVFFBd2pSQ0FweG44ek9JVkFOTlkyT0E4OXdnejJRRmdDYnNCOEliQnp3b0NnS1dFQUpVWi9Ld2tBQWhCQ0ZDSndVOEVQZ05BQ0JaRXFuQ3RFNFVkQU1LeEcwQkdCai9SQ0FEQ0VnSmtZUEFUbFFBZ1BDSEFqZ3grb2hNQWJFTUlzQU9EbjEwSUFMWWpCSWpJNEdjM0FvQnRDUUVpTVBqWmxRQWdCVEhBVElZK0dRZ0FVaEVDakdUd2s0a0FJQ1VoUUU4R1B4a0pBTklUQTl6QzBDYzdBVUFaUW9CTEdQeFVJUUFvU1F4d3pOQ25JZ0ZBZVdLZ0prT2Y2Z1FBSEJFRHVSbjY4SVlBZ0VlSWdSd01mVGhOQU1DRkJNRWVESHk0akFDQUc0aUJXQXg5dUo0QWdBNEV3VndHUHR4UEFNQUFncUF2QXgvNkV3QXdpU2k0akdFUGN3Z0FXS3hxR0JqMHNKWUFnTUIyandOREh1SVNBSkRBN0ZBdzJHRi9BZ0FBQ25wLzlRRUFBUE1KQUFBb1NBQUFRRUVDQUFBS0VnQUFVSkFBQUlDQ0JBQUFGQ1FBQUtBZ0FRQUFCUWtBQUNoSUFBQkFRUUlBQUFvU0FBQlFrQUFBZ0lJRUFBQVVKQUFBb0NBQkFBQUZDUUFBS0VnQUFFQkJBZ0FBQ2hJQUFGQ1FBQUNBZ2dRQUFCUWtBQUNnSUFFQUFBVUpBQUFvU0FBQVFFRUNBQUFLRWdBQVVKQUFBSUNDQkFBQUZDUUFBS0FnQVFBQUJRa0FBQ2hJQUFCQVFRSUFBQW9TQUFCUWtBQUFnSUlFQUFBVUpBQUFvQ0FCQUFBRkNRQUFLRWdBQUVCQkFnQUFDaElBQUZDUUFBQ0FnZ1FBQUJRa0FBQ2dJQUVBQUFVSkFBQW9TQUFBUUVFQ0FBQUtFZ0FBVUpBQUFJQ0NCQUFBRkNRQUFLQWdBUUFBQlFrQUFDaElBQUJBUVFJQUFBcjZmNzg3djN3QzJZMVNBQUFBQUVsRlRrU3VRbUNDIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifV19" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --line: #334155;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --muted-2: #94a3b8;
+      --primary: #6366f1;
+      --primary-2: #4f46e5;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --green: #00ff00;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(99,102,241,.20), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(16,185,129,.14), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header { padding: 10px 16px 8px; text-align: center; }
+    h1 { margin: 0 0 8px; font-size: clamp(1.45rem, 3vw, 2.15rem); letter-spacing: -.03em; }
+    header p { margin: 0; color: var(--muted); font-size: .82rem; }
+
+    .app {
+      width: min(1600px, calc(100% - 24px));
+      margin: 0 auto 12px;
+      display: grid;
+      grid-template-columns: 370px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .panel, .stage-panel {
+      background: rgba(17,24,39,.92);
+      border: 1px solid rgba(148,163,184,.20);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel { padding: 12px; max-height: calc(100vh - 82px); overflow: auto; }
+    .stage-panel { padding: 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+      position: sticky;
+      top: 0;
+      background: rgba(17,24,39,.98);
+      padding-bottom: 10px;
+      z-index: 5;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--muted);
+      padding: 11px 8px;
+      border-radius: 14px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .tab-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); border-color: transparent; color: white; }
+
+    .section {
+      border: 1px solid rgba(148,163,184,.18);
+      background: rgba(15,23,42,.48);
+      border-radius: 16px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .section h2 { margin: 0 0 8px; font-size: .95rem; letter-spacing: -.01em; }
+    .row { display: grid; gap: 6px; margin-bottom: 9px; }
+    .row:last-child { margin-bottom: 0; }
+
+    label { color: var(--muted); font-size: .88rem; font-weight: 750; }
+
+    .file-card {
+      position: relative;
+      border: 1.5px dashed rgba(148,163,184,.45);
+      border-radius: 14px;
+      padding: 9px 11px;
+      background: rgba(255,255,255,.035);
+      min-height: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .file-card:hover { border-color: var(--primary); background: rgba(99,102,241,.10); }
+    .file-card input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .file-title { font-weight: 850; color: #fff; font-size: .88rem; }
+    .file-status { color: var(--muted-2); font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-status:empty { display: none; }
+    .file-status.ok { color: #86efac; }
+
+    input[type="range"] { width: 100%; accent-color: var(--primary); }
+    input[type="number"], select {
+      width: 100%;
+      background: #0b1220;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px;
+      font-size: .95rem;
+    }
+
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 10px 11px;
+      font-weight: 850;
+      color: white;
+      background: var(--primary);
+      cursor: pointer;
+      transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+    }
+
+    button:hover:not(:disabled) { filter: brightness(1.08); }
+    button:active:not(:disabled) { transform: scale(.985); }
+    button:disabled { opacity: .48; cursor: not-allowed; }
+    .btn-danger { background: var(--danger); }
+    .btn-success { background: var(--success); }
+    .btn-muted { background: #475569; }
+    .btn-warning { background: var(--warning); color: #111827; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+
+    .person-btn {
+      padding: 10px 6px;
+      background: #334155;
+      border: 1px solid rgba(148,163,184,.22);
+      border-radius: 12px;
+      font-size: .86rem;
+    }
+
+    .person-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); }
+    .person-btn.ready { box-shadow: inset 0 -3px 0 rgba(16,185,129,.9); }
+    .person-btn.audio-on { outline: 2px solid rgba(16,185,129,.9); }
+
+    .selected-person-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(99,102,241,.16);
+      border: 1px solid rgba(99,102,241,.35);
+      color: #c7d2fe;
+      font-weight: 850;
+      font-size: .78rem;
+    }
+
+    .meter { height: 18px; background: #0b1220; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; position: relative; }
+    .meter-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); transition: width .08s linear; }
+    .meter-line { position: absolute; top: 0; bottom: 0; width: 2px; left: 12%; background: white; box-shadow: 0 0 8px rgba(255,255,255,.75); }
+
+    .small { display: block; color: var(--muted-2); font-size: .78rem; line-height: 1.35; }
+    .ok-text { color: #86efac; }
+    .warn-text { color: #fbbf24; }
+    .danger-text { color: #fca5a5; }
+
+    .canvas-wrap {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,.25);
+      background: #020617;
+      position: relative;
+      touch-action: none;
+    }
+
+    canvas { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
+
+    .badge {
+      position: absolute;
+      top: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(2,6,23,.70);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(8px);
+      font-weight: 900;
+      font-size: .85rem;
+      pointer-events: none;
+    }
+
+    .badge.left { left: 12px; }
+    .badge.right { right: 12px; }
+    .recording { color: #fecaca; display: none; animation: pulse 1s infinite; }
+    .mouth-open { color: #86efac; }
+    .mouth-closed { color: #cbd5e1; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+    .audio-panel {
+      position: static;
+      width: min(560px, 100%);
+      min-height: 110px;
+      background: rgba(2,6,23,.76);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 10px;
+      display: none;
+      gap: 8px;
+      pointer-events: auto;
+      align-self: flex-start;
+      margin: 0 0 2px 8px;
+    }
+
+    .audio-panel.show { display: grid; }
+    .audio-panel-title { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: #e2e8f0; font-size: .82rem; font-weight: 900; margin-bottom: 2px; }
+    .audio-switch-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
+
+    .knob-card {
+      display: grid;
+      justify-items: center;
+      gap: 5px;
+      border: 1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.66);
+      border-radius: 12px;
+      padding: 8px 5px;
+      min-width: 0;
+    }
+
+    .knob-card .name { font-weight: 900; font-size: .76rem; color: #e2e8f0; }
+    .switch { position: relative; width: 42px; height: 24px; display: inline-block; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #475569;
+      border-radius: 999px;
+      transition: .2s;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .2s;
+    }
+    .switch input:checked + .slider { background: var(--success); }
+    .switch input:checked + .slider:before { transform: translateX(18px); }
+    .knob-card.on { border-color: rgba(16,185,129,.55); background: rgba(16,185,129,.13); }
+
+    .helpbar { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; color: var(--muted-2); font-size: .82rem; padding: 0 2px 2px; }
+    .mic-tip { display: none; margin-top: 8px; padding: 8px 10px; border-radius: 12px; border: 1px solid rgba(251,191,36,.28); background: rgba(245,158,11,.10); color: #fde68a; font-size: .78rem; line-height: 1.35; }
+    .mic-tip.show { display: block; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 1050px) {
+      .app { grid-template-columns: 1fr; }
+      .panel { max-height: none; }
+    }
+
+    @media (max-width: 620px) {
+      .app { width: min(100% - 12px, 1600px); gap: 10px; }
+      .panel, .stage-panel { border-radius: 14px; padding: 8px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .grid-6, .audio-switch-grid { grid-template-columns: repeat(3, 1fr); }
+      button { padding: 9px; }
+      header { padding: 6px 8px; }
+      h1 { font-size: 1.15rem; margin-bottom: 2px; }
+      header p { display: none; }
+      .tabs { margin-bottom: 8px; padding-bottom: 6px; }
+      .tab-btn { padding: 9px 6px; }
+      .audio-panel { max-height: none; overflow: visible; margin-left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎬 Sharon edit-pro</h1>
+    <p>Editor de cortometrajes con personajes, micrófono, zoom táctil y grabación.</p>
+  </header>
+
+  <div class="app">
+    <aside class="panel">
+      <div class="tabs">
+        <button id="tab-green" class="tab-btn active" type="button">🟩 Fondo verde</button>
+        <button id="tab-film" class="tab-btn" type="button">🎬 Cortometraje</button>
+      </div>
+
+      <div id="green-controls">
+        <div class="section">
+          <h2>🖼️ Imágenes del avatar</h2>
+          <div class="row">
+            <label>Boca cerrada</label>
+            <div class="file-card">
+              <div class="file-title">Boca cerrada</div>
+              <div id="status-green-closed" class="file-status"></div>
+              <input id="green-closed" type="file" accept="image/png,image/jpeg,image/webp" />
+            </div>
+          </div>
+          <div class="row">
+            <label>Boca abierta</label>
+            <div class="file-card">
+              <div class="file-title">Boca abierta</div>
+              <div id="status-green-open" class="file-status"></div>
+              <input id="green-open" type="file" accept="image/png,image/jpeg,image/webp" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="film-controls" class="hidden">
+        <div class="section">
+          <h2>🎬 Fondo del cortometraje</h2>
+          <div class="row">
+            <label>Fondo / escenario</label>
+            <div class="file-card">
+              <div class="file-title">Fondo</div>
+              <div id="status-film-bg" class="file-status"></div>
+              <input id="film-bg" type="file" accept="image/png,image/jpeg,image/webp" />
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>👥 Personajes</h2>
+          <div id="person-buttons" class="grid-6"></div>
+        </div>
+
+        <div id="person-editor" class="section"></div>
+      </div>
+
+      <div class="section">
+        <h2>🎙️ Micrófono y movimiento de boca</h2>
+        <div class="grid-2">
+          <button id="btn-mic" type="button">Activar micrófono</button>
+          <button id="btn-calibrate" class="btn-warning" type="button" disabled>Calibrar silencio</button>
+        </div>
+        <div class="row" style="margin-top: 12px;">
+          <label>Volumen actual</label>
+          <div class="meter">
+            <div id="volume-fill" class="meter-fill"></div>
+            <div id="threshold-line" class="meter-line"></div>
+          </div>
+          <span id="mic-status" class="small">Micrófono apagado.</span>
+          <div id="mic-tip" class="mic-tip"></div>
+        </div>
+        <div class="row">
+          <label>Sensibilidad: <span id="sensitivity-value">12</span>%</label>
+          <input id="sensitivity" type="range" min="2" max="70" value="12" />
+        </div>
+        <div class="row">
+          <label>Volver a boca cerrada: <span id="silence-value">1.0</span>s</label>
+          <input id="silence-delay" type="range" min="200" max="2500" step="100" value="1000" />
+        </div>
+        <div class="row">
+          <label>Velocidad simulación de habla: <span id="talk-value">120</span>ms</label>
+          <input id="talk-speed" type="range" min="70" max="250" step="10" value="120" />
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📹 Grabación</h2>
+        <div class="grid-2">
+          <button id="btn-record" class="btn-danger" type="button">🔴 Grabar</button>
+          <button id="btn-stop" class="btn-muted" type="button" disabled>⏹ Detener</button>
+        </div>
+        <button id="btn-download" class="btn-success" type="button" disabled style="width:100%; margin-top: 8px;">⬇️ Descargar video</button>
+        <span id="record-status" class="small" style="margin-top: 8px;">Listo para grabar.</span>
+        <span id="format-status" class="small" style="margin-top: 4px;"></span>
+      </div>
+    </aside>
+
+    <main class="stage-panel">
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="canvas" width="1920" height="1080"></canvas>
+        <div id="recording-badge" class="badge left recording">🔴 Grabando</div>
+        <div id="mouth-badge" class="badge right mouth-closed">Boca cerrada</div>
+
+      </div>
+      <div class="helpbar">
+        <span id="mode-help">Fondo verde.</span>
+        <span>Salida interna: 1920×1080</span>
+      </div>
+
+        <div id="audio-panel" class="audio-panel">
+          <div class="audio-panel-title">
+            <span>🎛️ Asignar audio a personaje</span>
+            <span id="audio-panel-hint" class="small">Prende una o varias perillas</span>
+          </div>
+          <div id="audio-switches" class="audio-switch-grid"></div>
+        </div>
+    </main>
+  </div>
+
+  <script>
+    'use strict';
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const canvasWrap = document.getElementById('canvas-wrap');
+
+    const els = {
+      tabGreen: document.getElementById('tab-green'),
+      tabFilm: document.getElementById('tab-film'),
+      greenControls: document.getElementById('green-controls'),
+      filmControls: document.getElementById('film-controls'),
+      greenClosed: document.getElementById('green-closed'),
+      greenOpen: document.getElementById('green-open'),
+      filmBg: document.getElementById('film-bg'),
+      statusGreenClosed: document.getElementById('status-green-closed'),
+      statusGreenOpen: document.getElementById('status-green-open'),
+      statusFilmBg: document.getElementById('status-film-bg'),
+      personButtons: document.getElementById('person-buttons'),
+      personEditor: document.getElementById('person-editor'),
+      audioPanel: document.getElementById('audio-panel'),
+      audioSwitches: document.getElementById('audio-switches'),
+      audioPanelHint: document.getElementById('audio-panel-hint'),
+      btnMic: document.getElementById('btn-mic'),
+      btnCalibrate: document.getElementById('btn-calibrate'),
+      micStatus: document.getElementById('mic-status'),
+      micTip: document.getElementById('mic-tip'),
+      volumeFill: document.getElementById('volume-fill'),
+      thresholdLine: document.getElementById('threshold-line'),
+      sensitivity: document.getElementById('sensitivity'),
+      sensitivityValue: document.getElementById('sensitivity-value'),
+      silenceDelay: document.getElementById('silence-delay'),
+      silenceValue: document.getElementById('silence-value'),
+      talkSpeed: document.getElementById('talk-speed'),
+      talkValue: document.getElementById('talk-value'),
+      btnRecord: document.getElementById('btn-record'),
+      btnStop: document.getElementById('btn-stop'),
+      btnDownload: document.getElementById('btn-download'),
+      recordStatus: document.getElementById('record-status'),
+      formatStatus: document.getElementById('format-status'),
+      recordingBadge: document.getElementById('recording-badge'),
+      mouthBadge: document.getElementById('mouth-badge'),
+      modeHelp: document.getElementById('mode-help')
+    };
+
+    function createCharacter(index) {
+      return {
+        id: index + 1,
+        label: 'P' + (index + 1),
+        closed: null,
+        open: null,
+        closedName: '',
+        openName: '',
+        x: 720 + index * 95,
+        y: 700,
+        scale: 42,
+        visible: true,
+        audioLinked: index === 0,
+        dragging: false
+      };
+    }
+
+    const state = {
+      mode: 'green',
+      selectedPerson: 0,
+      drag: {
+        active: false,
+        pointerId: null,
+        index: -1,
+        offsetX: 0,
+        offsetY: 0
+      },
+      pointers: new Map(),
+      pinch: {
+        active: false,
+        index: -1,
+        startDistance: 0,
+        startScale: 42,
+        startX: 0,
+        startY: 0,
+        startCenterX: 0,
+        startCenterY: 0
+      },
+      images: {
+        greenClosed: null,
+        greenOpen: null,
+        filmBg: null
+      },
+      characters: Array.from({ length: 6 }, function(_, index) { return createCharacter(index); }),
+      audio: {
+        ctx: null,
+        analyser: null,
+        stream: null,
+        source: null,
+        data: null,
+        active: false,
+        volume: 0,
+        smooth: 0,
+        noiseFloor: 2,
+        lastVoiceAt: 0,
+        voiceActive: false,
+        mouthOpen: false,
+        lastFlapAt: 0,
+        requesting: false
+      },
+      recording: {
+        recorder: null,
+        chunks: [],
+        stream: null,
+        url: null,
+        mimeType: '',
+        extension: 'webm'
+      }
+    };
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      const isGreen = mode === 'green';
+      els.tabGreen.classList.toggle('active', isGreen);
+      els.tabFilm.classList.toggle('active', !isGreen);
+      els.greenControls.classList.toggle('hidden', !isGreen);
+      els.filmControls.classList.toggle('hidden', isGreen);
+      els.audioPanel.classList.toggle('show', !isGreen);
+      els.modeHelp.textContent = isGreen
+        ? 'Fondo verde.'
+        : 'Cortometraje: mueve personajes, zoom táctil y perillas de audio.';
+      resetMouthToClosed();
+      updateRecordStatus();
+    }
+
+    function loadGeneralImageFromInput(input, statusEl, key) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function() {
+        const img = new Image();
+        img.onload = function() {
+          state.images[key] = img;
+          statusEl.textContent = file.name;
+          statusEl.classList.add('ok');
+          updateRecordStatus();
+        };
+        img.onerror = function() {
+          statusEl.textContent = 'Error al cargar';
+          statusEl.classList.remove('ok');
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadPersonImage(index, kind, input, statusEl) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const person = state.characters[index];
+      const reader = new FileReader();
+      reader.onload = function() {
+        const img = new Image();
+        img.onload = function() {
+          person[kind] = img;
+          person[kind + 'Name'] = file.name;
+          statusEl.textContent = file.name;
+          statusEl.classList.add('ok');
+          renderPersonButtons();
+          renderAudioSwitches();
+          updateRecordStatus();
+        };
+        img.onerror = function() {
+          statusEl.textContent = 'Error al cargar';
+          statusEl.classList.remove('ok');
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderPersonButtons() {
+      els.personButtons.innerHTML = '';
+      state.characters.forEach(function(person, index) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = person.label;
+        btn.className = 'person-btn';
+        btn.classList.toggle('active', state.selectedPerson === index);
+        btn.classList.toggle('ready', Boolean(person.closed && person.open));
+        btn.classList.toggle('audio-on', Boolean(person.audioLinked));
+        btn.title = person.audioLinked ? person.label + ' tiene audio asignado' : 'Editar ' + person.label;
+        btn.addEventListener('click', function() {
+          selectPerson(index);
+        });
+        els.personButtons.appendChild(btn);
+      });
+    }
+
+    function selectPerson(index) {
+      state.selectedPerson = Math.max(0, Math.min(5, index));
+      renderPersonButtons();
+      renderPersonEditor();
+    }
+
+    function renderPersonEditor() {
+      const index = state.selectedPerson;
+      const person = state.characters[index];
+      const closedStatus = person.closedName ? escapeHtml(person.closedName) : '';
+      const openStatus = person.openName ? escapeHtml(person.openName) : '';
+      els.personEditor.innerHTML = `
+        <div class="selected-person-title">
+          <h2 style="margin:0;">🎭 Editando ${person.label}</h2>
+          <span class="pill">${person.audioLinked ? '🎙️ audio ON' : 'audio OFF'}</span>
+        </div>
+        <div class="row">
+          <label>${person.label} boca cerrada</label>
+          <div class="file-card">
+            <div class="file-title">Boca cerrada</div>
+            <div id="person-closed-status" class="file-status ${person.closedName ? 'ok' : ''}">${closedStatus}</div>
+            <input id="person-closed-input" type="file" accept="image/png,image/jpeg,image/webp" />
+          </div>
+        </div>
+        <div class="row">
+          <label>${person.label} boca abierta</label>
+          <div class="file-card">
+            <div class="file-title">Boca abierta</div>
+            <div id="person-open-status" class="file-status ${person.openName ? 'ok' : ''}">${openStatus}</div>
+            <input id="person-open-input" type="file" accept="image/png,image/jpeg,image/webp" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="row">
+            <label>X: <span id="person-x-value">${Math.round(person.x)}</span></label>
+            <input id="person-x" type="range" min="0" max="1920" value="${Math.round(person.x)}" />
+          </div>
+          <div class="row">
+            <label>Y: <span id="person-y-value">${Math.round(person.y)}</span></label>
+            <input id="person-y" type="range" min="0" max="1080" value="${Math.round(person.y)}" />
+          </div>
+        </div>
+        <div class="row">
+          <label>Tamaño / zoom: <span id="person-scale-value">${person.scale}</span>%</label>
+          <input id="person-scale" type="range" min="5" max="250" value="${person.scale}" />
+        </div>
+        <div class="grid-3">
+          <button id="btn-person-center" class="btn-muted" type="button">Centrar</button>
+          <button id="btn-person-bottom" class="btn-muted" type="button">Poner abajo</button>
+          <button id="btn-person-visibility" class="${person.visible ? 'btn-success' : 'btn-muted'}" type="button">${person.visible ? 'Visible' : 'Oculto'}</button>
+        </div>
+        <span class="small" style="margin-top:8px;">También puedes mover ${person.label} directamente arrastrándolo sobre el reproductor. En celular/tablet, pellizca con dos dedos encima del personaje para darle zoom.</span>
+      `;
+
+      const closedInput = document.getElementById('person-closed-input');
+      const openInput = document.getElementById('person-open-input');
+      const closedStatusEl = document.getElementById('person-closed-status');
+      const openStatusEl = document.getElementById('person-open-status');
+      const xInput = document.getElementById('person-x');
+      const yInput = document.getElementById('person-y');
+      const scaleInput = document.getElementById('person-scale');
+      const xValue = document.getElementById('person-x-value');
+      const yValue = document.getElementById('person-y-value');
+      const scaleValue = document.getElementById('person-scale-value');
+
+      closedInput.addEventListener('change', function() { loadPersonImage(index, 'closed', closedInput, closedStatusEl); });
+      openInput.addEventListener('change', function() { loadPersonImage(index, 'open', openInput, openStatusEl); });
+      xInput.addEventListener('input', function() {
+        person.x = Number(xInput.value);
+        xValue.textContent = String(Math.round(person.x));
+      });
+      yInput.addEventListener('input', function() {
+        person.y = Number(yInput.value);
+        yValue.textContent = String(Math.round(person.y));
+      });
+      scaleInput.addEventListener('input', function() {
+        person.scale = Number(scaleInput.value);
+        scaleValue.textContent = String(person.scale);
+      });
+      document.getElementById('btn-person-center').addEventListener('click', function() {
+        setPersonPosition(index, canvas.width / 2, canvas.height / 2);
+        renderPersonEditor();
+      });
+      document.getElementById('btn-person-bottom').addEventListener('click', function() {
+        setPersonPosition(index, canvas.width / 2, canvas.height * 0.72);
+        renderPersonEditor();
+      });
+      document.getElementById('btn-person-visibility').addEventListener('click', function() {
+        person.visible = !person.visible;
+        renderPersonEditor();
+        renderAudioSwitches();
+        updateRecordStatus();
+      });
+    }
+
+    function renderAudioSwitches() {
+      els.audioSwitches.innerHTML = '';
+      let linkedCount = 0;
+      state.characters.forEach(function(person, index) {
+        if (person.audioLinked) linkedCount += 1;
+        const card = document.createElement('div');
+        card.className = 'knob-card' + (person.audioLinked ? ' on' : '');
+        const disabled = !person.closed && !person.open;
+        card.innerHTML = `
+          <span class="name">${person.label}</span>
+          <label class="switch" title="Asignar audio a ${person.label}">
+            <input type="checkbox" ${person.audioLinked ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-index="${index}" />
+            <span class="slider"></span>
+          </label>
+          <span class="small">${disabled ? 'sin img' : (person.audioLinked ? 'habla' : 'apagado')}</span>
+        `;
+        const input = card.querySelector('input');
+        input.addEventListener('change', function() {
+          person.audioLinked = input.checked;
+          renderAudioSwitches();
+          renderPersonButtons();
+          renderPersonEditor();
+          updateMouthBadge();
+        });
+        els.audioSwitches.appendChild(card);
+      });
+      els.audioPanelHint.textContent = linkedCount ? linkedCount + ' personaje(s) con audio' : 'Ningún personaje tiene audio';
+    }
+
+    function updateRecordStatus() {
+      if (state.mode === 'green') {
+        if (!state.images.greenClosed || !state.images.greenOpen) {
+          els.recordStatus.textContent = 'Sube las dos imágenes del avatar para grabar fondo verde.';
+        } else {
+          els.recordStatus.textContent = 'Listo. Activa micrófono para animar y grabar con audio.';
+        }
+        return;
+      }
+
+      const readyPeople = state.characters.filter(function(person) { return person.visible && person.closed; }).length;
+      if (!state.images.filmBg) {
+        els.recordStatus.textContent = 'Sube una imagen de fondo para el cortometraje.';
+      } else if (!readyPeople) {
+        els.recordStatus.textContent = 'Agrega al menos un personaje con imagen de boca cerrada.';
+      } else {
+        els.recordStatus.textContent = 'Listo para grabar cortometraje con ' + readyPeople + ' personaje(s).';
+      }
+    }
+
+    function fitImageContain(img, maxW, maxH) {
+      const scale = Math.min(maxW / img.width, maxH / img.height);
+      return { w: img.width * scale, h: img.height * scale };
+    }
+
+    function drawImageCover(img) {
+      const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+      ctx.drawImage(img, x, y, w, h);
+    }
+
+    function drawCenteredImage(img) {
+      const fitted = fitImageContain(img, canvas.width * 0.90, canvas.height * 0.90);
+      ctx.drawImage(img, (canvas.width - fitted.w) / 2, (canvas.height - fitted.h) / 2, fitted.w, fitted.h);
+    }
+
+    function getActiveGreenImage() {
+      return state.audio.mouthOpen && state.images.greenOpen ? state.images.greenOpen : state.images.greenClosed;
+    }
+
+    function getActivePersonImage(person) {
+      if (person.audioLinked && state.audio.mouthOpen && person.open) return person.open;
+      return person.closed || person.open || null;
+    }
+
+    function getPersonBox(index) {
+      const person = state.characters[index];
+      const img = getActivePersonImage(person);
+      if (!img || !person.visible) return null;
+      const maxW = canvas.width * (person.scale / 100);
+      const maxH = canvas.height * (person.scale / 100);
+      const fitted = fitImageContain(img, maxW, maxH);
+      return {
+        x: person.x - fitted.w / 2,
+        y: person.y - fitted.h / 2,
+        w: fitted.w,
+        h: fitted.h,
+        cx: person.x,
+        cy: person.y
+      };
+    }
+
+    function drawPlaceholder(lines) {
+      ctx.fillStyle = state.mode === 'green' ? '#00ff00' : '#101827';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(2, 6, 23, .72)';
+      ctx.fillRect(canvas.width * .16, canvas.height * .36, canvas.width * .68, canvas.height * .26);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 42px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      lines.forEach(function(line, index) {
+        ctx.fillText(line, canvas.width / 2, canvas.height * .43 + index * 56);
+      });
+    }
+
+    function updateAudio() {
+      const audio = state.audio;
+      if (!audio.active || !audio.analyser || !audio.data) {
+        audio.volume = 0;
+        audio.smooth *= 0.88;
+        audio.voiceActive = false;
+        if (performance.now() - audio.lastVoiceAt > Number(els.silenceDelay.value)) audio.mouthOpen = false;
+        els.volumeFill.style.width = '0%';
+        updateMouthBadge();
+        return;
+      }
+
+      audio.analyser.getByteTimeDomainData(audio.data);
+      let sum = 0;
+      for (let i = 0; i < audio.data.length; i += 1) {
+        const v = (audio.data[i] - 128) / 128;
+        sum += v * v;
+      }
+
+      const rms = Math.sqrt(sum / audio.data.length) * 100;
+      audio.volume = Math.min(100, rms * 3.0);
+      audio.smooth = audio.smooth * 0.78 + audio.volume * 0.22;
+
+      const userThreshold = Number(els.sensitivity.value);
+      const openGate = Math.max(userThreshold, audio.noiseFloor + 5);
+      const closeGate = Math.max(2, openGate * 0.62);
+      const now = performance.now();
+
+      if (audio.smooth >= openGate) {
+        audio.voiceActive = true;
+        audio.lastVoiceAt = now;
+      } else if (audio.smooth < closeGate && now - audio.lastVoiceAt > Number(els.silenceDelay.value)) {
+        audio.voiceActive = false;
+      }
+
+      if (audio.voiceActive) {
+        const speed = Number(els.talkSpeed.value);
+        if (now - audio.lastFlapAt >= speed) {
+          audio.mouthOpen = !audio.mouthOpen;
+          audio.lastFlapAt = now;
+        }
+      } else {
+        audio.mouthOpen = false;
+      }
+
+      els.volumeFill.style.width = Math.min(100, audio.smooth).toFixed(1) + '%';
+      updateMouthBadge();
+    }
+
+    function updateMouthBadge() {
+      const linked = state.mode === 'film'
+        ? state.characters.filter(function(person) { return person.audioLinked && person.visible && (person.closed || person.open); }).map(function(person) { return person.label; })
+        : [];
+      const activeOpen = state.mode === 'film' ? Boolean(state.audio.mouthOpen && linked.length) : Boolean(state.audio.mouthOpen);
+
+      if (state.mode === 'film') {
+        els.mouthBadge.textContent = activeOpen ? 'Habla: ' + linked.join(', ') : 'Boca cerrada';
+      } else {
+        els.mouthBadge.textContent = activeOpen ? 'Boca abierta' : 'Boca cerrada';
+      }
+      els.mouthBadge.classList.toggle('mouth-open', activeOpen);
+      els.mouthBadge.classList.toggle('mouth-closed', !activeOpen);
+    }
+
+    function resetMouthToClosed() {
+      state.audio.voiceActive = false;
+      state.audio.mouthOpen = false;
+      state.audio.lastVoiceAt = 0;
+      updateMouthBadge();
+    }
+
+    function draw() {
+      updateAudio();
+
+      if (state.mode === 'green') {
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const img = getActiveGreenImage();
+        if (img) drawCenteredImage(img);
+        else drawPlaceholder(['Sube boca cerrada', 'y boca abierta']);
+      } else {
+        if (state.images.filmBg) drawImageCover(state.images.filmBg);
+        else drawPlaceholder(['Sube una imagen', 'de fondo']);
+
+        state.characters.forEach(function(person, index) {
+          const img = getActivePersonImage(person);
+          const box = getPersonBox(index);
+          if (img && box) ctx.drawImage(img, box.x, box.y, box.w, box.h);
+        });
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    function getUserMediaCompat(constraints) {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        return navigator.mediaDevices.getUserMedia(constraints);
+      }
+      const legacyGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+      if (!legacyGetUserMedia) {
+        return Promise.reject(new Error('NO_GET_USER_MEDIA'));
+      }
+      return new Promise(function(resolve, reject) {
+        legacyGetUserMedia.call(navigator, constraints, resolve, reject);
+      });
+    }
+
+    function showMicTip(message) {
+      if (!els.micTip) return;
+      els.micTip.textContent = message || '';
+      els.micTip.classList.toggle('show', Boolean(message));
+    }
+
+    function getMicErrorMessage(error) {
+      const name = error && error.name ? error.name : String(error && error.message ? error.message : error || '');
+      if (name.includes('NO_GET_USER_MEDIA')) {
+        return 'El micrófono no está disponible en este modo del navegador. En celular ábrelo desde HTTPS o localhost; evita abrirlo desde un visor de archivos.';
+      }
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        return 'El permiso del micrófono está bloqueado. En el candado del navegador permite Micrófono y recarga la página.';
+      }
+      if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        return 'No se encontró micrófono en este dispositivo.';
+      }
+      if (name === 'NotReadableError' || name === 'TrackStartError') {
+        return 'El micrófono está ocupado por otra app. Cierra grabadoras, llamadas o apps de cámara y vuelve a intentar.';
+      }
+      if (name === 'SecurityError') {
+        return 'El navegador bloqueó el micrófono por seguridad. Usa HTTPS o localhost para activar audio en celular.';
+      }
+      return 'No se pudo activar el micrófono. Revisa permisos del navegador y vuelve a intentar.';
+    }
+
+    async function requestMicrophoneStream() {
+      const mobileFriendly = {
+        audio: {
+          echoCancellation: { ideal: true },
+          noiseSuppression: { ideal: true },
+          autoGainControl: { ideal: true },
+          channelCount: { ideal: 1 }
+        },
+        video: false
+      };
+      try {
+        return await getUserMediaCompat(mobileFriendly);
+      } catch (firstError) {
+        // Algunos navegadores móviles fallan con constraints avanzadas. Reintenta limpio.
+        if (firstError && (firstError.name === 'OverconstrainedError' || firstError.name === 'ConstraintNotSatisfiedError' || firstError.name === 'NotReadableError')) {
+          return await getUserMediaCompat({ audio: true, video: false });
+        }
+        throw firstError;
+      }
+    }
+
+    async function toggleMicrophone() {
+      if (state.audio.requesting) return;
+      if (state.audio.active) {
+        stopMicrophone();
+        return;
+      }
+
+      state.audio.requesting = true;
+      els.btnMic.disabled = true;
+      els.btnMic.textContent = 'Activando...';
+      showMicTip('');
+
+      let stream = null;
+      try {
+        stream = await requestMicrophoneStream();
+
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) throw new Error('NO_AUDIO_CONTEXT');
+
+        const audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+        }
+
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 1024;
+        analyser.smoothingTimeConstant = 0.72;
+        const source = audioCtx.createMediaStreamSource(stream);
+        source.connect(analyser);
+
+        state.audio.ctx = audioCtx;
+        state.audio.analyser = analyser;
+        state.audio.stream = stream;
+        state.audio.source = source;
+        state.audio.data = new Uint8Array(analyser.fftSize);
+        state.audio.active = true;
+        state.audio.lastVoiceAt = 0;
+        state.audio.voiceActive = false;
+        state.audio.mouthOpen = false;
+        state.audio.smooth = 0;
+
+        els.btnMic.textContent = 'Desactivar micrófono';
+        els.btnMic.classList.add('btn-danger');
+        els.btnCalibrate.disabled = false;
+        els.micStatus.textContent = 'Micrófono activo.';
+        els.micStatus.className = 'small ok-text';
+      } catch (error) {
+        console.error(error);
+        if (stream) stream.getTracks().forEach(function(track) { track.stop(); });
+        const message = getMicErrorMessage(error);
+        els.micStatus.textContent = message;
+        els.micStatus.className = 'small danger-text';
+        if (!window.isSecureContext && location.protocol !== 'file:') {
+          showMicTip('Tip móvil: el micrófono solo funciona en páginas seguras. Sube este HTML a un hosting HTTPS o ejecútalo en localhost.');
+        } else {
+          showMicTip('En Android, abre la página directamente en Chrome/Edge, no dentro de un visor de archivos o una vista previa de otra app.');
+        }
+        els.btnMic.textContent = 'Activar micrófono';
+        els.btnMic.classList.remove('btn-danger');
+      } finally {
+        state.audio.requesting = false;
+        els.btnMic.disabled = false;
+      }
+    }
+
+    function stopMicrophone() {
+      const audio = state.audio;
+      if (audio.stream) audio.stream.getTracks().forEach(function(track) { track.stop(); });
+      if (audio.ctx && audio.ctx.state !== 'closed') audio.ctx.close().catch(function() {});
+      audio.ctx = null;
+      audio.analyser = null;
+      audio.stream = null;
+      audio.source = null;
+      audio.data = null;
+      audio.active = false;
+      audio.volume = 0;
+      audio.smooth = 0;
+      resetMouthToClosed();
+      els.btnMic.textContent = 'Activar micrófono';
+      els.btnMic.classList.remove('btn-danger');
+      els.btnCalibrate.disabled = true;
+      els.volumeFill.style.width = '0%';
+      els.micStatus.textContent = 'Micrófono apagado.';
+      els.micStatus.className = 'small';
+      showMicTip('');
+    }
+
+    function calibrateSilence() {
+      if (!state.audio.active || !state.audio.analyser) return;
+      const samples = [];
+      const start = performance.now();
+      els.micStatus.textContent = 'Calibrando silencio... no hables por 1 segundo.';
+      els.micStatus.className = 'small warn-text';
+
+      function collect() {
+        samples.push(state.audio.smooth);
+        if (performance.now() - start < 1000) {
+          requestAnimationFrame(collect);
+          return;
+        }
+        const avg = samples.reduce(function(a, b) { return a + b; }, 0) / Math.max(1, samples.length);
+        state.audio.noiseFloor = Math.min(60, Math.max(1, avg));
+        const suggested = Math.ceil(state.audio.noiseFloor + 6);
+        if (suggested > Number(els.sensitivity.value)) {
+          els.sensitivity.value = String(Math.min(70, suggested));
+          updateSliderLabels();
+        }
+        resetMouthToClosed();
+        els.micStatus.textContent = 'Silencio calibrado. Ahora habla normalmente.';
+        els.micStatus.className = 'small ok-text';
+      }
+      collect();
+    }
+
+    function chooseMimeType() {
+      if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+      const types = [
+        'video/mp4;codecs="avc1.42E01E,mp4a.40.2"',
+        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+        'video/mp4;codecs="avc1.64001F,mp4a.40.2"',
+        'video/mp4;codecs=h264,aac',
+        'video/mp4',
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
+        'video/webm'
+      ];
+      return types.find(function(type) { return MediaRecorder.isTypeSupported(type); }) || '';
+    }
+
+    function describeFormat(mime) {
+      const lower = (mime || '').toLowerCase();
+      if (lower.includes('mp4')) return 'MP4 H.264/AAC';
+      if (lower.includes('vp9')) return 'WebM VP9/Opus';
+      if (lower.includes('vp8')) return 'WebM VP8/Opus';
+      if (lower.includes('webm')) return 'WebM';
+      return 'formato del navegador';
+    }
+
+    function canRecordCurrentMode() {
+      if (state.mode === 'green') {
+        return Boolean(state.images.greenClosed && state.images.greenOpen);
+      }
+      return Boolean(state.images.filmBg && state.characters.some(function(person) { return person.visible && person.closed; }));
+    }
+
+    function startRecording() {
+      if (!canRecordCurrentMode()) {
+        alert(state.mode === 'green'
+          ? 'Primero sube las dos imágenes: boca cerrada y boca abierta.'
+          : 'Primero sube el fondo y al menos un personaje con imagen de boca cerrada.');
+        return;
+      }
+
+      if (!canvas.captureStream || !window.MediaRecorder) {
+        alert('Este navegador no soporta grabación de canvas. Prueba con Chrome, Edge o Safari actualizado.');
+        return;
+      }
+
+      state.recording.chunks = [];
+      if (state.recording.url) URL.revokeObjectURL(state.recording.url);
+      state.recording.url = null;
+      els.btnDownload.disabled = true;
+
+      const canvasStream = canvas.captureStream(30);
+      const tracks = [].concat(canvasStream.getVideoTracks());
+      if (state.audio.active && state.audio.stream) tracks.push.apply(tracks, state.audio.stream.getAudioTracks());
+      state.recording.stream = new MediaStream(tracks);
+
+      const mimeType = chooseMimeType();
+      const options = mimeType ? { mimeType: mimeType } : undefined;
+
+      try {
+        state.recording.recorder = new MediaRecorder(state.recording.stream, options);
+      } catch (error) {
+        console.error(error);
+        alert('No se pudo iniciar la grabación con este navegador.');
+        if (state.recording.stream) state.recording.stream.getTracks().forEach(function(track) { track.stop(); });
+        return;
+      }
+
+      state.recording.mimeType = state.recording.recorder.mimeType || mimeType || 'video/webm';
+      state.recording.extension = state.recording.mimeType.toLowerCase().includes('mp4') ? 'mp4' : 'webm';
+      const label = describeFormat(state.recording.mimeType);
+
+      if (state.recording.extension === 'mp4') {
+        els.formatStatus.textContent = '✅ Grabando en MP4 H.264/AAC.';
+        els.formatStatus.className = 'small ok-text';
+      } else {
+        els.formatStatus.textContent = '⚠️ Este navegador no permite MP4 H.264 aquí. Se grabará en ' + label + ' para que funcione.';
+        els.formatStatus.className = 'small warn-text';
+      }
+
+      state.recording.recorder.ondataavailable = function(event) {
+        if (event.data && event.data.size > 0) state.recording.chunks.push(event.data);
+      };
+
+      state.recording.recorder.onstop = function() {
+        if (state.recording.stream) {
+          state.recording.stream.getVideoTracks().forEach(function(track) { track.stop(); });
+          state.recording.stream = null;
+        }
+
+        if (!state.recording.chunks.length) {
+          els.recordStatus.textContent = 'No se generó video. Graba unos segundos más.';
+          els.btnRecord.disabled = false;
+          els.btnStop.disabled = true;
+          els.recordingBadge.style.display = 'none';
+          return;
+        }
+
+        const blob = new Blob(state.recording.chunks, { type: state.recording.mimeType || 'video/webm' });
+        state.recording.url = URL.createObjectURL(blob);
+        els.btnDownload.disabled = false;
+        els.btnRecord.disabled = false;
+        els.btnStop.disabled = true;
+        els.recordingBadge.style.display = 'none';
+        els.recordStatus.textContent = '✅ Video listo. Descargando...';
+        setTimeout(downloadVideo, 150);
+      };
+
+      state.recording.recorder.start(250);
+      els.btnRecord.disabled = true;
+      els.btnStop.disabled = false;
+      els.recordingBadge.style.display = 'block';
+      els.recordStatus.textContent = 'Grabando ' + label + (state.audio.active ? ' con audio.' : ' sin audio.');
+    }
+
+    function stopRecording() {
+      const recorder = state.recording.recorder;
+      if (recorder && recorder.state !== 'inactive') {
+        try { recorder.requestData(); } catch (error) {}
+        recorder.stop();
+        els.btnStop.disabled = true;
+        els.recordStatus.textContent = 'Procesando video...';
+      }
+    }
+
+    function downloadVideo() {
+      if (!state.recording.url) {
+        els.recordStatus.textContent = 'Todavía no hay video generado.';
+        return;
+      }
+      const a = document.createElement('a');
+      const prefix = state.mode === 'film' ? 'cortometraje_6_personajes_' : 'avatar_fondo_verde_';
+      const formatName = state.recording.extension === 'mp4' ? 'mp4_h264' : 'webm';
+      a.href = state.recording.url;
+      a.download = prefix + formatName + '_' + Date.now() + '.' + state.recording.extension;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() { a.remove(); }, 250);
+      els.recordStatus.textContent = '✅ Si no bajó solo, toca de nuevo “Descargar video”.';
+    }
+
+    function updateSliderLabels() {
+      els.sensitivityValue.textContent = els.sensitivity.value;
+      els.thresholdLine.style.left = els.sensitivity.value + '%';
+      els.silenceValue.textContent = (Number(els.silenceDelay.value) / 1000).toFixed(1);
+      els.talkValue.textContent = els.talkSpeed.value;
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function syncSelectedPersonControls(index) {
+      if (state.selectedPerson !== index) return;
+      const person = state.characters[index];
+      const xInput = document.getElementById('person-x');
+      const yInput = document.getElementById('person-y');
+      const scaleInput = document.getElementById('person-scale');
+      const xValue = document.getElementById('person-x-value');
+      const yValue = document.getElementById('person-y-value');
+      const scaleValue = document.getElementById('person-scale-value');
+      if (xInput) xInput.value = String(Math.round(person.x));
+      if (yInput) yInput.value = String(Math.round(person.y));
+      if (scaleInput) scaleInput.value = String(Math.round(person.scale));
+      if (xValue) xValue.textContent = String(Math.round(person.x));
+      if (yValue) yValue.textContent = String(Math.round(person.y));
+      if (scaleValue) scaleValue.textContent = String(Math.round(person.scale));
+    }
+
+    function setPersonPosition(index, x, y) {
+      const person = state.characters[index];
+      person.x = clamp(x, 0, canvas.width);
+      person.y = clamp(y, 0, canvas.height);
+      syncSelectedPersonControls(index);
+    }
+
+    function pointToCanvas(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * (canvas.width / rect.width),
+        y: (event.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function personAtPoint(point) {
+      for (let index = state.characters.length - 1; index >= 0; index -= 1) {
+        const box = getPersonBox(index);
+        if (!box) continue;
+        if (point.x >= box.x && point.x <= box.x + box.w && point.y >= box.y && point.y <= box.y + box.h) return index;
+      }
+      return -1;
+    }
+
+    function getPointerPoints() {
+      return Array.from(state.pointers.values());
+    }
+
+    function distanceBetween(a, b) {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function centerBetween(a, b) {
+      return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    }
+
+    function beginPinchZoom() {
+      const points = getPointerPoints();
+      if (points.length < 2) return;
+      const a = points[0];
+      const b = points[1];
+      const center = centerBetween(a, b);
+      let index = personAtPoint(center);
+
+      if (index < 0) {
+        const selectedBox = getPersonBox(state.selectedPerson);
+        if (selectedBox) index = state.selectedPerson;
+      }
+      if (index < 0) return;
+
+      const person = state.characters[index];
+      selectPerson(index);
+      state.drag.active = false;
+      state.pinch.active = true;
+      state.pinch.index = index;
+      state.pinch.startDistance = Math.max(12, distanceBetween(a, b));
+      state.pinch.startScale = person.scale;
+      state.pinch.startX = person.x;
+      state.pinch.startY = person.y;
+      state.pinch.startCenterX = center.x;
+      state.pinch.startCenterY = center.y;
+    }
+
+    function updatePinchZoom() {
+      if (!state.pinch.active) return;
+      const points = getPointerPoints();
+      if (points.length < 2) return;
+      const a = points[0];
+      const b = points[1];
+      const center = centerBetween(a, b);
+      const distance = Math.max(12, distanceBetween(a, b));
+      const person = state.characters[state.pinch.index];
+      const ratio = distance / state.pinch.startDistance;
+      person.scale = Math.round(clamp(state.pinch.startScale * ratio, 5, 250));
+      setPersonPosition(
+        state.pinch.index,
+        state.pinch.startX + (center.x - state.pinch.startCenterX),
+        state.pinch.startY + (center.y - state.pinch.startCenterY)
+      );
+      syncSelectedPersonControls(state.pinch.index);
+    }
+
+    function endPinchZoom() {
+      state.pinch.active = false;
+      state.pinch.index = -1;
+      state.pinch.startDistance = 0;
+    }
+
+    canvasWrap.addEventListener('pointerdown', function(event) {
+      if (state.mode !== 'film') return;
+      const point = pointToCanvas(event);
+      state.pointers.set(event.pointerId, point);
+      try { canvasWrap.setPointerCapture(event.pointerId); } catch (error) {}
+
+      if (state.pointers.size >= 2) {
+        beginPinchZoom();
+        event.preventDefault();
+        return;
+      }
+
+      const index = personAtPoint(point);
+      if (index < 0) return;
+      const person = state.characters[index];
+      selectPerson(index);
+      state.drag.active = true;
+      state.drag.pointerId = event.pointerId;
+      state.drag.index = index;
+      state.drag.offsetX = point.x - person.x;
+      state.drag.offsetY = point.y - person.y;
+      event.preventDefault();
+    });
+
+    canvasWrap.addEventListener('pointermove', function(event) {
+      if (state.mode !== 'film' || !state.pointers.has(event.pointerId)) return;
+      const point = pointToCanvas(event);
+      state.pointers.set(event.pointerId, point);
+
+      if (state.pinch.active) {
+        updatePinchZoom();
+        event.preventDefault();
+        return;
+      }
+
+      if (!state.drag.active || event.pointerId !== state.drag.pointerId) return;
+      setPersonPosition(state.drag.index, point.x - state.drag.offsetX, point.y - state.drag.offsetY);
+      event.preventDefault();
+    });
+
+    function stopDrag() {
+      state.drag.active = false;
+      state.drag.pointerId = null;
+      state.drag.index = -1;
+    }
+
+    function removePointer(event) {
+      if (state.pointers.has(event.pointerId)) state.pointers.delete(event.pointerId);
+      try { canvasWrap.releasePointerCapture(event.pointerId); } catch (error) {}
+      if (state.pinch.active && state.pointers.size < 2) endPinchZoom();
+      if (state.drag.pointerId === event.pointerId) stopDrag();
+    }
+
+    canvasWrap.addEventListener('pointerup', removePointer);
+    canvasWrap.addEventListener('pointercancel', removePointer);
+    canvasWrap.addEventListener('pointerleave', function(event) {
+      if (event.pointerType === 'mouse') removePointer(event);
+    });
+
+
+    function resumeAudioIfNeeded() {
+      if (state.audio.active && state.audio.ctx && state.audio.ctx.state === 'suspended') {
+        state.audio.ctx.resume().catch(function() {});
+      }
+    }
+    document.addEventListener('pointerdown', resumeAudioIfNeeded, { passive: true });
+    document.addEventListener('touchstart', resumeAudioIfNeeded, { passive: true });
+
+    els.tabGreen.addEventListener('click', function() { setMode('green'); });
+    els.tabFilm.addEventListener('click', function() { setMode('film'); });
+
+    els.greenClosed.addEventListener('change', function() { loadGeneralImageFromInput(els.greenClosed, els.statusGreenClosed, 'greenClosed'); });
+    els.greenOpen.addEventListener('change', function() { loadGeneralImageFromInput(els.greenOpen, els.statusGreenOpen, 'greenOpen'); });
+    els.filmBg.addEventListener('change', function() { loadGeneralImageFromInput(els.filmBg, els.statusFilmBg, 'filmBg'); });
+
+    els.btnMic.addEventListener('click', toggleMicrophone);
+    els.btnCalibrate.addEventListener('click', calibrateSilence);
+    els.btnRecord.addEventListener('click', startRecording);
+    els.btnStop.addEventListener('click', stopRecording);
+    els.btnDownload.addEventListener('click', downloadVideo);
+
+    els.sensitivity.addEventListener('input', updateSliderLabels);
+    els.silenceDelay.addEventListener('input', updateSliderLabels);
+    els.talkSpeed.addEventListener('input', updateSliderLabels);
+
+    updateSliderLabels();
+    renderPersonButtons();
+    renderPersonEditor();
+    renderAudioSwitches();
+    updateRecordStatus();
+    draw();
+  </script>
+</body>
+</html>
