@@ -160,7 +160,7 @@
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .grid-6 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 
     .person-btn {
       padding: 10px 6px;
@@ -173,13 +173,19 @@
     .person-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); }
     .person-btn.ready { box-shadow: inset 0 -3px 0 rgba(16,185,129,.9); }
     .person-btn.audio-on { outline: 2px solid rgba(16,185,129,.9); }
+    .person-btn.add-person-btn {
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      color: #fff;
+      border: 1px solid rgba(6,182,212,.45);
+      box-shadow: 0 10px 20px rgba(6,182,212,.14);
+    }
 
     .selected-person-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 6px;
+      margin-bottom: 7px;
     }
 
     .pill {
@@ -270,11 +276,12 @@
 
     .knob-card .name { font-weight: 900; font-size: .76rem; color: #e2e8f0; }
     .switch { position: relative; width: 42px; height: 24px; display: inline-block; }
-    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 3; }
     .slider {
       position: absolute;
       cursor: pointer;
       inset: 0;
+      pointer-events: none;
       background: #475569;
       border-radius: 999px;
       transition: .2s;
@@ -445,6 +452,38 @@
     .file-title { color: #831843; }
     .file-status { color: #9d5b80; }
     .file-status.ok { color: #047857; }
+
+    .file-card.has-loaded-image {
+      padding-right: 48px;
+    }
+
+    .file-card input {
+      z-index: 2;
+    }
+
+    .file-delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+      padding: 0;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #be123c;
+      border: 1px solid rgba(225, 29, 72, .25);
+      box-shadow: 0 8px 18px rgba(225, 29, 72, .16);
+      font-size: 1.05rem;
+      font-weight: 950;
+      line-height: 1;
+      z-index: 4;
+    }
+
+    .file-delete-btn:hover {
+      background: #ffe4ee;
+      color: #9f1239;
+    }
 
     input[type="number"], select {
       background: #ffffff;
@@ -771,7 +810,7 @@
 
     .vertical-actions button {
       width: 100%;
-      min-height: 42px;
+      min-height: 36px;
       border-radius: 15px;
     }
 
@@ -796,7 +835,7 @@
 
     .mic-control-card #btn-mic,
     .mic-control-card #btn-calibrate {
-      min-height: 42px;
+      min-height: 38px;
       border-radius: 15px;
     }
 
@@ -807,7 +846,7 @@
     }
 
     @media (min-width: 920px) {
-      #film-controls .grid-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      #film-controls .grid-6 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
 
     @media (max-width: 760px) {
@@ -978,6 +1017,8 @@
     }
 
     body.mode-film.film-detail-editor #person-editor,
+    body.mode-film.film-detail-effects #effects-panel,
+    body.mode-film.film-detail-music #music-player-panel,
     body.mode-film.film-detail-mic .mic-control-card {
       display: grid !important;
     }
@@ -1003,6 +1044,98 @@
       border: 1px solid rgba(236, 72, 153, .15);
       color: #9d174d;
       font-weight: 750;
+    }
+
+
+    /* ===== Card de efectos para personajes ===== */
+    .effects-person-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .effects-person-btn,
+    .effect-action-btn {
+      min-height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(236, 72, 153, .18);
+      background: #ffffff;
+      color: #831843;
+      font-weight: 950;
+      box-shadow: 0 10px 18px rgba(190, 24, 93, .08);
+    }
+
+    .effects-person-btn.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      border-color: transparent;
+    }
+
+    .effect-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .effect-action-btn {
+      min-height: 58px;
+      display: grid;
+      place-items: center;
+      line-height: 1.15;
+    }
+
+    .effect-action-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+
+    .effect-action-btn.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, #f97316, #ec4899);
+      border-color: transparent;
+      box-shadow: 0 12px 22px rgba(236, 72, 153, .18);
+    }
+
+    .effect-control-row {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .effect-insert-btn {
+      min-height: 44px;
+      border-radius: 16px;
+      border: 0;
+      background: linear-gradient(135deg, #22c55e, #14b8a6);
+      color: #ffffff;
+      font-weight: 1000;
+      box-shadow: 0 10px 18px rgba(20, 184, 166, .18);
+    }
+
+    .effect-insert-btn:disabled {
+      opacity: .55;
+      filter: grayscale(.25);
+      cursor: not-allowed;
+    }
+
+    .effect-preview-status {
+      display: block;
+      padding: 9px 10px;
+      border-radius: 14px;
+      background: #fff7fb;
+      color: #9d174d;
+      border: 1px solid rgba(236, 72, 153, .16);
+      font-weight: 850;
+    }
+
+    @media (max-width: 760px) {
+      .effects-person-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .effect-actions-grid { grid-template-columns: 1fr; }
+      .effect-control-row { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 760px) {
@@ -1102,7 +1235,7 @@
     }
 
 
-    /* ===== Ajuste: P1-P6 dentro de Editar personaje y panel de posición oculto ===== */
+    /* ===== Ajuste: P1-P10 dentro de Editar personaje y panel de posición oculto ===== */
     .editor-person-switcher-card {
       margin: 0 0 12px;
       padding: 12px;
@@ -1240,6 +1373,597 @@
       button { transition: transform .06s ease, opacity .12s ease; }
     }
 
+
+    /* ===== Módulo de Keyframes integrado: simple, claro y fluido ===== */
+    .keyframe-panel {
+      width: min(980px, 100%);
+      margin: 8px auto 0;
+      padding: 10px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,247,251,.98));
+      border: 1px solid rgba(236,72,153,.22);
+      box-shadow: 0 12px 26px rgba(190,24,93,.11);
+      color: #111827;
+    }
+
+    .keyframe-titlebar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .keyframe-titlebar h2 {
+      margin: 0;
+      font-size: .95rem;
+      line-height: 1.1;
+    }
+
+    .keyframe-titlebar .mini-help {
+      margin-top: 2px;
+      color: #64748b;
+      font-size: .72rem;
+      font-weight: 800;
+    }
+
+    .keyframe-live-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 104px;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #fff;
+      font-size: .82rem;
+      font-weight: 1000;
+      box-shadow: 0 10px 22px rgba(15,23,42,.18);
+      text-align: center;
+    }
+
+    .keyframe-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .keyframe-step {
+      padding: 7px;
+      border-radius: 13px;
+      background: #fff;
+      border: 1px solid rgba(236,72,153,.14);
+      font-size: .74rem;
+      font-weight: 900;
+      color: #334155;
+      text-align: center;
+    }
+
+    .keyframe-step strong {
+      display: block;
+      color: #be185d;
+      font-size: .78rem;
+      margin-bottom: 2px;
+    }
+
+    .key-person-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .key-person-btn {
+      min-height: 42px;
+      border: 0;
+      border-radius: 15px;
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 1000;
+      box-shadow: inset 0 0 0 1px rgba(148,163,184,.28);
+      cursor: pointer;
+    }
+
+    .key-person-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      box-shadow: 0 10px 20px rgba(236,72,153,.22);
+    }
+
+    .key-person-btn.has-keys::after {
+      content: attr(data-keys);
+      display: block;
+      margin-top: 2px;
+      font-size: .68rem;
+      opacity: .9;
+    }
+
+    .keyframe-time-card,
+    .keyframe-tools-card,
+    .keyframe-timeline-card {
+      border-radius: 15px;
+      background: #fff;
+      border: 1px solid rgba(148,163,184,.18);
+      padding: 8px;
+      margin-top: 6px;
+    }
+
+    .keyframe-time-line {
+      display: grid;
+      grid-template-columns: 1fr 76px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .keyframe-time-line label,
+    .keyframe-transform-grid label {
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      font-size: .78rem;
+      font-weight: 950;
+      color: #334155;
+    }
+
+    .keyframe-time-line input[type="number"] {
+      width: 100%;
+      min-height: 38px;
+      border-radius: 13px;
+      border: 1px solid rgba(148,163,184,.35);
+      padding: 0 8px;
+      font-weight: 1000;
+      text-align: center;
+    }
+
+    .keyframe-transform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .keyframe-actions {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .keyframe-actions button {
+      min-height: 38px;
+      padding: 7px;
+      border: 0;
+      border-radius: 15px;
+      color: #fff;
+      background: #0f172a;
+      font-size: .78rem;
+      font-weight: 1000;
+      cursor: pointer;
+      box-shadow: 0 10px 18px rgba(15,23,42,.12);
+    }
+
+    .keyframe-actions .btn-key-add { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+    .keyframe-actions .btn-key-play { background: linear-gradient(135deg, #22c55e, #14b8a6); }
+    .keyframe-actions .btn-key-all { background: linear-gradient(135deg, #f97316, #ec4899); }
+    .keyframe-actions .btn-key-stop { background: linear-gradient(135deg, #ef4444, #be123c); }
+    .keyframe-actions .btn-key-delete { background: #475569; }
+    .keyframe-actions .btn-key-effect-delete { background: linear-gradient(135deg, #64748b, #334155); }
+
+    .keyframe-status {
+      margin-top: 7px;
+      padding: 8px 9px;
+      min-height: 34px;
+      border-radius: 15px;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid rgba(34,197,94,.22);
+      font-size: .82rem;
+      font-weight: 950;
+    }
+
+    .keyframe-status.warn {
+      background: #fffbeb;
+      color: #92400e;
+      border-color: rgba(245,158,11,.28);
+    }
+
+    .keyframe-status.live {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: rgba(59,130,246,.24);
+    }
+
+    .keyframe-selected-info {
+      margin-top: 5px;
+      color: #64748b;
+      font-size: .72rem;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .keyframe-timeline-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: .82rem;
+      font-weight: 1000;
+      color: #334155;
+      margin-bottom: 7px;
+    }
+
+    .keyframe-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin: 6px 0;
+    }
+
+    .keyframe-row-label {
+      font-size: .8rem;
+      font-weight: 1000;
+      color: #be185d;
+      text-align: center;
+    }
+
+    .keyframe-track {
+      position: relative;
+      height: 38px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f1f5f9, #fff7fb);
+      border: 1px solid rgba(148,163,184,.24);
+      overflow: hidden;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .keyframe-track::before {
+      content: '';
+      position: absolute;
+      inset: 50% 7px auto 7px;
+      height: 2px;
+      transform: translateY(-50%);
+      background: rgba(148,163,184,.55);
+    }
+
+    .keyframe-playhead {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #0f172a;
+      opacity: .55;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .keyframe-marker {
+      position: absolute;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: #ec4899;
+      box-shadow: 0 0 0 3px #fff, 0 7px 14px rgba(236,72,153,.28);
+      transform: translate(-50%, -50%) rotate(45deg);
+      cursor: grab;
+      z-index: 3;
+      touch-action: none;
+    }
+
+    .keyframe-marker.selected {
+      background: #0f172a;
+      box-shadow: 0 0 0 3px #facc15, 0 8px 18px rgba(15,23,42,.26);
+    }
+
+    .keyframe-marker:active { cursor: grabbing; }
+
+    .keyframe-empty-row {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: .72rem;
+      font-weight: 900;
+      pointer-events: none;
+    }
+
+    .keyframe-active-note {
+      color: #64748b;
+      font-size: .72rem;
+      font-weight: 900;
+    }
+
+    /* Vista compacta solicitada: solo grabar/reproducir/detener y línea activa */
+    .keyframe-panel {
+      width: min(930px, 100%);
+      padding: 8px 10px 10px;
+      margin-top: 6px;
+    }
+
+    .keyframe-titlebar,
+    .keyframe-steps,
+    .key-person-grid,
+    .keyframe-time-card,
+    .keyframe-transform-grid,
+    .keyframe-status,
+    .keyframe-selected-info,
+    .keyframe-timeline-title,
+    .keyframe-actions .btn-key-delete {
+      display: none !important;
+    }
+
+    .keyframe-tools-card,
+    .keyframe-timeline-card {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 16px;
+    }
+
+    .keyframe-actions {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-top: 0;
+    }
+
+    .keyframe-actions button {
+      min-height: 42px;
+      font-size: .82rem;
+      border-radius: 16px;
+    }
+
+    .keyframe-actions .btn-key-add.recording {
+      background: linear-gradient(135deg, #dc2626, #f97316);
+      animation: pulse .9s ease-in-out infinite;
+    }
+
+    .keyframe-row {
+      margin: 0;
+    }
+
+    .keyframe-track {
+      height: 42px;
+    }
+
+    @media (max-width: 760px) {
+      .keyframe-panel { padding: 8px; border-radius: 16px; }
+      .keyframe-titlebar { align-items: stretch; flex-direction: column; }
+      .keyframe-live-pill { width: 100%; }
+      .keyframe-steps { grid-template-columns: 1fr; display:none; }
+      .key-person-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .keyframe-time-line { grid-template-columns: 1fr; }
+      .keyframe-transform-grid { grid-template-columns: 1fr; }
+      .keyframe-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .keyframe-actions .btn-key-all { grid-column: span 2; }
+      .keyframe-actions .btn-key-stop { grid-column: span 2; }
+      .keyframe-row { grid-template-columns: 38px 1fr; }
+    }
+
+
+    /* ===== Ajuste solicitado: audio en el espacio del menú y candado del fondo ===== */
+    .film-card-home .audio-panel-home {
+      width: 100% !important;
+      min-height: auto !important;
+      margin: 0 !important;
+      padding: 10px !important;
+      border-radius: 18px !important;
+      align-self: stretch !important;
+    }
+
+    .film-card-home .audio-panel-home.show {
+      display: grid !important;
+    }
+
+    .film-card-home .audio-switch-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
+
+    .film-card-home .knob-card {
+      padding: 7px 4px !important;
+      border-radius: 12px !important;
+    }
+
+    .film-card-home .switch {
+      width: 40px !important;
+      height: 23px !important;
+    }
+
+    .film-card-home .slider::before {
+      height: 17px !important;
+      width: 17px !important;
+    }
+
+    .film-card-home .switch input:checked + .slider::before {
+      transform: translateX(17px) !important;
+    }
+
+    .closed-detail-card[data-film-detail="background"] {
+      grid-template-columns: auto 1fr auto !important;
+    }
+
+    .closed-detail-lock,
+    .bg-lock-box,
+    .btn-bg-lock,
+    .bg-lock-status {
+      display: none !important;
+    }
+
+    .canvas-bg-lock {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 12;
+      width: 50px;
+      height: 50px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(255,255,255,.78);
+      background: rgba(15, 23, 42, .82);
+      color: #ffffff;
+      font-size: 1.45rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,.28);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      pointer-events: auto;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 0;
+    }
+
+    .canvas-bg-lock.unlocked {
+      background: linear-gradient(135deg, #22c55e, #14b8a6);
+      border-color: rgba(255,255,255,.92);
+    }
+
+    .canvas-bg-lock:active {
+      transform: scale(.96);
+    }
+
+    .bg-transform-hint {
+      position: absolute;
+      right: 12px;
+      bottom: 68px;
+      z-index: 11;
+      max-width: min(300px, calc(100% - 24px));
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, .78);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,.18);
+      font-size: .78rem;
+      font-weight: 900;
+      line-height: 1.25;
+      pointer-events: none;
+      opacity: .92;
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+
+    .bg-transform-hint.show {
+      display: block;
+    }
+
+    body.mode-green .canvas-bg-lock,
+    body.mode-green .bg-transform-hint {
+      display: none !important;
+    }
+
+    #film-bg:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+
+    /* ===== Reproductor de música simple ===== */
+    .music-player-card {
+      border-radius: 18px;
+      background: rgba(255,255,255,.96);
+      color: #0f172a;
+      border: 1px solid rgba(236, 72, 153, .18);
+      box-shadow: 0 14px 32px rgba(190, 24, 93, .12);
+      padding: 10px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .music-player-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 1000;
+      color: #831843;
+    }
+
+    .music-player-title .small {
+      color: #64748b;
+      font-weight: 850;
+      text-align: right;
+    }
+
+    .music-file-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .music-file-card {
+      min-height: 42px;
+      background: #fff7fb;
+      color: #831843;
+      border-color: rgba(236, 72, 153, .28);
+    }
+
+    .music-file-card .file-title,
+    .music-file-card .file-status {
+      color: #831843;
+    }
+
+    .music-control-btn {
+      min-height: 42px;
+      min-width: 48px;
+      border: 0;
+      border-radius: 15px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      font-weight: 1000;
+      box-shadow: 0 10px 18px rgba(236, 72, 153, .18);
+      cursor: pointer;
+    }
+
+    .music-control-btn.stop {
+      background: linear-gradient(135deg, #64748b, #334155);
+    }
+
+    .music-control-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      filter: grayscale(.25);
+    }
+
+    .music-timeline-row {
+      display: grid;
+      grid-template-columns: 46px 1fr 46px;
+      gap: 8px;
+      align-items: center;
+      color: #334155;
+      font-size: .78rem;
+      font-weight: 1000;
+    }
+
+    .music-timeline-row input[type="range"] {
+      width: 100%;
+      accent-color: #ec4899;
+    }
+
+    .music-volume-row {
+      display: grid;
+      grid-template-columns: 78px 1fr 46px;
+      gap: 8px;
+      align-items: center;
+      color: #334155;
+      font-size: .78rem;
+      font-weight: 1000;
+    }
+
+    .music-volume-row input[type="range"] {
+      width: 100%;
+      accent-color: #ec4899;
+    }
+
+    @media (max-width: 760px) {
+      .music-file-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
   </style>
 </head>
 <body class="mode-film">
@@ -1290,7 +2014,25 @@
           <button class="closed-detail-card" type="button" data-film-detail="editor">
             <span class="closed-detail-icon">🎭</span>
             <span class="closed-detail-copy">
-              <strong>Editar personajes P1 - P6</strong>
+              <strong>Editar personajes P1 - P10</strong>
+            </span>
+            <span class="closed-detail-arrow">›</span>
+          </button>
+
+          <button class="closed-detail-card" type="button" data-film-detail="effects">
+            <span class="closed-detail-icon">✨</span>
+            <span class="closed-detail-copy">
+              <strong>Efectos de personajes</strong>
+              <span>20 efectos con prueba antes de insertar.</span>
+            </span>
+            <span class="closed-detail-arrow">›</span>
+          </button>
+
+          <button class="closed-detail-card" type="button" data-film-detail="music">
+            <span class="closed-detail-icon">🎵</span>
+            <span class="closed-detail-copy">
+              <strong>Música de reproducción</strong>
+              <span>Carga música, reproduce, mueve la línea y controla el volumen.</span>
             </span>
             <span class="closed-detail-arrow">›</span>
           </button>
@@ -1302,6 +2044,14 @@
             </span>
             <span class="closed-detail-arrow">›</span>
           </button>
+
+          <div id="audio-panel" class="audio-panel audio-panel-home">
+            <div class="audio-panel-title">
+              <span>🎛️ Asignar audio a personaje</span>
+              <span id="audio-panel-hint" class="small">Prende una o varias perillas</span>
+            </div>
+            <div id="audio-switches" class="audio-switch-grid"></div>
+          </div>
         </div>
 
         <div id="film-detail-bg" class="section option-card film-detail-panel">
@@ -1322,6 +2072,86 @@
         </div>
 
         <div id="person-editor" class="section option-card person-editor-card film-detail-panel"></div>
+
+        <div id="effects-panel" class="section option-card film-detail-panel">
+          <div class="detail-topbar">
+            <button class="detail-back-btn" type="button" data-film-back>← Volver</button>
+            <div class="detail-topbar-title">
+              <strong>✨ Efectos de personajes</strong>
+              <span>Elige un personaje, prueba un efecto y luego insértalo.</span>
+            </div>
+          </div>
+
+          <div class="inner-option-card">
+            <div class="mini-card-title">👥 Personajes P1 - P10</div>
+            <div id="effects-person-buttons" class="effects-person-grid"></div>
+          </div>
+
+          <div class="inner-option-card">
+            <div class="mini-card-title">✨ Aplicar a <span id="effects-selected-label">P1</span></div>
+            <div class="effect-actions-grid">
+              <button class="effect-action-btn" type="button" data-character-effect="jump">🦘 Saltar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="rotate">🔄 Girar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="spin">🌪️ Dar vueltas</button>
+              <button class="effect-action-btn" type="button" data-character-effect="bounce">🏀 Rebotar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="shake">⚡ Temblar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="pulse">💗 Latido</button>
+              <button class="effect-action-btn" type="button" data-character-effect="fade">👻 Desvanecer</button>
+              <button class="effect-action-btn" type="button" data-character-effect="slide">↔️ Deslizar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="zoom">🔍 Zoom</button>
+              <button class="effect-action-btn" type="button" data-character-effect="dance">🕺 Bailar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="wave">👋 Saludar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="swing">🪁 Balancear</button>
+              <button class="effect-action-btn" type="button" data-character-effect="flip">🔁 Voltereta</button>
+              <button class="effect-action-btn" type="button" data-character-effect="float">🎈 Flotar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="stomp">👣 Pisotear</button>
+              <button class="effect-action-btn" type="button" data-character-effect="zigzag">🐍 Zigzag</button>
+              <button class="effect-action-btn" type="button" data-character-effect="rocket">🚀 Cohete</button>
+              <button class="effect-action-btn" type="button" data-character-effect="roll">🛞 Rodar</button>
+              <button class="effect-action-btn" type="button" data-character-effect="blink">✨ Parpadear</button>
+              <button class="effect-action-btn" type="button" data-character-effect="pop">💥 Pop</button>
+            </div>
+            <div class="effect-control-row">
+              <button id="btn-effect-insert" class="effect-insert-btn" type="button" disabled>✅ Insertar</button>
+              <span id="effect-preview-status" class="small effect-preview-status">Toca un efecto para probarlo. No se guarda hasta tocar Insertar.</span>
+            </div>
+            <span class="small help-note">Primero se reproduce como prueba. Si te gusta, toca Insertar para guardarlo en los keyframes.</span>
+          </div>
+        </div>
+
+        <div id="music-player-panel" class="section option-card music-player-card film-detail-panel" aria-label="Música de reproducción">
+          <div class="detail-topbar">
+            <button class="detail-back-btn" type="button" data-film-back>← Volver</button>
+            <div class="detail-topbar-title">
+              <strong>🎵 Música de reproducción</strong>
+              <span>Carga una canción, reproduce, mueve la línea y ajusta el volumen.</span>
+            </div>
+          </div>
+          <div class="music-player-title">
+            <strong>🎵 Música</strong>
+            <span id="music-status" class="small">Sin música</span>
+          </div>
+          <div class="music-file-row">
+            <div class="file-card music-file-card">
+              <div class="file-title">Cargar música</div>
+              <div id="music-file-status" class="file-status"></div>
+              <input id="music-file" type="file" accept="audio/*" />
+            </div>
+            <button id="btn-music-play" class="music-control-btn" type="button" disabled>▶</button>
+            <button id="btn-music-stop" class="music-control-btn stop" type="button" disabled>⏹</button>
+          </div>
+          <div class="music-timeline-row">
+            <span id="music-current-time">0:00</span>
+            <input id="music-time-slider" type="range" min="0" max="0" step="0.01" value="0" disabled aria-label="Línea de reproducción de música" />
+            <span id="music-duration">0:00</span>
+          </div>
+          <div class="music-volume-row">
+            <span>Volumen</span>
+            <input id="music-volume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volumen de música" />
+            <span id="music-volume-value">100%</span>
+          </div>
+          <audio id="music-audio" preload="metadata"></audio>
+        </div>
       </div>
 
       <div id="mic-controls" class="section mic-control-card">
@@ -1366,6 +2196,8 @@
         <canvas id="canvas" width="1920" height="1080"></canvas>
         <div id="recording-badge" class="badge left recording">🔴 Grabando</div>
         <div id="mouth-badge" class="badge right mouth-closed">Boca cerrada</div>
+        <button id="btn-bg-lock" class="canvas-bg-lock locked" type="button" aria-pressed="true" title="Toca para desbloquear el fondo">🔒</button>
+        <div id="bg-transform-hint" class="bg-transform-hint">Fondo bloqueado</div>
 
       </div>
 
@@ -1384,18 +2216,73 @@
         <span id="record-status" class="small record-status-text">Listo para grabar.</span>
       </div>
 
+
+      <section id="keyframe-panel" class="keyframe-panel" aria-label="Panel de Keyframes">
+        <div class="keyframe-titlebar">
+          <div>
+            <h2>🎬 Panel de Keyframes</h2>
+            <div class="mini-help">Elige personaje → guarda keys → reproduce.</div>
+          </div>
+          <div id="keyframe-live-pill" class="keyframe-live-pill">Listo P1</div>
+        </div>
+
+        <div class="keyframe-steps" aria-label="Pasos para animar">
+          <div class="keyframe-step"><strong>1</strong>Elige P</div>
+          <div class="keyframe-step"><strong>2</strong>Guarda key</div>
+          <div class="keyframe-step"><strong>3</strong>Reproduce</div>
+        </div>
+
+        <div id="keyframe-person-buttons" class="key-person-grid"></div>
+
+        <div class="keyframe-time-card">
+          <div class="keyframe-time-line">
+            <label>⏱ Tiempo actual: <span id="keyframe-current-time">0.00s</span>
+              <input id="keyframe-time-slider" type="range" min="0" max="10" step="0.01" value="0" />
+            </label>
+            <input id="keyframe-time-input" type="number" min="0" max="60" step="0.1" value="0" aria-label="Tiempo actual en segundos" />
+          </div>
+        </div>
+
+        <div class="keyframe-tools-card">
+          <div class="keyframe-transform-grid">
+            <label>🔎 Tamaño: <span id="keyframe-scale-value">42%</span>
+              <input id="keyframe-scale" type="range" min="5" max="250" step="1" value="42" />
+            </label>
+            <label>🔄 Giro: <span id="keyframe-rotation-value">0°</span>
+              <input id="keyframe-rotation" type="range" min="-180" max="180" step="1" value="0" />
+            </label>
+            <label>👻 Transparencia: <span id="keyframe-opacity-value">100%</span>
+              <input id="keyframe-opacity" type="range" min="0" max="100" step="1" value="100" />
+            </label>
+          </div>
+
+          <div class="keyframe-actions">
+            <button id="btn-keyframe-add" class="btn-key-add" type="button">⏺ Grabar Key</button>
+            <button id="btn-keyframe-delete" class="btn-key-delete" type="button">🗑️ Borrar Key</button>
+            <button id="btn-keyframe-play-person" class="btn-key-play" type="button">▶ P1</button>
+            <button id="btn-keyframe-play-all" class="btn-key-all" type="button">▶ Todos</button>
+            <button id="btn-keyframe-stop" class="btn-key-stop" type="button">⏹ Detener</button>
+            <button id="btn-keyframe-delete-effect" class="btn-key-effect-delete" type="button">🧹 Borrar efecto</button>
+          </div>
+
+          <div id="keyframe-status" class="keyframe-status">Listo. Selecciona P1 y guarda tu primer keyframe.</div>
+          <div id="keyframe-selected-info" class="keyframe-selected-info">Ningún key seleccionado.</div>
+        </div>
+
+        <div class="keyframe-timeline-card">
+          <div class="keyframe-timeline-title">
+            <span>💠 Línea activa</span>
+            <span id="keyframe-timeline-summary">P1: 0 keys</span>
+          </div>
+          <div id="keyframe-timeline"></div>
+        </div>
+      </section>
+
       <div class="helpbar">
         <span id="mode-help">Fondo verde.</span>
         <span>Salida interna: 1920×1080</span>
       </div>
 
-        <div id="audio-panel" class="audio-panel">
-          <div class="audio-panel-title">
-            <span>🎛️ Asignar audio a personaje</span>
-            <span id="audio-panel-hint" class="small">Prende una o varias perillas</span>
-          </div>
-          <div id="audio-switches" class="audio-switch-grid"></div>
-        </div>
     </main>
   </div>
 
@@ -1406,8 +2293,8 @@
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
     const canvasWrap = document.getElementById('canvas-wrap');
     const IS_MOBILE_DEVICE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-    const RECORDING_FPS = IS_MOBILE_DEVICE ? 90 : 120;
-    const RECORDING_VIDEO_BITS_PER_SECOND = IS_MOBILE_DEVICE ? 14000000 : 18000000;
+    const RECORDING_FPS = 60;
+    const RECORDING_VIDEO_BITS_PER_SECOND = IS_MOBILE_DEVICE ? 12000000 : 16000000;
     const ACTIVE_FRAME_MS = 1000 / 60;
     const IDLE_FRAME_MS = 1000 / 24;
 
@@ -1421,6 +2308,11 @@
       greenClosed: document.getElementById('green-closed'),
       greenOpen: document.getElementById('green-open'),
       filmBg: document.getElementById('film-bg'),
+      btnBgLock: document.getElementById('btn-bg-lock'),
+      btnBgLockDetail: document.getElementById('btn-bg-lock-detail'),
+      bgTransformHint: document.getElementById('bg-transform-hint'),
+      bgLockHome: document.getElementById('bg-lock-home'),
+      statusBgLock: document.getElementById('status-bg-lock'),
       statusGreenClosed: document.getElementById('status-green-closed'),
       statusGreenOpen: document.getElementById('status-green-open'),
       statusFilmBg: document.getElementById('status-film-bg'),
@@ -1429,6 +2321,11 @@
       audioPanel: document.getElementById('audio-panel'),
       audioSwitches: document.getElementById('audio-switches'),
       audioPanelHint: document.getElementById('audio-panel-hint'),
+      effectsPanel: document.getElementById('effects-panel'),
+      effectsPersonButtons: document.getElementById('effects-person-buttons'),
+      effectsSelectedLabel: document.getElementById('effects-selected-label'),
+      effectsInsertBtn: document.getElementById('btn-effect-insert'),
+      effectPreviewStatus: document.getElementById('effect-preview-status'),
       btnMic: document.getElementById('btn-mic'),
       btnCalibrate: document.getElementById('btn-calibrate'),
       micStatus: document.getElementById('mic-status'),
@@ -1448,8 +2345,46 @@
       formatStatus: document.getElementById('format-status'),
       recordingBadge: document.getElementById('recording-badge'),
       mouthBadge: document.getElementById('mouth-badge'),
-      modeHelp: document.getElementById('mode-help')
+      modeHelp: document.getElementById('mode-help'),
+      keyframePanel: document.getElementById('keyframe-panel'),
+      keyframePersonButtons: document.getElementById('keyframe-person-buttons'),
+      keyframeLivePill: document.getElementById('keyframe-live-pill'),
+      keyframeCurrentTime: document.getElementById('keyframe-current-time'),
+      keyframeTimeSlider: document.getElementById('keyframe-time-slider'),
+      keyframeTimeInput: document.getElementById('keyframe-time-input'),
+      keyframeScale: document.getElementById('keyframe-scale'),
+      keyframeScaleValue: document.getElementById('keyframe-scale-value'),
+      keyframeRotation: document.getElementById('keyframe-rotation'),
+      keyframeRotationValue: document.getElementById('keyframe-rotation-value'),
+      keyframeOpacity: document.getElementById('keyframe-opacity'),
+      keyframeOpacityValue: document.getElementById('keyframe-opacity-value'),
+      btnKeyframeAdd: document.getElementById('btn-keyframe-add'),
+      btnKeyframeUpdate: document.getElementById('btn-keyframe-update'),
+      btnKeyframeDelete: document.getElementById('btn-keyframe-delete'),
+      btnKeyframePlayPerson: document.getElementById('btn-keyframe-play-person'),
+      btnKeyframePlayAll: document.getElementById('btn-keyframe-play-all'),
+      btnKeyframeStop: document.getElementById('btn-keyframe-stop'),
+      btnKeyframeDeleteEffect: document.getElementById('btn-keyframe-delete-effect'),
+      keyframeStatus: document.getElementById('keyframe-status'),
+      keyframeSelectedInfo: document.getElementById('keyframe-selected-info'),
+      keyframeTimeline: document.getElementById('keyframe-timeline'),
+      keyframeTimelineSummary: document.getElementById('keyframe-timeline-summary'),
+      musicPanel: document.getElementById('music-player-panel'),
+      musicFile: document.getElementById('music-file'),
+      musicFileStatus: document.getElementById('music-file-status'),
+      musicStatus: document.getElementById('music-status'),
+      musicAudio: document.getElementById('music-audio'),
+      btnMusicPlay: document.getElementById('btn-music-play'),
+      btnMusicStop: document.getElementById('btn-music-stop'),
+      musicTimeSlider: document.getElementById('music-time-slider'),
+      musicCurrentTime: document.getElementById('music-current-time'),
+      musicDuration: document.getElementById('music-duration'),
+      musicVolume: document.getElementById('music-volume'),
+      musicVolumeValue: document.getElementById('music-volume-value')
     };
+
+    const DEFAULT_FILM_CHARACTERS = 6;
+    const MAX_FILM_CHARACTERS = 10;
 
     function createCharacter(index) {
       return {
@@ -1459,9 +2394,13 @@
         open: null,
         closedName: '',
         openName: '',
-        x: 720 + index * 95,
-        y: 700,
+        enabled: index < DEFAULT_FILM_CHARACTERS,
+        x: 690 + (index % 5) * 115,
+        y: 680 + Math.floor(index / 5) * 110,
         scale: 42,
+        rotation: 0,
+        opacity: 1,
+        keyframes: [],
         visible: true,
         audioLinked: index === 0,
         dragging: false
@@ -1471,6 +2410,7 @@
     const state = {
       mode: 'film',
       filmDetail: 'home',
+      filmBgLocked: true,
       selectedPerson: 0,
       drag: {
         active: false,
@@ -1478,6 +2418,26 @@
         index: -1,
         offsetX: 0,
         offsetY: 0
+      },
+      bgTransform: {
+        x: 960,
+        y: 540,
+        scale: 1
+      },
+      bgDrag: {
+        active: false,
+        pointerId: null,
+        offsetX: 0,
+        offsetY: 0
+      },
+      bgPinch: {
+        active: false,
+        startDistance: 0,
+        startScale: 1,
+        startX: 960,
+        startY: 540,
+        startCenterX: 960,
+        startCenterY: 540
       },
       pointers: new Map(),
       pinch: {
@@ -1495,8 +2455,8 @@
         greenOpen: null,
         filmBg: null
       },
-      characters: Array.from({ length: 6 }, function(_, index) { return createCharacter(index); }),
-      zOrder: Array.from({ length: 6 }, function(_, index) { return index; }),
+      characters: Array.from({ length: MAX_FILM_CHARACTERS }, function(_, index) { return createCharacter(index); }),
+      zOrder: Array.from({ length: MAX_FILM_CHARACTERS }, function(_, index) { return index; }),
       audio: {
         ctx: null,
         analyser: null,
@@ -1517,9 +2477,57 @@
         recorder: null,
         chunks: [],
         stream: null,
+        audioStream: null,
+        audioCtx: null,
+        micRecordSource: null,
+        musicRecordDestination: null,
+        musicRecordConnected: false,
         url: null,
         mimeType: '',
         extension: 'webm'
+      },
+      animation: {
+        playing: false,
+        mode: 'none',
+        playPerson: 0,
+        currentTime: 0,
+        duration: 10,
+        startedAt: 0,
+        rafId: 0,
+        selectedKeyId: null,
+        selectedKeyPerson: 0,
+        dragKey: null,
+        ignoreNextTrackClick: false,
+        lastUiAt: 0,
+        recording: {
+          active: false,
+          personIndex: 0,
+          startedAt: 0,
+          rafId: 0,
+          lastSampleAt: 0,
+          lastUiAt: 0,
+          lastPose: null,
+          sampleMs: 85,
+          maxDuration: 60
+        }
+      },
+      effectPreview: {
+        active: false,
+        rafId: 0,
+        personIndex: 0,
+        effectName: '',
+        keys: null,
+        originalPose: null,
+        startedAt: 0,
+        duration: 0
+      },
+      music: {
+        url: null,
+        rafId: 0,
+        seeking: false,
+        audioCtx: null,
+        sourceNode: null,
+        gainNode: null
       }
     };
 
@@ -1538,7 +2546,7 @@
     }
 
     function shouldKeepAnimating() {
-      return Boolean(state.audio.active || state.drag.active || state.pinch.active || isRecordingActive());
+      return Boolean(state.audio.active || state.drag.active || state.pinch.active || state.bgDrag.active || state.bgPinch.active || isRecordingActive() || state.animation.playing || (state.effectPreview && state.effectPreview.active));
     }
 
     function requestDraw(force) {
@@ -1568,6 +2576,8 @@
         'film-detail-background',
         'film-detail-people',
         'film-detail-editor',
+        'film-detail-effects',
+        'film-detail-music',
         'film-detail-mic'
       );
 
@@ -1575,6 +2585,7 @@
 
       document.body.classList.add('film-detail-open', 'film-detail-' + nextDetail);
       if (nextDetail === 'editor') renderPersonEditor();
+      if (nextDetail === 'effects') renderEffectsPanel();
     }
 
     function setMode(mode) {
@@ -1590,8 +2601,72 @@
       setFilmDetail('home');
       els.modeHelp.textContent = isGreen
         ? 'Fondo verde.'
-        : 'Cortometraje: toca Fondo para escoger imagen, o Editar personajes para P1-P6.';
+        : 'Cortometraje: toca Fondo para escoger imagen, o Editar personajes para P1-P10.';
       resetMouthToClosed();
+      updateRecordStatus();
+      markDirty();
+    }
+
+    function updateBackgroundLockUi() {
+      const locked = Boolean(state.filmBgLocked);
+      const mainText = locked ? '🔒' : '🔓';
+      const mainTitle = locked
+        ? 'Toca para desbloquear el fondo y moverlo con zoom'
+        : 'Fondo desbloqueado: arrastra o haz zoom. Toca para bloquear.';
+
+      if (els.btnBgLock) {
+        els.btnBgLock.textContent = mainText;
+        els.btnBgLock.classList.toggle('locked', locked);
+        els.btnBgLock.classList.toggle('unlocked', !locked);
+        els.btnBgLock.setAttribute('aria-pressed', locked ? 'true' : 'false');
+        els.btnBgLock.title = mainTitle;
+        els.btnBgLock.setAttribute('aria-label', locked ? 'Desbloquear fondo' : 'Bloquear fondo');
+        els.btnBgLock.hidden = state.mode !== 'film';
+      }
+
+      if (els.btnBgLockDetail) {
+        els.btnBgLockDetail.textContent = locked ? '🔒 Fondo bloqueado' : '🔓 Mover fondo activo';
+        els.btnBgLockDetail.classList.toggle('locked', locked);
+        els.btnBgLockDetail.setAttribute('aria-pressed', locked ? 'true' : 'false');
+        els.btnBgLockDetail.title = mainTitle;
+      }
+
+      if (els.bgLockHome) {
+        els.bgLockHome.textContent = locked ? '🔒' : '🔓';
+        els.bgLockHome.title = locked ? 'Fondo bloqueado' : 'Fondo desbloqueado para mover y zoom';
+      }
+
+      if (els.statusBgLock) {
+        els.statusBgLock.textContent = locked
+          ? 'Fondo protegido. Toca el candado de la pantalla para moverlo.'
+          : 'Fondo desbloqueado: arrastra la imagen o usa zoom.';
+      }
+
+      if (els.bgTransformHint) {
+        els.bgTransformHint.textContent = locked
+          ? 'Fondo bloqueado'
+          : 'Fondo desbloqueado: arrastra, usa la rueda del mouse o pellizca con dos dedos.';
+        els.bgTransformHint.classList.toggle('show', state.mode === 'film' && !locked);
+      }
+
+      if (els.filmBg) els.filmBg.disabled = false;
+    }
+
+    function stopBackgroundGestures() {
+      state.bgDrag.active = false;
+      state.bgDrag.pointerId = null;
+      state.bgPinch.active = false;
+      state.bgPinch.startDistance = 0;
+    }
+
+    function toggleBackgroundLock() {
+      state.filmBgLocked = !state.filmBgLocked;
+      if (state.filmBgLocked) stopBackgroundGestures();
+      else {
+        stopDrag();
+        endPinchZoom();
+      }
+      updateBackgroundLockUi();
       updateRecordStatus();
       markDirty();
     }
@@ -1606,6 +2681,10 @@
           state.images[key] = img;
           statusEl.textContent = file.name;
           statusEl.classList.add('ok');
+          if (key === 'filmBg') {
+            resetFilmBackgroundTransform();
+            updateBackgroundLockUi();
+          }
           updateRecordStatus();
           if (key === 'filmBg' && state.mode === 'film') {
             setFilmDetail('home');
@@ -1634,6 +2713,8 @@
           person[kind + 'Name'] = file.name;
           statusEl.textContent = file.name;
           statusEl.classList.add('ok');
+          input.value = '';
+          renderPersonEditor();
           renderPersonButtons();
           renderAudioSwitches();
           updateRecordStatus();
@@ -1648,11 +2729,61 @@
       reader.readAsDataURL(file);
     }
 
+    function deletePersonImage(index, kind) {
+      const person = state.characters[index];
+      if (!person || (kind !== 'closed' && kind !== 'open')) return;
+      person[kind] = null;
+      person[kind + 'Name'] = '';
+      if (state.selectedPerson === index) resetMouthToClosed();
+      renderPersonEditor();
+      renderPersonButtons();
+      renderAudioSwitches();
+      updateRecordStatus();
+      markDirty();
+    }
+
+    function isPersonEnabled(person) {
+      return Boolean(person && person.enabled !== false);
+    }
+
+    function getEnabledCharacterCount() {
+      return state.characters.filter(function(person) { return isPersonEnabled(person); }).length;
+    }
+
+    function getNextDisabledPersonIndex() {
+      return state.characters.findIndex(function(person) { return !isPersonEnabled(person); });
+    }
+
+    function ensureSelectedPersonIsEnabled() {
+      if (isPersonEnabled(state.characters[state.selectedPerson])) return;
+      const firstEnabled = state.characters.findIndex(function(person) { return isPersonEnabled(person); });
+      state.selectedPerson = firstEnabled >= 0 ? firstEnabled : 0;
+    }
+
+    function addNextPerson() {
+      const nextIndex = getNextDisabledPersonIndex();
+      if (nextIndex < 0) return;
+      const person = state.characters[nextIndex];
+      person.enabled = true;
+      person.visible = true;
+      person.x = 690 + (nextIndex % 5) * 115;
+      person.y = 680 + Math.floor(nextIndex / 5) * 110;
+      if (!state.zOrder.includes(nextIndex)) state.zOrder.push(nextIndex);
+      selectPerson(nextIndex, true);
+      renderAudioSwitches();
+      updateRecordStatus();
+      updateKeyframePanel();
+      setKeyframeMessage('Agregado ' + person.label + '. Ya puedes cargar sus imágenes y grabar keys.', 'ok');
+      markDirty();
+    }
+
     function renderPersonButtons() {
       const personButtonsEl = document.getElementById('person-buttons');
       if (!personButtonsEl) return;
+      ensureSelectedPersonIsEnabled();
       personButtonsEl.innerHTML = '';
       state.characters.forEach(function(person, index) {
+        if (!isPersonEnabled(person)) return;
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.textContent = person.label;
@@ -1667,6 +2798,20 @@
         });
         personButtonsEl.appendChild(btn);
       });
+
+      const nextIndex = getNextDisabledPersonIndex();
+      if (nextIndex >= 0 && getEnabledCharacterCount() < MAX_FILM_CHARACTERS) {
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'person-btn add-person-btn';
+        addBtn.textContent = '+ P' + (nextIndex + 1);
+        addBtn.title = 'Agregar P' + (nextIndex + 1) + ' hasta P10';
+        addBtn.addEventListener('click', function() {
+          addNextPerson();
+          if (state.mode === 'film') setFilmDetail('editor');
+        });
+        personButtonsEl.appendChild(addBtn);
+      }
     }
 
     function bringPersonToFront(index) {
@@ -1679,15 +2824,23 @@
     }
 
     function selectPerson(index, bringFront) {
-      const safeIndex = Math.max(0, Math.min(5, index));
+      const safeIndex = Math.max(0, Math.min(state.characters.length - 1, index));
+      if (state.animation && state.animation.recording && state.animation.recording.active && state.animation.recording.personIndex !== safeIndex) {
+        stopKeyframeRecording(true);
+      }
+      const wasPlayingSingle = Boolean(state.animation && state.animation.playing && state.animation.mode === 'person');
       state.selectedPerson = safeIndex;
       if (bringFront) bringPersonToFront(safeIndex);
       renderPersonButtons();
       renderPersonEditor();
+      renderEffectsPanel();
+      updateKeyframePanel();
+      if (wasPlayingSingle) playSelectedPerson(true);
       markDirty();
     }
 
     function renderPersonEditor() {
+      ensureSelectedPersonIsEnabled();
       const index = state.selectedPerson;
       const person = state.characters[index];
       const closedStatus = person.closedName ? escapeHtml(person.closedName) : '';
@@ -1697,19 +2850,11 @@
           <button class="detail-back-btn" type="button" data-film-back>← Volver</button>
           <div class="detail-topbar-title">
             <strong>🎭 Editar personajes</strong>
-            <span>Todo está junto: selecciona P1-P6 y carga sus imágenes.</span>
+            <span>Todo está junto: selecciona P1-P10 y carga sus imágenes.</span>
           </div>
         </div>
-        <div class="selected-person-title card-title-bar">
-          <div>
-            <h2 style="margin:0;">🎭 Editando ${person.label}</h2>
-            <span class="small">Escoge el personaje y carga boca cerrada / boca abierta.</span>
-          </div>
-          <span class="pill">${person.audioLinked ? '🎙️ audio ON' : 'audio OFF'}</span>
-        </div>
-
         <div class="editor-person-switcher-card">
-          <div class="mini-card-title">👥 Personajes P1 - P6</div>
+          <div class="mini-card-title">👥 Personajes P1 - P10</div>
           <div id="person-buttons" class="grid-6"></div>
         </div>
 
@@ -1717,17 +2862,19 @@
           <div class="mini-card-title">🖼️ Imágenes del personaje</div>
           <div class="row clean-row">
             <label>${person.label} boca cerrada</label>
-            <div class="file-card">
+            <div class="file-card ${person.closedName ? 'has-loaded-image' : ''}">
               <div class="file-title">Boca cerrada</div>
               <div id="person-closed-status" class="file-status ${person.closedName ? 'ok' : ''}">${closedStatus}</div>
+              ${person.closedName ? '<button class="file-delete-btn" type="button" data-person-image-delete="closed" aria-label="Borrar imagen de boca cerrada">×</button>' : ''}
               <input id="person-closed-input" type="file" accept="image/png,image/jpeg,image/webp" />
             </div>
           </div>
           <div class="row clean-row">
             <label>${person.label} boca abierta</label>
-            <div class="file-card">
+            <div class="file-card ${person.openName ? 'has-loaded-image' : ''}">
               <div class="file-title">Boca abierta</div>
               <div id="person-open-status" class="file-status ${person.openName ? 'ok' : ''}">${openStatus}</div>
+              ${person.openName ? '<button class="file-delete-btn" type="button" data-person-image-delete="open" aria-label="Borrar imagen de boca abierta">×</button>' : ''}
               <input id="person-open-input" type="file" accept="image/png,image/jpeg,image/webp" />
             </div>
           </div>
@@ -1771,6 +2918,13 @@
 
       closedInput.addEventListener('change', function() { loadPersonImage(index, 'closed', closedInput, closedStatusEl); });
       openInput.addEventListener('change', function() { loadPersonImage(index, 'open', openInput, openStatusEl); });
+      els.personEditor.querySelectorAll('[data-person-image-delete]').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          deletePersonImage(index, button.getAttribute('data-person-image-delete'));
+        });
+      });
       xInput.addEventListener('input', function() {
         person.x = Number(xInput.value);
         xValue.textContent = String(Math.round(person.x));
@@ -1807,17 +2961,18 @@
       els.audioSwitches.innerHTML = '';
       let linkedCount = 0;
       state.characters.forEach(function(person, index) {
+        if (!isPersonEnabled(person)) return;
         if (person.audioLinked) linkedCount += 1;
         const card = document.createElement('div');
         card.className = 'knob-card' + (person.audioLinked ? ' on' : '');
-        const disabled = !person.closed && !person.open;
+        const hasImage = Boolean(person.closed || person.open);
         card.innerHTML = `
           <span class="name">${person.label}</span>
           <label class="switch" title="Asignar audio a ${person.label}">
-            <input type="checkbox" ${person.audioLinked ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-index="${index}" />
+            <input type="checkbox" ${person.audioLinked ? 'checked' : ''} data-index="${index}" aria-label="Asignar audio a ${person.label}" />
             <span class="slider"></span>
           </label>
-          <span class="small">${disabled ? 'sin img' : (person.audioLinked ? 'habla' : 'apagado')}</span>
+          <span class="small">${person.audioLinked ? 'habla' : (hasImage ? 'apagado' : 'sin img')}</span>
         `;
         const input = card.querySelector('input');
         input.addEventListener('change', function() {
@@ -1830,7 +2985,482 @@
         });
         els.audioSwitches.appendChild(card);
       });
-      els.audioPanelHint.textContent = linkedCount ? linkedCount + ' personaje(s) con audio' : 'Ningún personaje tiene audio';
+      els.audioPanelHint.textContent = linkedCount ? linkedCount + ' personaje(s) con audio' : 'Toca una perilla para activar audio';
+    }
+
+
+    function renderEffectsPanel() {
+      if (!els.effectsPanel || !els.effectsPersonButtons) return;
+      ensureSelectedPersonIsEnabled();
+      const selected = state.characters[state.selectedPerson];
+      if (els.effectsSelectedLabel && selected) els.effectsSelectedLabel.textContent = selected.label;
+      els.effectsPersonButtons.innerHTML = '';
+      state.characters.forEach(function(person, index) {
+        if (!isPersonEnabled(person)) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'effects-person-btn';
+        btn.classList.toggle('active', index === state.selectedPerson);
+        btn.textContent = person.label;
+        btn.title = 'Aplicar efectos a ' + person.label;
+        btn.addEventListener('click', function() {
+          clearEffectPreview(true);
+          selectPerson(index, true);
+          renderEffectsPanel();
+        });
+        els.effectsPersonButtons.appendChild(btn);
+      });
+      updateEffectPreviewUi();
+    }
+
+    function makeEffectKey(time, pose) {
+      return {
+        id: createKeyframeId(),
+        time: Number(time.toFixed(2)),
+        x: Number(pose.x) || 0,
+        y: Number(pose.y) || 0,
+        scale: Number(pose.scale) || 42,
+        rotation: Number(pose.rotation) || 0,
+        opacity: clamp(Number(pose.opacity == null ? 1 : pose.opacity), 0, 1)
+      };
+    }
+
+    function getCharacterEffectName(effectName) {
+      const names = {
+        jump: 'saltar',
+        rotate: 'girar',
+        spin: 'dar vueltas',
+        bounce: 'rebotar',
+        shake: 'temblar',
+        pulse: 'latido',
+        fade: 'desvanecer',
+        slide: 'deslizar',
+        zoom: 'zoom',
+        dance: 'bailar',
+        wave: 'saludar',
+        swing: 'balancear',
+        flip: 'voltereta',
+        float: 'flotar',
+        stomp: 'pisotear',
+        zigzag: 'zigzag',
+        rocket: 'cohete',
+        roll: 'rodar',
+        blink: 'parpadear',
+        pop: 'pop'
+      };
+      return names[effectName] || 'efecto';
+    }
+
+    function buildCharacterEffectKeys(effectName, index, startTime, basePose) {
+      const person = state.characters[index];
+      const base = Object.assign({}, basePose || getCurrentPersonState(index));
+      base.time = Number(startTime) || 0;
+      const start = Number(startTime) || 0;
+      const jumpHeight = Math.min(190, Math.max(90, Number(person.scale || 42) * 3));
+      const circle = Math.min(150, Math.max(70, Number(person.scale || 42) * 2.4));
+      const move = Math.min(160, Math.max(80, Number(person.scale || 42) * 2.7));
+      const smallMove = Math.min(95, Math.max(45, Number(person.scale || 42) * 1.55));
+      const baseRotation = Number(base.rotation) || 0;
+
+      if (effectName === 'jump') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.28, Object.assign({}, base, { y: clamp(base.y - jumpHeight, 0, canvas.height), scale: base.scale * 1.06 })),
+          makeEffectKey(start + 0.56, base),
+          makeEffectKey(start + 0.78, Object.assign({}, base, { y: clamp(base.y - jumpHeight * 0.45, 0, canvas.height), scale: base.scale * 1.03 })),
+          makeEffectKey(start + 1.05, base)
+        ];
+      }
+
+      if (effectName === 'rotate') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.50, Object.assign({}, base, { rotation: baseRotation + 180 })),
+          makeEffectKey(start + 1.00, Object.assign({}, base, { rotation: baseRotation + 360 }))
+        ];
+      }
+
+      if (effectName === 'spin') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.40, Object.assign({}, base, { x: clamp(base.x + circle, 0, canvas.width), y: clamp(base.y - circle * 0.45, 0, canvas.height), rotation: baseRotation + 180 })),
+          makeEffectKey(start + 0.80, Object.assign({}, base, { x: base.x, y: clamp(base.y - circle * 0.85, 0, canvas.height), rotation: baseRotation + 360 })),
+          makeEffectKey(start + 1.20, Object.assign({}, base, { x: clamp(base.x - circle, 0, canvas.width), y: clamp(base.y - circle * 0.45, 0, canvas.height), rotation: baseRotation + 540 })),
+          makeEffectKey(start + 1.60, Object.assign({}, base, { rotation: baseRotation + 720 }))
+        ];
+      }
+
+      if (effectName === 'bounce') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.22, Object.assign({}, base, { y: clamp(base.y - jumpHeight * 0.72, 0, canvas.height), scale: base.scale * 1.04 })),
+          makeEffectKey(start + 0.44, Object.assign({}, base, { y: clamp(base.y + 12, 0, canvas.height), scale: base.scale * 0.96 })),
+          makeEffectKey(start + 0.66, Object.assign({}, base, { y: clamp(base.y - jumpHeight * 0.42, 0, canvas.height), scale: base.scale * 1.02 })),
+          makeEffectKey(start + 0.90, base)
+        ];
+      }
+
+      if (effectName === 'shake') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.10, Object.assign({}, base, { x: clamp(base.x - 18, 0, canvas.width), rotation: baseRotation - 8 })),
+          makeEffectKey(start + 0.20, Object.assign({}, base, { x: clamp(base.x + 18, 0, canvas.width), rotation: baseRotation + 8 })),
+          makeEffectKey(start + 0.30, Object.assign({}, base, { x: clamp(base.x - 14, 0, canvas.width), rotation: baseRotation - 6 })),
+          makeEffectKey(start + 0.40, Object.assign({}, base, { x: clamp(base.x + 14, 0, canvas.width), rotation: baseRotation + 6 })),
+          makeEffectKey(start + 0.55, base)
+        ];
+      }
+
+      if (effectName === 'pulse') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.24, Object.assign({}, base, { scale: base.scale * 1.22 })),
+          makeEffectKey(start + 0.48, base),
+          makeEffectKey(start + 0.72, Object.assign({}, base, { scale: base.scale * 1.16 })),
+          makeEffectKey(start + 0.96, base)
+        ];
+      }
+
+      if (effectName === 'fade') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.35, Object.assign({}, base, { opacity: 0.18, scale: base.scale * 0.92 })),
+          makeEffectKey(start + 0.70, Object.assign({}, base, { opacity: 1, scale: base.scale * 1.06 })),
+          makeEffectKey(start + 0.95, base)
+        ];
+      }
+
+      if (effectName === 'slide') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.35, Object.assign({}, base, { x: clamp(base.x + move, 0, canvas.width), rotation: baseRotation + 7 })),
+          makeEffectKey(start + 0.70, Object.assign({}, base, { x: clamp(base.x - move, 0, canvas.width), rotation: baseRotation - 7 })),
+          makeEffectKey(start + 1.05, base)
+        ];
+      }
+
+      if (effectName === 'zoom') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.35, Object.assign({}, base, { scale: base.scale * 1.45, opacity: 1 })),
+          makeEffectKey(start + 0.70, Object.assign({}, base, { scale: base.scale * 0.82, opacity: 0.92 })),
+          makeEffectKey(start + 1.05, base)
+        ];
+      }
+
+      if (effectName === 'dance') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.20, Object.assign({}, base, { x: clamp(base.x - move * 0.35, 0, canvas.width), y: clamp(base.y - 22, 0, canvas.height), rotation: baseRotation - 14, scale: base.scale * 1.04 })),
+          makeEffectKey(start + 0.40, Object.assign({}, base, { x: clamp(base.x + move * 0.35, 0, canvas.width), y: clamp(base.y - 8, 0, canvas.height), rotation: baseRotation + 14, scale: base.scale * 1.04 })),
+          makeEffectKey(start + 0.60, Object.assign({}, base, { x: clamp(base.x - move * 0.25, 0, canvas.width), y: clamp(base.y - 18, 0, canvas.height), rotation: baseRotation - 10 })),
+          makeEffectKey(start + 0.80, Object.assign({}, base, { x: clamp(base.x + move * 0.25, 0, canvas.width), y: clamp(base.y - 6, 0, canvas.height), rotation: baseRotation + 10 })),
+          makeEffectKey(start + 1.05, base)
+        ];
+      }
+
+      if (effectName === 'wave') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.18, Object.assign({}, base, { rotation: baseRotation - 16, scale: base.scale * 1.03 })),
+          makeEffectKey(start + 0.36, Object.assign({}, base, { rotation: baseRotation + 16, scale: base.scale * 1.03 })),
+          makeEffectKey(start + 0.54, Object.assign({}, base, { rotation: baseRotation - 12, scale: base.scale * 1.02 })),
+          makeEffectKey(start + 0.78, base)
+        ];
+      }
+
+      if (effectName === 'swing') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.30, Object.assign({}, base, { x: clamp(base.x - smallMove, 0, canvas.width), rotation: baseRotation - 18 })),
+          makeEffectKey(start + 0.60, Object.assign({}, base, { x: clamp(base.x + smallMove, 0, canvas.width), rotation: baseRotation + 18 })),
+          makeEffectKey(start + 0.90, Object.assign({}, base, { x: clamp(base.x - smallMove * .55, 0, canvas.width), rotation: baseRotation - 10 })),
+          makeEffectKey(start + 1.20, base)
+        ];
+      }
+
+      if (effectName === 'flip') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.32, Object.assign({}, base, { y: clamp(base.y - jumpHeight * .72, 0, canvas.height), rotation: baseRotation + 180, scale: base.scale * 1.04 })),
+          makeEffectKey(start + 0.64, Object.assign({}, base, { y: clamp(base.y - jumpHeight * .18, 0, canvas.height), rotation: baseRotation + 360 })),
+          makeEffectKey(start + 0.92, base)
+        ];
+      }
+
+      if (effectName === 'float') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.45, Object.assign({}, base, { y: clamp(base.y - jumpHeight * .55, 0, canvas.height), x: clamp(base.x + smallMove * .32, 0, canvas.width), rotation: baseRotation + 7 })),
+          makeEffectKey(start + 0.90, Object.assign({}, base, { y: clamp(base.y - jumpHeight * .78, 0, canvas.height), x: clamp(base.x - smallMove * .24, 0, canvas.width), rotation: baseRotation - 6 })),
+          makeEffectKey(start + 1.35, base)
+        ];
+      }
+
+      if (effectName === 'stomp') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.20, Object.assign({}, base, { y: clamp(base.y - jumpHeight * .35, 0, canvas.height), scale: base.scale * 1.08 })),
+          makeEffectKey(start + 0.38, Object.assign({}, base, { y: clamp(base.y + 18, 0, canvas.height), scale: base.scale * .9, rotation: baseRotation - 4 })),
+          makeEffectKey(start + 0.56, Object.assign({}, base, { y: clamp(base.y - 10, 0, canvas.height), scale: base.scale * 1.04, rotation: baseRotation + 4 })),
+          makeEffectKey(start + 0.80, base)
+        ];
+      }
+
+      if (effectName === 'zigzag') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.22, Object.assign({}, base, { x: clamp(base.x + move * .55, 0, canvas.width), y: clamp(base.y - 35, 0, canvas.height), rotation: baseRotation + 9 })),
+          makeEffectKey(start + 0.44, Object.assign({}, base, { x: clamp(base.x - move * .55, 0, canvas.width), y: clamp(base.y + 18, 0, canvas.height), rotation: baseRotation - 9 })),
+          makeEffectKey(start + 0.66, Object.assign({}, base, { x: clamp(base.x + move * .36, 0, canvas.width), y: clamp(base.y - 20, 0, canvas.height), rotation: baseRotation + 7 })),
+          makeEffectKey(start + 0.94, base)
+        ];
+      }
+
+      if (effectName === 'rocket') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.20, Object.assign({}, base, { scale: base.scale * .9, y: clamp(base.y + 18, 0, canvas.height) })),
+          makeEffectKey(start + 0.55, Object.assign({}, base, { y: clamp(base.y - jumpHeight * 1.05, 0, canvas.height), rotation: baseRotation + 12, scale: base.scale * 1.08 })),
+          makeEffectKey(start + 0.88, Object.assign({}, base, { y: clamp(base.y - jumpHeight * .2, 0, canvas.height), rotation: baseRotation - 6 })),
+          makeEffectKey(start + 1.16, base)
+        ];
+      }
+
+      if (effectName === 'roll') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.36, Object.assign({}, base, { x: clamp(base.x + move * .65, 0, canvas.width), rotation: baseRotation + 180 })),
+          makeEffectKey(start + 0.72, Object.assign({}, base, { x: clamp(base.x + move * 1.05, 0, canvas.width), rotation: baseRotation + 360 })),
+          makeEffectKey(start + 1.08, base)
+        ];
+      }
+
+      if (effectName === 'blink') {
+        return [
+          makeEffectKey(start + 0.00, base),
+          makeEffectKey(start + 0.18, Object.assign({}, base, { opacity: .18 })),
+          makeEffectKey(start + 0.32, Object.assign({}, base, { opacity: 1 })),
+          makeEffectKey(start + 0.50, Object.assign({}, base, { opacity: .25 })),
+          makeEffectKey(start + 0.68, base)
+        ];
+      }
+
+      if (effectName === 'pop') {
+        return [
+          makeEffectKey(start + 0.00, Object.assign({}, base, { scale: base.scale * .72, opacity: .7 })),
+          makeEffectKey(start + 0.22, Object.assign({}, base, { scale: base.scale * 1.42, opacity: 1, rotation: baseRotation + 8 })),
+          makeEffectKey(start + 0.42, Object.assign({}, base, { scale: base.scale * .94, rotation: baseRotation - 5 })),
+          makeEffectKey(start + 0.64, base)
+        ];
+      }
+
+      return [makeEffectKey(start + 0.00, base)];
+    }
+
+    function getEffectPoseAtTime(keys, currentTime) {
+      const sorted = (keys || []).slice().sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      if (!sorted.length) return null;
+      const time = Number(currentTime) || 0;
+      if (sorted.length === 1 || time <= Number(sorted[0].time || 0)) return sorted[0];
+      const lastKey = sorted[sorted.length - 1];
+      if (time >= Number(lastKey.time || 0)) return lastKey;
+      let prev = sorted[0];
+      let next = lastKey;
+      for (let i = 0; i < sorted.length - 1; i += 1) {
+        if (time >= Number(sorted[i].time || 0) && time <= Number(sorted[i + 1].time || 0)) {
+          prev = sorted[i];
+          next = sorted[i + 1];
+          break;
+        }
+      }
+      const startTime = Number(prev.time || 0);
+      const endTime = Number(next.time || 0);
+      const duration = Math.max(0.0001, endTime - startTime);
+      const progress = clamp((time - startTime) / duration, 0, 1);
+      return {
+        x: lerp(Number(prev.x) || 0, Number(next.x) || 0, progress),
+        y: lerp(Number(prev.y) || 0, Number(next.y) || 0, progress),
+        scale: lerp(Number(prev.scale) || 42, Number(next.scale) || 42, progress),
+        rotation: lerp(Number(prev.rotation) || 0, Number(next.rotation) || 0, progress),
+        opacity: lerp(Number(prev.opacity == null ? 1 : prev.opacity), Number(next.opacity == null ? 1 : next.opacity), progress)
+      };
+    }
+
+    function updateEffectPreviewUi() {
+      const preview = state.effectPreview;
+      const hasPending = Boolean(preview && preview.effectName);
+      if (els.effectsInsertBtn) els.effectsInsertBtn.disabled = !hasPending;
+      if (els.effectPreviewStatus) {
+        if (!hasPending) {
+          els.effectPreviewStatus.textContent = 'Toca un efecto para probarlo. No se guarda hasta tocar Insertar.';
+        } else if (preview.active) {
+          els.effectPreviewStatus.textContent = 'Probando ' + getCharacterEffectName(preview.effectName) + ' en ' + state.characters[preview.personIndex].label + '...';
+        } else {
+          els.effectPreviewStatus.textContent = 'Prueba lista: ' + getCharacterEffectName(preview.effectName) + '. Toca Insertar para guardarlo.';
+        }
+      }
+      document.querySelectorAll('[data-character-effect]').forEach(function(button) {
+        button.classList.toggle('active', hasPending && button.getAttribute('data-character-effect') === preview.effectName);
+      });
+    }
+
+    function clearEffectPreview(restorePose) {
+      const preview = state.effectPreview;
+      if (!preview) return;
+      if (preview.rafId) cancelAnimationFrame(preview.rafId);
+      preview.rafId = 0;
+      if (restorePose && preview.originalPose && state.characters[preview.personIndex]) {
+        applyPersonState(preview.personIndex, preview.originalPose, true);
+      }
+      preview.active = false;
+      preview.effectName = '';
+      preview.keys = null;
+      preview.originalPose = null;
+      preview.startedAt = 0;
+      preview.duration = 0;
+      updateEffectPreviewUi();
+      markDirty();
+    }
+
+    function previewEffectFrame(now) {
+      const preview = state.effectPreview;
+      if (!preview || !preview.active) return;
+      const elapsed = Math.max(0, (now - preview.startedAt) / 1000);
+      const current = Math.min(elapsed, preview.duration);
+      const pose = getEffectPoseAtTime(preview.keys, current);
+      if (pose) applyPersonState(preview.personIndex, pose, true);
+      updateEffectPreviewUi();
+      if (elapsed >= preview.duration) {
+        preview.active = false;
+        preview.rafId = 0;
+        if (preview.originalPose) applyPersonState(preview.personIndex, preview.originalPose, true);
+        updateEffectPreviewUi();
+        return;
+      }
+      preview.rafId = requestAnimationFrame(previewEffectFrame);
+    }
+
+    function previewCharacterEffect(effectName) {
+      const index = state.selectedPerson;
+      const person = state.characters[index];
+      if (!person || !isPersonEnabled(person)) return;
+      if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
+      stopAnimation(false);
+      clearEffectPreview(true);
+      const originalPose = getCurrentPersonState(index);
+      const effectKeys = buildCharacterEffectKeys(effectName, index, 0, originalPose);
+      const duration = effectKeys.reduce(function(max, key) { return Math.max(max, Number(key.time || 0)); }, 0);
+      state.effectPreview.active = true;
+      state.effectPreview.personIndex = index;
+      state.effectPreview.effectName = effectName;
+      state.effectPreview.keys = effectKeys;
+      state.effectPreview.originalPose = originalPose;
+      state.effectPreview.startedAt = performance.now();
+      state.effectPreview.duration = Math.max(0.35, duration);
+      setKeyframeMessage('Prueba de ' + getCharacterEffectName(effectName) + ' en ' + person.label + '. Si te gusta, toca Insertar.', 'live');
+      setKeyframeLiveLabel('Probando ' + person.label);
+      updateEffectPreviewUi();
+      state.effectPreview.rafId = requestAnimationFrame(previewEffectFrame);
+    }
+
+    function insertPreviewedEffect() {
+      const preview = state.effectPreview;
+      if (!preview || !preview.effectName) {
+        setKeyframeMessage('Primero toca un efecto para probarlo antes de insertar.', 'warn');
+        return;
+      }
+      const index = preview.personIndex;
+      const person = state.characters[index];
+      if (!person || !isPersonEnabled(person)) return;
+      const effectName = preview.effectName;
+      const originalPose = Object.assign({}, preview.originalPose || getCurrentPersonState(index));
+      if (preview.rafId) cancelAnimationFrame(preview.rafId);
+      preview.rafId = 0;
+      preview.active = false;
+      applyPersonState(index, originalPose, true);
+      selectPerson(index, true);
+      stopAnimation(false);
+      if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
+
+      const startTime = Number(state.animation.currentTime) || 0;
+      const effectId = 'effect-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+      const effectKeys = buildCharacterEffectKeys(effectName, index, startTime, originalPose).map(function(key) {
+        key.effectId = effectId;
+        key.effectName = effectName;
+        return key;
+      });
+      const endTime = effectKeys.reduce(function(max, key) { return Math.max(max, Number(key.time || 0)); }, startTime);
+      const existing = (person.keyframes || []).filter(function(key) {
+        const time = Number(key.time || 0);
+        return time < startTime - 0.02 || time > endTime + 0.02;
+      });
+      person.keyframes = existing.concat(effectKeys).sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      state.animation.selectedKeyId = effectKeys[effectKeys.length - 1].id;
+      state.animation.selectedKeyPerson = index;
+      state.animation.duration = Math.max(state.animation.duration || 10, Math.ceil(endTime + 1));
+      preview.effectName = '';
+      preview.keys = null;
+      preview.originalPose = null;
+      preview.duration = 0;
+      preview.startedAt = 0;
+      updateEffectPreviewUi();
+      updateKeyframePanel();
+      renderEffectsPanel();
+      setKeyframeTime(startTime, false);
+      setKeyframeMessage('Efecto insertado en ' + person.label + ': ' + getCharacterEffectName(effectName) + '.', 'ok');
+      playSelectedPerson(true);
+      markDirty();
+    }
+
+    function deleteInsertedEffect() {
+      const index = state.selectedPerson;
+      const person = state.characters[index];
+      if (!person || !person.keyframes || !person.keyframes.length) {
+        setKeyframeMessage('No hay efectos insertados para borrar en ' + (person ? person.label : 'este personaje') + '.', 'warn');
+        return;
+      }
+      if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
+      stopAnimation(false);
+      clearEffectPreview(true);
+      const selected = getSelectedKeyframe();
+      let effectId = selected && selected.personIndex === index && selected.key.effectId ? selected.key.effectId : '';
+      if (!effectId) {
+        const groups = {};
+        person.keyframes.forEach(function(key) {
+          if (!key.effectId) return;
+          if (!groups[key.effectId]) groups[key.effectId] = { id: key.effectId, name: key.effectName || '', start: Number(key.time || 0), end: Number(key.time || 0) };
+          groups[key.effectId].start = Math.min(groups[key.effectId].start, Number(key.time || 0));
+          groups[key.effectId].end = Math.max(groups[key.effectId].end, Number(key.time || 0));
+        });
+        const currentTime = Number(state.animation.currentTime) || 0;
+        const list = Object.keys(groups).map(function(id) { return groups[id]; });
+        const currentGroup = list.find(function(group) { return currentTime >= group.start - 0.05 && currentTime <= group.end + 0.05; });
+        const latestGroup = list.sort(function(a, b) { return b.start - a.start; })[0];
+        effectId = (currentGroup || latestGroup || {}).id || '';
+      }
+      if (!effectId) {
+        setKeyframeMessage('No encontré un efecto insertado para borrar. Los keyframes manuales se borran con “Borrar Key”.', 'warn');
+        return;
+      }
+      let removedName = '';
+      const before = person.keyframes.length;
+      person.keyframes = person.keyframes.filter(function(key) {
+        if (key.effectId === effectId) {
+          removedName = removedName || key.effectName || '';
+          return false;
+        }
+        return true;
+      });
+      const removed = before - person.keyframes.length;
+      state.animation.selectedKeyId = null;
+      updateKeyframePanel();
+      setKeyframeMessage('Efecto borrado de ' + person.label + ': ' + getCharacterEffectName(removedName) + ' (' + removed + ' keys).', 'ok');
+      markDirty();
+    }
+
+    function applyCharacterEffect(effectName) {
+      previewCharacterEffect(effectName);
     }
 
     function updateRecordStatus() {
@@ -1843,7 +3473,7 @@
         return;
       }
 
-      const readyPeople = state.characters.filter(function(person) { return person.visible && person.closed; }).length;
+      const readyPeople = state.characters.filter(function(person) { return isPersonEnabled(person) && person.visible && person.closed; }).length;
       if (!state.images.filmBg) {
         els.recordStatus.textContent = 'Sube una imagen de fondo para el cortometraje.';
       } else if (!readyPeople) {
@@ -1858,6 +3488,54 @@
       return { w: img.width * scale, h: img.height * scale };
     }
 
+    function getDefaultFilmBackgroundTransform() {
+      return { x: canvas.width / 2, y: canvas.height / 2, scale: 1 };
+    }
+
+    function ensureFilmBackgroundTransform() {
+      if (!state.bgTransform) state.bgTransform = getDefaultFilmBackgroundTransform();
+      if (!Number.isFinite(state.bgTransform.x)) state.bgTransform.x = canvas.width / 2;
+      if (!Number.isFinite(state.bgTransform.y)) state.bgTransform.y = canvas.height / 2;
+      if (!Number.isFinite(state.bgTransform.scale)) state.bgTransform.scale = 1;
+      state.bgTransform.scale = clamp(Number(state.bgTransform.scale) || 1, 1, 5);
+      return state.bgTransform;
+    }
+
+    function resetFilmBackgroundTransform() {
+      state.bgTransform = getDefaultFilmBackgroundTransform();
+    }
+
+    function getFilmBackgroundMetrics(img) {
+      const transform = ensureFilmBackgroundTransform();
+      const baseScale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      const drawScale = baseScale * clamp(Number(transform.scale) || 1, 1, 5);
+      const w = img.width * drawScale;
+      const h = img.height * drawScale;
+      return {
+        x: transform.x - w / 2,
+        y: transform.y - h / 2,
+        w: w,
+        h: h,
+        centerX: transform.x,
+        centerY: transform.y,
+        scale: transform.scale
+      };
+    }
+
+    function clampFilmBackgroundTransform(img) {
+      if (!img) return;
+      const transform = ensureFilmBackgroundTransform();
+      const metrics = getFilmBackgroundMetrics(img);
+      const halfW = metrics.w / 2;
+      const halfH = metrics.h / 2;
+      const minX = canvas.width - halfW;
+      const maxX = halfW;
+      const minY = canvas.height - halfH;
+      const maxY = halfH;
+      transform.x = metrics.w <= canvas.width ? canvas.width / 2 : clamp(transform.x, minX, maxX);
+      transform.y = metrics.h <= canvas.height ? canvas.height / 2 : clamp(transform.y, minY, maxY);
+    }
+
     function drawImageCover(img) {
       const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
       const w = img.width * scale;
@@ -1865,6 +3543,12 @@
       const x = (canvas.width - w) / 2;
       const y = (canvas.height - h) / 2;
       ctx.drawImage(img, x, y, w, h);
+    }
+
+    function drawFilmBackground(img) {
+      clampFilmBackgroundTransform(img);
+      const metrics = getFilmBackgroundMetrics(img);
+      ctx.drawImage(img, metrics.x, metrics.y, metrics.w, metrics.h);
     }
 
     function drawCenteredImage(img) {
@@ -1884,7 +3568,7 @@
     function getPersonBox(index) {
       const person = state.characters[index];
       const img = getActivePersonImage(person);
-      if (!img || !person.visible) return null;
+      if (!isPersonEnabled(person) || !img || !person.visible) return null;
       const maxW = canvas.width * (person.scale / 100);
       const maxH = canvas.height * (person.scale / 100);
       const fitted = fitImageContain(img, maxW, maxH);
@@ -1982,7 +3666,7 @@
 
     function updateMouthBadge() {
       const linked = state.mode === 'film'
-        ? state.characters.filter(function(person) { return person.audioLinked && person.visible && (person.closed || person.open); }).map(function(person) { return person.label; })
+        ? state.characters.filter(function(person) { return isPersonEnabled(person) && person.audioLinked && person.visible && (person.closed || person.open); }).map(function(person) { return person.label; })
         : [];
       const activeOpen = state.mode === 'film' ? Boolean(state.audio.mouthOpen && linked.length) : Boolean(state.audio.mouthOpen);
       const text = state.mode === 'film'
@@ -2030,21 +3714,977 @@
         if (img) drawCenteredImage(img);
         else drawPlaceholder(['Sube boca cerrada', 'y boca abierta']);
       } else {
-        if (state.images.filmBg) drawImageCover(state.images.filmBg);
+        if (state.images.filmBg) drawFilmBackground(state.images.filmBg);
         else drawPlaceholder(['Sube una imagen', 'de fondo']);
 
         const drawOrder = state.zOrder || state.characters.map(function(_, personIndex) { return personIndex; });
         drawOrder.forEach(function(index) {
           const person = state.characters[index];
+          if (!isPersonEnabled(person)) return;
           const img = getActivePersonImage(person);
           const box = getPersonBox(index);
-          if (img && box) ctx.drawImage(img, box.x, box.y, box.w, box.h);
+          if (!img || !box) return;
+          ctx.save();
+          ctx.globalAlpha = clamp(Number(person.opacity == null ? 1 : person.opacity), 0, 1);
+          ctx.translate(person.x, person.y);
+          ctx.rotate((Number(person.rotation) || 0) * Math.PI / 180);
+          ctx.drawImage(img, -box.w / 2, -box.h / 2, box.w, box.h);
+          ctx.restore();
         });
       }
 
       perf.dirty = false;
       perf.lastDrawAt = now;
       if (shouldKeepAnimating()) requestDraw(false);
+    }
+
+
+    /* ===== Música simple: solo reproducción con línea movible ===== */
+    function formatMusicTime(value) {
+      const seconds = Math.max(0, Number(value) || 0);
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return mins + ':' + String(secs).padStart(2, '0');
+    }
+
+    function setMusicStatus(message) {
+      if (els.musicStatus) els.musicStatus.textContent = message || 'Sin música';
+    }
+
+    function getAudioContextClass() {
+      return window.AudioContext || window.webkitAudioContext;
+    }
+
+    function ensureMusicAudioGraph() {
+      const audio = els.musicAudio;
+      if (!audio) return null;
+      const AudioContextClass = getAudioContextClass();
+      if (!AudioContextClass) return null;
+
+      if (!state.music.audioCtx || state.music.audioCtx.state === 'closed') {
+        state.music.audioCtx = new AudioContextClass();
+      }
+
+      if (!state.music.sourceNode) {
+        try {
+          state.music.sourceNode = state.music.audioCtx.createMediaElementSource(audio);
+          state.music.gainNode = state.music.audioCtx.createGain();
+          state.music.sourceNode.connect(state.music.gainNode);
+          state.music.gainNode.connect(state.music.audioCtx.destination);
+        } catch (error) {
+          // Si el navegador ya conectó este audio internamente, seguimos usando el reproductor normal.
+          console.warn('No se pudo preparar la música para mezcla de grabación:', error);
+          return null;
+        }
+      }
+
+      updateMusicVolume();
+      return state.music.audioCtx;
+    }
+
+    function resumeMusicAudioGraph() {
+      const ctx = ensureMusicAudioGraph();
+      if (ctx && ctx.state === 'suspended') {
+        return ctx.resume().catch(function() {});
+      }
+      return Promise.resolve();
+    }
+
+    function updateMusicUi() {
+      const audio = els.musicAudio;
+      if (!audio) return;
+      const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+
+      if (els.musicTimeSlider) {
+        els.musicTimeSlider.max = String(duration || 0);
+        if (!state.music.seeking) els.musicTimeSlider.value = String(current || 0);
+        els.musicTimeSlider.disabled = !duration;
+      }
+      if (els.musicCurrentTime) els.musicCurrentTime.textContent = formatMusicTime(current);
+      if (els.musicDuration) els.musicDuration.textContent = formatMusicTime(duration);
+      if (els.btnMusicPlay) els.btnMusicPlay.textContent = audio.paused ? '▶' : '⏸';
+      if (els.btnMusicStop) els.btnMusicStop.disabled = !state.music.url;
+    }
+
+    function stopMusicUiLoop() {
+      if (state.music.rafId) cancelAnimationFrame(state.music.rafId);
+      state.music.rafId = 0;
+    }
+
+    function startMusicUiLoop() {
+      stopMusicUiLoop();
+      function loop() {
+        updateMusicUi();
+        if (els.musicAudio && !els.musicAudio.paused && !els.musicAudio.ended) {
+          state.music.rafId = requestAnimationFrame(loop);
+        } else {
+          state.music.rafId = 0;
+          updateMusicUi();
+        }
+      }
+      state.music.rafId = requestAnimationFrame(loop);
+    }
+
+    function loadMusicFile() {
+      const input = els.musicFile;
+      const audio = els.musicAudio;
+      const file = input && input.files ? input.files[0] : null;
+      if (!file || !audio) return;
+
+      stopMusicUiLoop();
+      audio.pause();
+      if (state.music.url) URL.revokeObjectURL(state.music.url);
+      state.music.url = URL.createObjectURL(file);
+      audio.src = state.music.url;
+      audio.loop = true;
+      audio.currentTime = 0;
+      audio.load();
+      ensureMusicAudioGraph();
+
+      if (els.musicFileStatus) {
+        els.musicFileStatus.textContent = file.name;
+        els.musicFileStatus.classList.add('ok');
+      }
+      if (els.btnMusicPlay) els.btnMusicPlay.disabled = false;
+      if (els.btnMusicStop) els.btnMusicStop.disabled = false;
+      setMusicStatus('Música lista');
+      updateMusicUi();
+      input.value = '';
+    }
+
+    function toggleMusicPlayback() {
+      const audio = els.musicAudio;
+      if (!audio || !state.music.url) return;
+      if (audio.paused) {
+        resumeMusicAudioGraph().then(function() {
+          return audio.play();
+        }).then(function() {
+          setMusicStatus('Reproduciendo en bucle');
+          startMusicUiLoop();
+        }).catch(function() {
+          setMusicStatus('Toca de nuevo para reproducir');
+        });
+      } else {
+        audio.pause();
+        setMusicStatus('Pausado');
+        updateMusicUi();
+      }
+    }
+
+    function stopMusicPlayback() {
+      const audio = els.musicAudio;
+      if (!audio || !state.music.url) return;
+      audio.pause();
+      audio.currentTime = 0;
+      setMusicStatus('Detenido');
+      updateMusicUi();
+    }
+
+    function seekMusicFromSlider() {
+      const audio = els.musicAudio;
+      if (!audio || !state.music.url) return;
+      const nextTime = clamp(Number(els.musicTimeSlider.value) || 0, 0, Number(audio.duration) || 0);
+      audio.currentTime = nextTime;
+      updateMusicUi();
+    }
+
+    function updateMusicVolume() {
+      const audio = els.musicAudio;
+      const volume = els.musicVolume ? clamp(Number(els.musicVolume.value), 0, 1) : 1;
+      if (state.music.gainNode) {
+        try { state.music.gainNode.gain.setTargetAtTime(volume, state.music.audioCtx.currentTime, 0.01); }
+        catch (error) { state.music.gainNode.gain.value = volume; }
+        if (audio) audio.volume = 1;
+      } else if (audio) {
+        audio.volume = volume;
+      }
+      if (els.musicVolumeValue) els.musicVolumeValue.textContent = Math.round(volume * 100) + '%';
+    }
+
+    function initMusicPlayer() {
+      if (!els.musicAudio) return;
+      els.musicAudio.loop = true;
+      if (els.musicFile) els.musicFile.addEventListener('change', loadMusicFile);
+      if (els.btnMusicPlay) els.btnMusicPlay.addEventListener('click', toggleMusicPlayback);
+      if (els.btnMusicStop) els.btnMusicStop.addEventListener('click', stopMusicPlayback);
+      if (els.musicVolume) els.musicVolume.addEventListener('input', updateMusicVolume);
+      if (els.musicTimeSlider) {
+        els.musicTimeSlider.addEventListener('pointerdown', function() { state.music.seeking = true; });
+        els.musicTimeSlider.addEventListener('input', function() {
+          state.music.seeking = true;
+          if (els.musicCurrentTime) els.musicCurrentTime.textContent = formatMusicTime(Number(els.musicTimeSlider.value) || 0);
+        });
+        els.musicTimeSlider.addEventListener('change', function() {
+          state.music.seeking = false;
+          seekMusicFromSlider();
+        });
+        els.musicTimeSlider.addEventListener('pointerup', function() {
+          state.music.seeking = false;
+          seekMusicFromSlider();
+        });
+      }
+      els.musicAudio.addEventListener('loadedmetadata', function() {
+        setMusicStatus('Música lista');
+        updateMusicUi();
+      });
+      els.musicAudio.addEventListener('play', function() {
+        setMusicStatus('Reproduciendo en bucle');
+        startMusicUiLoop();
+      });
+      els.musicAudio.addEventListener('pause', updateMusicUi);
+      els.musicAudio.addEventListener('ended', function() {
+        if (els.musicAudio.loop && state.music.url) {
+          els.musicAudio.currentTime = 0;
+          els.musicAudio.play().catch(function() {});
+          return;
+        }
+        setMusicStatus('Terminó');
+        updateMusicUi();
+      });
+      updateMusicVolume();
+      updateMusicUi();
+    }
+
+
+    /* ===== Keyframes integrados al canvas original ===== */
+    function createKeyframeId() {
+      return 'key_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    }
+
+    function formatKeyTime(value) {
+      return Number(value || 0).toFixed(2) + 's';
+    }
+
+    function getCurrentPersonState(index) {
+      const person = state.characters[index];
+      return {
+        time: Number(state.animation.currentTime) || 0,
+        x: Number(person.x) || 0,
+        y: Number(person.y) || 0,
+        scale: Number(person.scale) || 42,
+        rotation: Number(person.rotation) || 0,
+        opacity: clamp(Number(person.opacity == null ? 1 : person.opacity), 0, 1)
+      };
+    }
+
+    function applyPersonState(index, pose, syncUi) {
+      const person = state.characters[index];
+      if (!person || !pose) return;
+      person.x = clamp(Number(pose.x) || 0, 0, canvas.width);
+      person.y = clamp(Number(pose.y) || 0, 0, canvas.height);
+      person.scale = clamp(Number(pose.scale) || 42, 5, 250);
+      person.rotation = clamp(Number(pose.rotation) || 0, -1440, 1440);
+      person.opacity = clamp(Number(pose.opacity == null ? 1 : pose.opacity), 0, 1);
+      syncSelectedPersonControls(index);
+      if (syncUi) syncKeyframeControlsFromPerson();
+      markDirty();
+    }
+
+    function lerp(start, end, progress) {
+      return start + (end - start) * progress;
+    }
+
+    function getTimelineDuration() {
+      let maxTime = Number(state.animation.duration) || 10;
+      state.characters.forEach(function(person) {
+        (person.keyframes || []).forEach(function(key) {
+          maxTime = Math.max(maxTime, Number(key.time || 0) + 1);
+        });
+      });
+      return clamp(Math.ceil(maxTime), 3, 60);
+    }
+
+    function getMaxKeyTimeFor(mode, personIndex) {
+      let maxTime = 0;
+      if (mode === 'person') {
+        (state.characters[personIndex].keyframes || []).forEach(function(key) {
+          maxTime = Math.max(maxTime, Number(key.time || 0));
+        });
+      } else {
+        state.characters.forEach(function(person) {
+          if (!isPersonEnabled(person)) return;
+          (person.keyframes || []).forEach(function(key) {
+            maxTime = Math.max(maxTime, Number(key.time || 0));
+          });
+        });
+      }
+      return maxTime;
+    }
+
+    function setKeyframeMessage(message, type) {
+      if (!els.keyframeStatus) return;
+      els.keyframeStatus.textContent = message;
+      els.keyframeStatus.classList.toggle('warn', type === 'warn');
+      els.keyframeStatus.classList.toggle('live', type === 'live');
+      if (els.keyframeLivePill && type === 'live') els.keyframeLivePill.textContent = message.replace('Reproduciendo todos los personajes en simultáneo', 'Animando todos');
+    }
+
+    function setKeyframeLiveLabel(text) {
+      if (els.keyframeLivePill) els.keyframeLivePill.textContent = text;
+    }
+
+    function syncKeyframeControlsFromPerson() {
+      if (!els.keyframeScale) return;
+      const person = state.characters[state.selectedPerson];
+      const scale = Math.round(Number(person.scale) || 42);
+      const rotation = Math.round(Number(person.rotation) || 0);
+      const opacity = Math.round(clamp(Number(person.opacity == null ? 1 : person.opacity), 0, 1) * 100);
+      els.keyframeScale.value = String(scale);
+      els.keyframeRotation.value = String(rotation);
+      els.keyframeOpacity.value = String(opacity);
+      els.keyframeScaleValue.textContent = scale + '%';
+      els.keyframeRotationValue.textContent = rotation + '°';
+      els.keyframeOpacityValue.textContent = opacity + '%';
+      if (els.btnKeyframePlayPerson) els.btnKeyframePlayPerson.textContent = '▶ ' + state.characters[state.selectedPerson].label;
+    }
+
+    function setKeyframeTime(time, preview) {
+      const duration = getTimelineDuration();
+      const nextTime = clamp(Number(time) || 0, 0, duration);
+      state.animation.currentTime = nextTime;
+      state.animation.duration = Math.max(state.animation.duration || 10, duration);
+      if (els.keyframeTimeSlider) {
+        els.keyframeTimeSlider.max = String(duration);
+        els.keyframeTimeSlider.value = String(nextTime);
+      }
+      if (els.keyframeTimeInput) {
+        els.keyframeTimeInput.max = String(duration);
+        els.keyframeTimeInput.value = Number(nextTime).toFixed(2);
+      }
+      if (els.keyframeCurrentTime) els.keyframeCurrentTime.textContent = formatKeyTime(nextTime);
+      if (preview) previewAtCurrentTime();
+      updateTimelineOnly();
+    }
+
+    function previewAtCurrentTime() {
+      if (state.animation.playing) return;
+      const index = state.selectedPerson;
+      if (animatePersonAtTime(index, state.animation.currentTime, true)) {
+        setKeyframeLiveLabel('Viendo ' + state.characters[index].label);
+      }
+    }
+
+    function getPoseDistance(a, b) {
+      if (!a || !b) return Infinity;
+      const dx = (Number(a.x) || 0) - (Number(b.x) || 0);
+      const dy = (Number(a.y) || 0) - (Number(b.y) || 0);
+      const dPos = Math.sqrt(dx * dx + dy * dy);
+      const dScale = Math.abs((Number(a.scale) || 0) - (Number(b.scale) || 0));
+      const dRotation = Math.abs((Number(a.rotation) || 0) - (Number(b.rotation) || 0));
+      const dOpacity = Math.abs((Number(a.opacity == null ? 1 : a.opacity)) - (Number(b.opacity == null ? 1 : b.opacity)));
+      return dPos + (dScale * 1.5) + (dRotation * 0.8) + (dOpacity * 120);
+    }
+
+    function pushRecordedKeyframe(personIndex, elapsedSeconds, force) {
+      const person = state.characters[personIndex];
+      if (!person) return null;
+      const keys = person.keyframes || (person.keyframes = []);
+      const pose = getCurrentPersonState(personIndex);
+      const time = clamp(Number(elapsedSeconds) || 0, 0, 60);
+      const lastKey = keys.length ? keys[keys.length - 1] : null;
+      if (!force && lastKey && getPoseDistance(pose, lastKey) < 2.2) return lastKey;
+
+      let key = keys.find(function(item) { return Math.abs(Number(item.time || 0) - time) < 0.025; });
+      if (!key) {
+        key = { id: createKeyframeId() };
+        keys.push(key);
+      }
+      key.time = Number(time.toFixed(2));
+      key.x = Number(pose.x) || 0;
+      key.y = Number(pose.y) || 0;
+      key.scale = Number(pose.scale) || 42;
+      key.rotation = Number(pose.rotation) || 0;
+      key.opacity = clamp(Number(pose.opacity == null ? 1 : pose.opacity), 0, 1);
+      keys.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      state.animation.selectedKeyId = key.id;
+      state.animation.selectedKeyPerson = personIndex;
+      state.animation.recording.lastPose = {
+        x: key.x,
+        y: key.y,
+        scale: key.scale,
+        rotation: key.rotation,
+        opacity: key.opacity
+      };
+      return key;
+    }
+
+    function updateKeyframeRecordButton() {
+      if (!els.btnKeyframeAdd) return;
+      const recording = Boolean(state.animation.recording && state.animation.recording.active);
+      const person = state.characters[state.animation.recording.personIndex] || state.characters[state.selectedPerson];
+      els.btnKeyframeAdd.classList.toggle('recording', recording);
+      els.btnKeyframeAdd.textContent = recording ? '⏹ Guardando ' + person.label : '⏺ Grabar Key';
+      if (els.btnKeyframeAdd.disabled) els.btnKeyframeAdd.disabled = false;
+    }
+
+    function startKeyframeRecording() {
+      clearEffectPreview(true);
+      const index = state.selectedPerson;
+      const person = state.characters[index];
+      if (!person) return;
+      stopAnimation(false);
+      person.keyframes = [];
+      state.animation.selectedKeyId = null;
+      state.animation.selectedKeyPerson = index;
+      state.animation.currentTime = 0;
+      state.animation.duration = 10;
+      state.animation.recording.active = true;
+      state.animation.recording.personIndex = index;
+      state.animation.recording.startedAt = performance.now();
+      state.animation.recording.lastSampleAt = 0;
+      state.animation.recording.lastUiAt = 0;
+      state.animation.recording.lastPose = null;
+      pushRecordedKeyframe(index, 0, true);
+      updateKeyframeRecordButton();
+      setKeyframeMessage('Grabando ' + person.label + '. Ahora mueve el personaje; yo guardo los keys automáticamente.', 'live');
+      setKeyframeLiveLabel('Grabando ' + person.label);
+      updateKeyframePanel();
+      state.animation.recording.rafId = requestAnimationFrame(recordKeyframeLoop);
+    }
+
+    function stopKeyframeRecording(showMessage) {
+      const recording = state.animation.recording;
+      if (!recording || !recording.active) return false;
+      const index = recording.personIndex;
+      const person = state.characters[index];
+      const elapsed = Math.max(0, (performance.now() - recording.startedAt) / 1000);
+      pushRecordedKeyframe(index, elapsed, true);
+      if (recording.rafId) cancelAnimationFrame(recording.rafId);
+      recording.rafId = 0;
+      recording.active = false;
+      recording.startedAt = 0;
+      recording.lastSampleAt = 0;
+      recording.lastUiAt = 0;
+      recording.lastPose = null;
+      const keyCount = person && person.keyframes ? person.keyframes.length : 0;
+      state.animation.currentTime = Math.min(elapsed, getTimelineDuration());
+      updateKeyframeRecordButton();
+      updateKeyframePanel();
+      if (showMessage !== false) {
+        if (keyCount >= 2) {
+          setKeyframeMessage('Grabación lista: ' + person.label + ' tiene ' + keyCount + ' keys automáticos.', 'ok');
+          setKeyframeLiveLabel('Listo ' + person.label);
+        } else {
+          setKeyframeMessage('Grabación guardada, pero mueve más el personaje para crear más keys.', 'warn');
+          setKeyframeLiveLabel('Faltan movimientos');
+        }
+      }
+      markDirty();
+      return true;
+    }
+
+    function toggleKeyframeRecording() {
+      if (state.animation.recording && state.animation.recording.active) {
+        stopKeyframeRecording(true);
+      } else {
+        startKeyframeRecording();
+      }
+    }
+
+    function recordKeyframeLoop(now) {
+      const recording = state.animation.recording;
+      if (!recording || !recording.active) return;
+      const elapsed = Math.max(0, (now - recording.startedAt) / 1000);
+      recording.personIndex = clamp(recording.personIndex, 0, state.characters.length - 1);
+      state.animation.currentTime = elapsed;
+      state.animation.duration = Math.max(10, Math.ceil(elapsed + 1));
+
+      if (!recording.lastSampleAt || now - recording.lastSampleAt >= recording.sampleMs) {
+        recording.lastSampleAt = now;
+        pushRecordedKeyframe(recording.personIndex, elapsed, false);
+      }
+
+      if (!recording.lastUiAt || now - recording.lastUiAt >= 120) {
+        recording.lastUiAt = now;
+        syncTimeUiOnly();
+        renderKeyframeTimeline();
+        updateKeyframeRecordButton();
+      }
+
+      markDirty();
+      if (elapsed >= recording.maxDuration) {
+        stopKeyframeRecording(true);
+        return;
+      }
+      recording.rafId = requestAnimationFrame(recordKeyframeLoop);
+    }
+
+    function addOrUpdateKeyframe() {
+      clearEffectPreview(true);
+      const index = state.selectedPerson;
+      const person = state.characters[index];
+      const keys = person.keyframes || (person.keyframes = []);
+      const pose = getCurrentPersonState(index);
+      const time = clamp(Number(state.animation.currentTime) || 0, 0, getTimelineDuration());
+      let key = keys.find(function(item) { return Math.abs(Number(item.time || 0) - time) < 0.025; });
+      const isUpdate = Boolean(key);
+      if (!key) {
+        key = { id: createKeyframeId() };
+        keys.push(key);
+      }
+      key.time = Number(time.toFixed(2));
+      key.x = pose.x;
+      key.y = pose.y;
+      key.scale = pose.scale;
+      key.rotation = pose.rotation;
+      key.opacity = pose.opacity;
+      keys.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      state.animation.selectedKeyId = key.id;
+      state.animation.selectedKeyPerson = index;
+      updateKeyframePanel();
+      setKeyframeMessage((isUpdate ? 'Keyframe actualizado correctamente en ' : 'Keyframe agregado correctamente a ') + person.label + ' en ' + formatKeyTime(key.time), 'ok');
+      setKeyframeLiveLabel('Listo ' + person.label);
+      markDirty();
+    }
+
+    function updateSelectedKeyframe() {
+      const selected = getSelectedKeyframe();
+      if (!selected) {
+        setKeyframeMessage('Toca un diamante de la línea de tiempo para seleccionar un keyframe.', 'warn');
+        return;
+      }
+      const pose = getCurrentPersonState(selected.personIndex);
+      selected.key.time = Number(state.animation.currentTime.toFixed(2));
+      selected.key.x = pose.x;
+      selected.key.y = pose.y;
+      selected.key.scale = pose.scale;
+      selected.key.rotation = pose.rotation;
+      selected.key.opacity = pose.opacity;
+      state.characters[selected.personIndex].keyframes.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      updateKeyframePanel();
+      setKeyframeMessage('Keyframe seleccionado actualizado en ' + state.characters[selected.personIndex].label + '.', 'ok');
+    }
+
+    function deleteSelectedKeyframe() {
+      const selected = getSelectedKeyframe();
+      if (!selected) {
+        setKeyframeMessage('Primero toca un diamante para borrarlo.', 'warn');
+        return;
+      }
+      const person = state.characters[selected.personIndex];
+      person.keyframes = person.keyframes.filter(function(key) { return key.id !== selected.key.id; });
+      state.animation.selectedKeyId = null;
+      updateKeyframePanel();
+      setKeyframeMessage('Keyframe eliminado de ' + person.label + '.', 'ok');
+      markDirty();
+    }
+
+    function getSelectedKeyframe() {
+      const keyId = state.animation.selectedKeyId;
+      if (!keyId) return null;
+      for (let personIndex = 0; personIndex < state.characters.length; personIndex += 1) {
+        const key = (state.characters[personIndex].keyframes || []).find(function(item) { return item.id === keyId; });
+        if (key) return { personIndex: personIndex, key: key };
+      }
+      return null;
+    }
+
+    function selectKeyframe(personIndex, keyId, shouldApply) {
+      state.animation.selectedKeyId = keyId;
+      state.animation.selectedKeyPerson = personIndex;
+      const key = (state.characters[personIndex].keyframes || []).find(function(item) { return item.id === keyId; });
+      if (key) {
+        state.selectedPerson = personIndex;
+        bringPersonToFront(personIndex);
+        setKeyframeTime(Number(key.time || 0), false);
+        if (shouldApply !== false) applyPersonState(personIndex, key, true);
+        renderPersonButtons();
+        renderPersonEditor();
+        updateKeyframePanel();
+        setKeyframeMessage('Key seleccionado: ' + state.characters[personIndex].label + ' en ' + formatKeyTime(key.time) + '. Puedes moverlo o borrarlo.', 'ok');
+      }
+    }
+
+    function animatePersonAtTime(personIndex, currentTime, syncUi) {
+      const person = state.characters[personIndex];
+      if (!person) return false;
+      const keys = (person.keyframes || []).slice().sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      if (!keys.length) return false;
+      if (keys.length === 1 || currentTime <= Number(keys[0].time || 0)) {
+        applyPersonState(personIndex, keys[0], syncUi && personIndex === state.selectedPerson);
+        return true;
+      }
+      const lastKey = keys[keys.length - 1];
+      if (currentTime >= Number(lastKey.time || 0)) {
+        applyPersonState(personIndex, lastKey, syncUi && personIndex === state.selectedPerson);
+        return true;
+      }
+      let prev = keys[0];
+      let next = lastKey;
+      for (let i = 0; i < keys.length - 1; i += 1) {
+        if (currentTime >= Number(keys[i].time || 0) && currentTime <= Number(keys[i + 1].time || 0)) {
+          prev = keys[i];
+          next = keys[i + 1];
+          break;
+        }
+      }
+      const startTime = Number(prev.time || 0);
+      const endTime = Number(next.time || 0);
+      const duration = Math.max(0.0001, endTime - startTime);
+      const progress = clamp((currentTime - startTime) / duration, 0, 1);
+      const pose = {
+        x: lerp(Number(prev.x) || 0, Number(next.x) || 0, progress),
+        y: lerp(Number(prev.y) || 0, Number(next.y) || 0, progress),
+        scale: lerp(Number(prev.scale) || 42, Number(next.scale) || 42, progress),
+        rotation: lerp(Number(prev.rotation) || 0, Number(next.rotation) || 0, progress),
+        opacity: lerp(Number(prev.opacity == null ? 1 : prev.opacity), Number(next.opacity == null ? 1 : next.opacity), progress)
+      };
+      applyPersonState(personIndex, pose, syncUi && personIndex === state.selectedPerson);
+      return true;
+    }
+
+    function stopAnimation(showMessage) {
+      if (state.animation.rafId) cancelAnimationFrame(state.animation.rafId);
+      state.animation.rafId = 0;
+      state.animation.playing = false;
+      state.animation.mode = 'none';
+      if (showMessage !== false) {
+        setKeyframeMessage('Animación detenida.', 'warn');
+        setKeyframeLiveLabel('Detenido');
+      }
+      updateKeyframePanel();
+      markDirty();
+    }
+
+    function playSelectedPerson(silent) {
+      const index = state.selectedPerson;
+      const person = state.characters[index];
+      if (!person.keyframes || person.keyframes.length < 2) {
+        setKeyframeMessage('Para animar ' + person.label + ', guarda mínimo 2 keyframes en tiempos diferentes.', 'warn');
+        setKeyframeLiveLabel('Falta key');
+        return;
+      }
+      startAnimation('person', index, silent);
+    }
+
+    function playAllCharacters() {
+      const animated = state.characters.filter(function(person) { return isPersonEnabled(person) && (person.keyframes || []).length >= 2; });
+      if (!animated.length) {
+        setKeyframeMessage('Guarda mínimo 2 keyframes en un personaje para reproducir todos.', 'warn');
+        setKeyframeLiveLabel('Faltan keys');
+        return;
+      }
+      startAnimation('all', state.selectedPerson, false);
+    }
+
+    function startAnimation(mode, personIndex, silent) {
+      if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
+      clearEffectPreview(true);
+      stopAnimation(false);
+      const maxTime = getMaxKeyTimeFor(mode, personIndex);
+      if (maxTime <= 0) {
+        setKeyframeMessage('Los keyframes están en 0.00s. Mueve el tiempo a 1s o más y guarda otro key.', 'warn');
+        return;
+      }
+      state.animation.playing = true;
+      state.animation.mode = mode;
+      state.animation.playPerson = personIndex;
+      state.animation.startedAt = performance.now();
+      state.animation.duration = Math.max(getTimelineDuration(), maxTime);
+      state.animation.currentTime = 0;
+      state.animation.lastUiAt = 0;
+      const label = mode === 'all'
+        ? 'Reproduciendo todos los personajes en simultáneo'
+        : 'Animando ' + state.characters[personIndex].label;
+      if (!silent) setKeyframeMessage(label, 'live');
+      setKeyframeLiveLabel(mode === 'all' ? 'Animando todos' : 'Animando ' + state.characters[personIndex].label);
+      state.animation.rafId = requestAnimationFrame(animationFrameLoop);
+    }
+
+    function animationFrameLoop(now) {
+      if (!state.animation.playing) return;
+      const elapsed = (now - state.animation.startedAt) / 1000;
+      const maxTime = getMaxKeyTimeFor(state.animation.mode, state.animation.playPerson);
+      const currentTime = Math.min(elapsed, maxTime);
+      state.animation.currentTime = currentTime;
+
+      if (state.animation.mode === 'person') {
+        animatePersonAtTime(state.animation.playPerson, currentTime, true);
+      } else {
+        state.characters.forEach(function(person, index) {
+          if ((person.keyframes || []).length >= 1) animatePersonAtTime(index, currentTime, index === state.selectedPerson);
+        });
+      }
+
+      if (now - state.animation.lastUiAt > 90) {
+        state.animation.lastUiAt = now;
+        syncTimeUiOnly();
+        updateTimelineOnly();
+        if (state.animation.mode === 'person') {
+          setKeyframeLiveLabel('Animando ' + state.characters[state.animation.playPerson].label);
+        } else {
+          setKeyframeLiveLabel('Animando todos');
+        }
+      }
+
+      markDirty();
+      if (elapsed >= maxTime) {
+        stopAnimation(false);
+        setKeyframeMessage('Animación terminada.', 'ok');
+        setKeyframeLiveLabel('Terminado');
+        setKeyframeTime(maxTime, false);
+        return;
+      }
+      state.animation.rafId = requestAnimationFrame(animationFrameLoop);
+    }
+
+    function syncTimeUiOnly() {
+      const currentTime = state.animation.currentTime;
+      const duration = getTimelineDuration();
+      if (els.keyframeTimeSlider) {
+        els.keyframeTimeSlider.max = String(duration);
+        els.keyframeTimeSlider.value = String(currentTime);
+      }
+      if (els.keyframeTimeInput) els.keyframeTimeInput.value = Number(currentTime).toFixed(2);
+      if (els.keyframeCurrentTime) els.keyframeCurrentTime.textContent = formatKeyTime(currentTime);
+    }
+
+    function updateTimelineOnly() {
+      if (!els.keyframeTimeline) return;
+      const duration = getTimelineDuration();
+      const playheadLeft = clamp((state.animation.currentTime / duration) * 100, 0, 100) + '%';
+      els.keyframeTimeline.querySelectorAll('.keyframe-playhead').forEach(function(playhead) {
+        playhead.style.left = playheadLeft;
+      });
+    }
+
+    function updateKeyframePanel() {
+      if (!els.keyframePanel) return;
+      const selectedPerson = state.characters[state.selectedPerson];
+      const duration = getTimelineDuration();
+      if (els.keyframeTimeSlider) els.keyframeTimeSlider.max = String(duration);
+      if (els.keyframeTimeInput) els.keyframeTimeInput.max = String(duration);
+      syncTimeUiOnly();
+      syncKeyframeControlsFromPerson();
+      renderKeyframePersonButtons();
+      renderKeyframeTimeline();
+      const selected = getSelectedKeyframe();
+      if (els.keyframeSelectedInfo) {
+        els.keyframeSelectedInfo.textContent = selected
+          ? 'Key seleccionado: ' + state.characters[selected.personIndex].label + ' en ' + formatKeyTime(selected.key.time) + '. Arrastra el diamante para moverlo.'
+          : 'Toca un diamante para seleccionarlo o borrarlo.';
+      }
+      updateKeyframeRecordButton();
+      if (state.animation.recording && state.animation.recording.active) {
+        setKeyframeLiveLabel('Grabando ' + state.characters[state.animation.recording.personIndex].label);
+      } else if (!state.animation.playing) {
+        setKeyframeLiveLabel('Listo ' + selectedPerson.label);
+      }
+    }
+
+    function renderKeyframePersonButtons() {
+      if (!els.keyframePersonButtons) return;
+      els.keyframePersonButtons.innerHTML = '';
+      state.characters.forEach(function(person, index) {
+        if (!isPersonEnabled(person)) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'key-person-btn';
+        btn.classList.toggle('active', index === state.selectedPerson);
+        btn.classList.toggle('has-keys', (person.keyframes || []).length > 0);
+        btn.textContent = person.label;
+        btn.setAttribute('data-keys', (person.keyframes || []).length + ' keys');
+        btn.addEventListener('click', function() {
+          state.animation.selectedKeyId = null;
+          selectPerson(index, true);
+          setKeyframeMessage('Preparando ' + person.label + '. Toca “Grabar Key” y mueve el personaje.', 'ok');
+        });
+        els.keyframePersonButtons.appendChild(btn);
+      });
+    }
+
+    function renderKeyframeTimeline() {
+      if (!els.keyframeTimeline) return;
+      const duration = getTimelineDuration();
+      const playheadLeft = clamp((state.animation.currentTime / duration) * 100, 0, 100);
+      const index = state.selectedPerson;
+      const person = state.characters[index];
+      const keys = (person.keyframes || []).slice().sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      els.keyframeTimeline.innerHTML = '';
+
+      const row = document.createElement('div');
+      row.className = 'keyframe-row';
+
+      const label = document.createElement('div');
+      label.className = 'keyframe-row-label';
+      label.textContent = person.label;
+
+      const track = document.createElement('div');
+      track.className = 'keyframe-track';
+      track.setAttribute('data-person-index', String(index));
+
+      const playhead = document.createElement('div');
+      playhead.className = 'keyframe-playhead';
+      playhead.style.left = playheadLeft + '%';
+      track.appendChild(playhead);
+
+      if (!keys.length) {
+        const empty = document.createElement('div');
+        empty.className = 'keyframe-empty-row';
+        empty.textContent = 'sin keys en ' + person.label;
+        track.appendChild(empty);
+      }
+
+      keys.forEach(function(key) {
+        const marker = document.createElement('button');
+        marker.type = 'button';
+        marker.className = 'keyframe-marker';
+        marker.classList.toggle('selected', key.id === state.animation.selectedKeyId);
+        marker.style.left = clamp((Number(key.time || 0) / duration) * 100, 0, 100) + '%';
+        marker.title = person.label + ' - ' + formatKeyTime(key.time);
+        marker.setAttribute('aria-label', 'Keyframe ' + person.label + ' en ' + formatKeyTime(key.time));
+        marker.dataset.personIndex = String(index);
+        marker.dataset.keyId = key.id;
+        marker.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (state.animation.ignoreNextTrackClick) return;
+          selectKeyframe(index, key.id, true);
+        });
+        marker.addEventListener('pointerdown', beginDragKeyframe);
+        track.appendChild(marker);
+      });
+
+      track.addEventListener('click', function(event) {
+        if (state.animation.ignoreNextTrackClick) {
+          event.preventDefault();
+          event.stopPropagation();
+          state.animation.ignoreNextTrackClick = false;
+          return;
+        }
+        if (event.target.closest && event.target.closest('.keyframe-marker')) return;
+        const rect = track.getBoundingClientRect();
+        const ratio = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+        state.animation.selectedKeyId = null;
+        setKeyframeTime(ratio * duration, true);
+        setKeyframeMessage('Tiempo colocado en ' + formatKeyTime(state.animation.currentTime) + ' para ' + person.label + '.', 'ok');
+      });
+
+      row.appendChild(label);
+      row.appendChild(track);
+      els.keyframeTimeline.appendChild(row);
+
+      const totalAll = state.characters.reduce(function(total, item) { return total + (isPersonEnabled(item) ? ((item.keyframes || []).length) : 0); }, 0);
+      if (els.keyframeTimelineSummary) {
+        els.keyframeTimelineSummary.innerHTML = person.label + ': ' + keys.length + ' keys <span class="keyframe-active-note">· total: ' + totalAll + '</span>';
+      }
+    }
+
+    function beginDragKeyframe(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const marker = event.currentTarget;
+      const personIndex = Number(marker.dataset.personIndex);
+      const keyId = marker.dataset.keyId;
+      const track = marker.closest('.keyframe-track');
+      const rect = track.getBoundingClientRect();
+      state.animation.dragKey = {
+        personIndex: personIndex,
+        keyId: keyId,
+        track: track,
+        marker: marker,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        moved: false,
+        rectLeft: rect.left,
+        rectWidth: Math.max(1, rect.width),
+        duration: getTimelineDuration()
+      };
+      const key = (state.characters[personIndex].keyframes || []).find(function(item) { return item.id === keyId; });
+      state.animation.selectedKeyId = keyId;
+      state.animation.selectedKeyPerson = personIndex;
+      state.selectedPerson = personIndex;
+      if (key) {
+        bringPersonToFront(personIndex);
+        setKeyframeTime(Number(key.time || 0), false);
+        applyPersonState(personIndex, key, true);
+      }
+      marker.classList.add('selected');
+      renderPersonButtons();
+      renderPersonEditor();
+      if (els.keyframeSelectedInfo && key) {
+        els.keyframeSelectedInfo.textContent = 'Key seleccionado: ' + state.characters[personIndex].label + ' en ' + formatKeyTime(key.time) + '. Arrástralo donde quieras.';
+      }
+      try { marker.setPointerCapture(event.pointerId); } catch (error) {}
+      document.addEventListener('pointermove', moveDraggedKeyframe, { passive: false });
+      document.addEventListener('pointerup', endDraggedKeyframe, { once: true });
+      document.addEventListener('pointercancel', endDraggedKeyframe, { once: true });
+    }
+
+    function moveDraggedKeyframe(event) {
+      if (!state.animation.dragKey) return;
+      event.preventDefault();
+      const drag = state.animation.dragKey;
+      if (drag.pointerId != null && event.pointerId != null && drag.pointerId !== event.pointerId) return;
+      if (Math.abs(event.clientX - drag.startX) > 2) drag.moved = true;
+      const ratio = clamp((event.clientX - drag.rectLeft) / drag.rectWidth, 0, 1);
+      const time = Number((ratio * drag.duration).toFixed(2));
+      const person = state.characters[drag.personIndex];
+      const key = (person.keyframes || []).find(function(item) { return item.id === drag.keyId; });
+      if (!key) return;
+      key.time = time;
+      state.animation.currentTime = time;
+      if (drag.marker) drag.marker.style.left = (ratio * 100) + '%';
+      updateTimelineOnly();
+      syncTimeUiOnly();
+      if (els.keyframeSelectedInfo) {
+        els.keyframeSelectedInfo.textContent = 'Key seleccionado: ' + person.label + ' en ' + formatKeyTime(time) + '. Suelta para guardar.';
+      }
+      setKeyframeMessage('Moviendo key de ' + person.label + ' a ' + formatKeyTime(time) + '.', 'live');
+    }
+
+    function endDraggedKeyframe(event) {
+      if (!state.animation.dragKey) return;
+      const drag = state.animation.dragKey;
+      const person = state.characters[drag.personIndex];
+      const key = (person.keyframes || []).find(function(item) { return item.id === drag.keyId; });
+      if (key) {
+        key.time = Number((Number(key.time || 0)).toFixed(2));
+        person.keyframes.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      }
+      if (drag.moved) {
+        state.animation.ignoreNextTrackClick = true;
+        setTimeout(function() { state.animation.ignoreNextTrackClick = false; }, 180);
+      }
+      state.animation.dragKey = null;
+      document.removeEventListener('pointermove', moveDraggedKeyframe);
+      updateKeyframePanel();
+      if (key) setKeyframeMessage('Key de ' + person.label + ' movido a ' + formatKeyTime(key.time) + '.', 'ok');
+      markDirty();
+    }
+
+    function initKeyframePanel() {
+      if (!els.keyframePanel) return;
+      els.btnKeyframeAdd.addEventListener('click', toggleKeyframeRecording);
+      if (els.btnKeyframeUpdate) els.btnKeyframeUpdate.addEventListener('click', updateSelectedKeyframe);
+      els.btnKeyframeDelete.addEventListener('click', deleteSelectedKeyframe);
+      if (els.btnKeyframeDeleteEffect) els.btnKeyframeDeleteEffect.addEventListener('click', deleteInsertedEffect);
+      els.btnKeyframePlayPerson.addEventListener('click', function() { playSelectedPerson(false); });
+      els.btnKeyframePlayAll.addEventListener('click', playAllCharacters);
+      els.btnKeyframeStop.addEventListener('click', function() { if (!stopKeyframeRecording(true)) stopAnimation(true); });
+      els.keyframeTimeSlider.addEventListener('input', function() { setKeyframeTime(Number(els.keyframeTimeSlider.value), true); });
+      els.keyframeTimeInput.addEventListener('change', function() { setKeyframeTime(Number(els.keyframeTimeInput.value), true); });
+      els.keyframeScale.addEventListener('input', function() {
+        const person = state.characters[state.selectedPerson];
+        person.scale = Number(els.keyframeScale.value);
+        syncKeyframeControlsFromPerson();
+        syncSelectedPersonControls(state.selectedPerson);
+        markDirty();
+      });
+      els.keyframeRotation.addEventListener('input', function() {
+        const person = state.characters[state.selectedPerson];
+        person.rotation = Number(els.keyframeRotation.value);
+        syncKeyframeControlsFromPerson();
+        markDirty();
+      });
+      els.keyframeOpacity.addEventListener('input', function() {
+        const person = state.characters[state.selectedPerson];
+        person.opacity = Number(els.keyframeOpacity.value) / 100;
+        syncKeyframeControlsFromPerson();
+        markDirty();
+      });
+      updateKeyframePanel();
     }
 
     function getUserMediaCompat(constraints) {
@@ -2226,10 +4866,15 @@
     function chooseMimeType() {
       if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
       const types = [
-        'video/mp4;codecs="avc1.42E01E,mp4a.40.2"',
-        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+        'video/mp4;codecs="avc1.64002A,mp4a.40.2"',
+        'video/mp4;codecs="avc1.4D402A,mp4a.40.2"',
+        'video/mp4;codecs="avc1.42E02A,mp4a.40.2"',
         'video/mp4;codecs="avc1.64001F,mp4a.40.2"',
-        'video/mp4;codecs=h264,aac',
+        'video/mp4;codecs="avc1.4D401F,mp4a.40.2"',
+        'video/mp4;codecs="avc1.42E01F,mp4a.40.2"',
+        'video/mp4;codecs=avc1.64002A,mp4a.40.2',
+        'video/mp4;codecs=avc1.4D402A,mp4a.40.2',
+        'video/mp4;codecs=avc1.42E02A,mp4a.40.2',
         'video/mp4',
         'video/webm;codecs=vp9,opus',
         'video/webm;codecs=vp8,opus',
@@ -2254,7 +4899,90 @@
       return Boolean(state.images.filmBg && state.characters.some(function(person) { return person.visible && person.closed; }));
     }
 
-    function startRecording() {
+    function cleanupRecordingAudioGraph() {
+      if (state.recording.musicRecordConnected && state.music.gainNode && state.recording.musicRecordDestination) {
+        try { state.music.gainNode.disconnect(state.recording.musicRecordDestination); } catch (error) {}
+      }
+      if (state.recording.micRecordSource) {
+        try { state.recording.micRecordSource.disconnect(); } catch (error) {}
+      }
+      state.recording.audioStream = null;
+      state.recording.audioCtx = null;
+      state.recording.micRecordSource = null;
+      state.recording.musicRecordDestination = null;
+      state.recording.musicRecordConnected = false;
+    }
+
+    function isMusicAvailableForRecording() {
+      const audio = els.musicAudio;
+      return Boolean(audio && state.music.url);
+    }
+
+    function isMusicSoundingForStatus() {
+      const audio = els.musicAudio;
+      return Boolean(audio && state.music.url && !audio.paused && !audio.ended && Number(audio.currentTime) >= 0);
+    }
+
+    async function createRecordingAudioStream() {
+      const hasMic = Boolean(state.audio.active && state.audio.stream && state.audio.stream.getAudioTracks().length);
+      const hasMusic = isMusicAvailableForRecording();
+      if (!hasMic && !hasMusic) return null;
+
+      const AudioContextClass = getAudioContextClass();
+      if (!AudioContextClass) {
+        return hasMic ? new MediaStream(state.audio.stream.getAudioTracks()) : null;
+      }
+
+      let mixCtx = null;
+      if (hasMusic) {
+        mixCtx = ensureMusicAudioGraph();
+      }
+      if (!mixCtx) {
+        mixCtx = state.audio.ctx && state.audio.ctx.state !== 'closed' ? state.audio.ctx : new AudioContextClass();
+      }
+      if (mixCtx.state === 'suspended') {
+        try { await mixCtx.resume(); } catch (error) {}
+      }
+
+      const destination = mixCtx.createMediaStreamDestination();
+
+      if (hasMusic && state.music.gainNode) {
+        try {
+          state.music.gainNode.connect(destination);
+          state.recording.musicRecordConnected = true;
+        } catch (error) {
+          console.warn('No se pudo conectar la música a la grabación:', error);
+        }
+      }
+
+      if (hasMic) {
+        try {
+          const micSource = mixCtx.createMediaStreamSource(state.audio.stream);
+          micSource.connect(destination);
+          state.recording.micRecordSource = micSource;
+        } catch (error) {
+          console.warn('No se pudo conectar el micrófono a la mezcla:', error);
+        }
+      }
+
+      state.recording.audioCtx = mixCtx;
+      state.recording.musicRecordDestination = destination;
+      state.recording.audioStream = destination.stream;
+
+      if (destination.stream.getAudioTracks().length) return destination.stream;
+      cleanupRecordingAudioGraph();
+      return hasMic ? new MediaStream(state.audio.stream.getAudioTracks()) : null;
+    }
+
+    function getRecordingAudioLabel() {
+      const parts = [];
+      if (state.audio.active && state.audio.stream) parts.push('micrófono');
+      if (isMusicSoundingForStatus()) parts.push('música');
+      if (!parts.length && isMusicAvailableForRecording()) parts.push('música lista');
+      return parts.length ? ' con ' + parts.join(' y ') + '.' : ' sin audio.';
+    }
+
+    async function startRecording() {
       if (!canRecordCurrentMode()) {
         alert(state.mode === 'green'
           ? 'Primero sube las dos imágenes: boca cerrada y boca abierta.'
@@ -2277,11 +5005,13 @@
       const mainVideoTrack = videoTracks[0];
       if (mainVideoTrack && mainVideoTrack.applyConstraints) {
         try {
-          mainVideoTrack.applyConstraints({ frameRate: { ideal: RECORDING_FPS, min: 61 } }).catch(function() {});
+          mainVideoTrack.applyConstraints({ frameRate: { ideal: RECORDING_FPS, max: RECORDING_FPS } }).catch(function() {});
         } catch (error) {}
       }
+      cleanupRecordingAudioGraph();
       const tracks = [].concat(videoTracks);
-      if (state.audio.active && state.audio.stream) tracks.push.apply(tracks, state.audio.stream.getAudioTracks());
+      const mixedAudioStream = await createRecordingAudioStream();
+      if (mixedAudioStream) tracks.push.apply(tracks, mixedAudioStream.getAudioTracks());
       state.recording.stream = new MediaStream(tracks);
 
       const mimeType = chooseMimeType();
@@ -2294,6 +5024,7 @@
         console.error(error);
         alert('No se pudo iniciar la grabación con este navegador.');
         if (state.recording.stream) state.recording.stream.getTracks().forEach(function(track) { track.stop(); });
+        cleanupRecordingAudioGraph();
         return;
       }
 
@@ -2302,10 +5033,10 @@
       const label = describeFormat(state.recording.mimeType);
 
       if (state.recording.extension === 'mp4') {
-        els.formatStatus.textContent = '✅ Grabando en MP4 H.264/AAC a ' + RECORDING_FPS + ' FPS.';
+        els.formatStatus.textContent = '✅ MP4 H.264/AAC compatible con Premiere Pro a ' + RECORDING_FPS + ' FPS.';
         els.formatStatus.className = 'small ok-text';
       } else {
-        els.formatStatus.textContent = '⚠️ Este navegador no permite MP4 H.264 aquí. Se grabará en ' + label + ' para que funcione. Objetivo: ' + RECORDING_FPS + ' FPS.';
+        els.formatStatus.textContent = '⚠️ Este navegador no permite MP4 H.264/AAC compatible con Premiere. Se grabará en ' + label + '.';
         els.formatStatus.className = 'small warn-text';
       }
 
@@ -2318,6 +5049,7 @@
           state.recording.stream.getVideoTracks().forEach(function(track) { track.stop(); });
           state.recording.stream = null;
         }
+        cleanupRecordingAudioGraph();
 
         if (!state.recording.chunks.length) {
           els.recordStatus.textContent = 'No se generó video. Graba unos segundos más.';
@@ -2342,7 +5074,7 @@
       els.btnStop.disabled = false;
       els.recordingBadge.style.display = 'block';
       requestDraw(true);
-      els.recordStatus.textContent = 'Grabando a ' + RECORDING_FPS + ' FPS en ' + label + (state.audio.active ? ' con audio.' : ' sin audio.');
+      els.recordStatus.textContent = 'Grabando a ' + RECORDING_FPS + ' FPS en ' + label + getRecordingAudioLabel();
     }
 
     function stopRecording() {
@@ -2362,7 +5094,7 @@
         return;
       }
       const a = document.createElement('a');
-      const prefix = state.mode === 'film' ? 'cortometraje_6_personajes_' : 'avatar_fondo_verde_';
+      const prefix = state.mode === 'film' ? 'cortometraje_10_personajes_' : 'avatar_fondo_verde_';
       const formatName = state.recording.extension === 'mp4' ? 'mp4_h264' : 'webm';
       a.href = state.recording.url;
       a.download = prefix + formatName + '_' + RECORDING_FPS + 'fps_' + Date.now() + '.' + state.recording.extension;
@@ -2494,11 +5226,90 @@
       state.pinch.startDistance = 0;
     }
 
+    function isBackgroundEditUnlocked() {
+      return Boolean(state.mode === 'film' && !state.filmBgLocked && state.images.filmBg);
+    }
+
+    function setBackgroundPosition(x, y) {
+      const transform = ensureFilmBackgroundTransform();
+      transform.x = x;
+      transform.y = y;
+      clampFilmBackgroundTransform(state.images.filmBg);
+      markDirty();
+    }
+
+    function setBackgroundScale(nextScale, anchorPoint) {
+      const transform = ensureFilmBackgroundTransform();
+      const previousScale = clamp(Number(transform.scale) || 1, 1, 5);
+      const targetScale = clamp(Number(nextScale) || 1, 1, 5);
+      if (Math.abs(targetScale - previousScale) < 0.001) return;
+      const anchor = anchorPoint || { x: canvas.width / 2, y: canvas.height / 2 };
+      const ratio = targetScale / previousScale;
+      transform.x = anchor.x - (anchor.x - transform.x) * ratio;
+      transform.y = anchor.y - (anchor.y - transform.y) * ratio;
+      transform.scale = targetScale;
+      clampFilmBackgroundTransform(state.images.filmBg);
+      markDirty();
+    }
+
+    function beginBackgroundDrag(pointerId, point) {
+      const transform = ensureFilmBackgroundTransform();
+      state.bgDrag.active = true;
+      state.bgDrag.pointerId = pointerId;
+      state.bgDrag.offsetX = point.x - transform.x;
+      state.bgDrag.offsetY = point.y - transform.y;
+    }
+
+    function beginBackgroundPinch() {
+      const points = getPointerPoints();
+      if (points.length < 2 || !isBackgroundEditUnlocked()) return;
+      const a = points[0];
+      const b = points[1];
+      const center = centerBetween(a, b);
+      const transform = ensureFilmBackgroundTransform();
+      state.bgDrag.active = false;
+      state.bgPinch.active = true;
+      state.bgPinch.startDistance = Math.max(12, distanceBetween(a, b));
+      state.bgPinch.startScale = transform.scale;
+      state.bgPinch.startX = transform.x;
+      state.bgPinch.startY = transform.y;
+      state.bgPinch.startCenterX = center.x;
+      state.bgPinch.startCenterY = center.y;
+    }
+
+    function updateBackgroundPinch() {
+      if (!state.bgPinch.active || !isBackgroundEditUnlocked()) return;
+      const points = getPointerPoints();
+      if (points.length < 2) return;
+      const a = points[0];
+      const b = points[1];
+      const center = centerBetween(a, b);
+      const distance = Math.max(12, distanceBetween(a, b));
+      const transform = ensureFilmBackgroundTransform();
+      transform.x = state.bgPinch.startX + (center.x - state.bgPinch.startCenterX);
+      transform.y = state.bgPinch.startY + (center.y - state.bgPinch.startCenterY);
+      transform.scale = clamp(state.bgPinch.startScale * (distance / state.bgPinch.startDistance), 1, 5);
+      clampFilmBackgroundTransform(state.images.filmBg);
+      markDirty();
+    }
+
+    function endBackgroundPinch() {
+      state.bgPinch.active = false;
+      state.bgPinch.startDistance = 0;
+    }
+
     canvasWrap.addEventListener('pointerdown', function(event) {
       if (state.mode !== 'film') return;
       const point = pointToCanvas(event);
       state.pointers.set(event.pointerId, point);
       try { canvasWrap.setPointerCapture(event.pointerId); } catch (error) {}
+
+      if (isBackgroundEditUnlocked()) {
+        if (state.pointers.size >= 2) beginBackgroundPinch();
+        else beginBackgroundDrag(event.pointerId, point);
+        event.preventDefault();
+        return;
+      }
 
       if (state.pointers.size >= 2) {
         beginPinchZoom();
@@ -2523,6 +5334,18 @@
       const point = pointToCanvas(event);
       state.pointers.set(event.pointerId, point);
 
+      if (state.bgPinch.active) {
+        updateBackgroundPinch();
+        event.preventDefault();
+        return;
+      }
+
+      if (state.bgDrag.active && event.pointerId === state.bgDrag.pointerId && isBackgroundEditUnlocked()) {
+        setBackgroundPosition(point.x - state.bgDrag.offsetX, point.y - state.bgDrag.offsetY);
+        event.preventDefault();
+        return;
+      }
+
       if (state.pinch.active) {
         updatePinchZoom();
         event.preventDefault();
@@ -2543,6 +5366,11 @@
     function removePointer(event) {
       if (state.pointers.has(event.pointerId)) state.pointers.delete(event.pointerId);
       try { canvasWrap.releasePointerCapture(event.pointerId); } catch (error) {}
+      if (state.bgPinch.active && state.pointers.size < 2) endBackgroundPinch();
+      if (state.bgDrag.pointerId === event.pointerId) {
+        state.bgDrag.active = false;
+        state.bgDrag.pointerId = null;
+      }
       if (state.pinch.active && state.pointers.size < 2) endPinchZoom();
       if (state.drag.pointerId === event.pointerId) stopDrag();
     }
@@ -2557,6 +5385,15 @@
       if (state.mode !== 'film') return;
 
       const point = pointToCanvas(event);
+
+      if (isBackgroundEditUnlocked()) {
+        const currentScale = ensureFilmBackgroundTransform().scale;
+        const factor = event.deltaY < 0 ? 1.08 : 0.92;
+        setBackgroundScale(currentScale * factor, point);
+        event.preventDefault();
+        return;
+      }
+
       let index = personAtPoint(point);
       const zoomOnCharacter = index >= 0;
       if (index < 0) index = state.selectedPerson;
@@ -2605,9 +5442,20 @@
         if (state.mode !== 'film') setMode('film');
         const detail = detailButton.getAttribute('data-film-detail');
         setFilmDetail(detail);
-        if (detail === 'background' && els.filmBg) {
-          els.filmBg.click();
-        }
+        return;
+      }
+
+      const effectButton = event.target.closest('[data-character-effect]');
+      if (effectButton) {
+        event.preventDefault();
+        applyCharacterEffect(effectButton.getAttribute('data-character-effect'));
+        return;
+      }
+
+      const insertEffectButton = event.target.closest('#btn-effect-insert');
+      if (insertEffectButton) {
+        event.preventDefault();
+        insertPreviewedEffect();
         return;
       }
 
@@ -2624,6 +5472,33 @@
     els.greenClosed.addEventListener('change', function() { loadGeneralImageFromInput(els.greenClosed, els.statusGreenClosed, 'greenClosed'); });
     els.greenOpen.addEventListener('change', function() { loadGeneralImageFromInput(els.greenOpen, els.statusGreenOpen, 'greenOpen'); });
     els.filmBg.addEventListener('change', function() { loadGeneralImageFromInput(els.filmBg, els.statusFilmBg, 'filmBg'); });
+    function handleBackgroundLockButton(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+      }
+      toggleBackgroundLock();
+    }
+
+    if (els.btnBgLock) {
+      // En computadora el botón está encima del visor. Capturamos el evento antes
+      // de que el canvas intente seleccionar/mover personajes o fondo.
+      if (window.PointerEvent) {
+        els.btnBgLock.addEventListener('pointerdown', handleBackgroundLockButton, { capture: true });
+        els.btnBgLock.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }, { capture: true });
+      } else {
+        els.btnBgLock.addEventListener('mousedown', handleBackgroundLockButton, { capture: true });
+        els.btnBgLock.addEventListener('touchstart', handleBackgroundLockButton, { capture: true, passive: false });
+        els.btnBgLock.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }, { capture: true });
+      }
+    }
 
     els.btnMic.addEventListener('click', toggleMicrophone);
     els.btnCalibrate.addEventListener('click', calibrateSilence);
@@ -2636,9 +5511,14 @@
     els.talkSpeed.addEventListener('input', updateSliderLabels);
 
     updateSliderLabels();
+    updateBackgroundLockUi();
+    initMusicPlayer();
+    initKeyframePanel();
     renderPersonButtons();
     renderPersonEditor();
+    renderEffectsPanel();
     renderAudioSwitches();
+    updateKeyframePanel();
     setMode('film');
     updateRecordStatus();
     requestDraw(true);
