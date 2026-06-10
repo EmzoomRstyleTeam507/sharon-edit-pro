@@ -2262,7 +2262,7 @@
             <button id="btn-keyframe-play-person" class="btn-key-play" type="button">▶ P1</button>
             <button id="btn-keyframe-play-all" class="btn-key-all" type="button">▶ Todos</button>
             <button id="btn-keyframe-stop" class="btn-key-stop" type="button">⏹ Detener</button>
-            <button id="btn-keyframe-delete-effect" class="btn-key-effect-delete" type="button">🧹 Borrar efecto</button>
+            <button id="btn-keyframe-delete-effect" class="btn-key-effect-delete" type="button">🧹 Borrar efecto/key</button>
           </div>
 
           <div id="keyframe-status" class="keyframe-status">Listo. Selecciona P1 y guarda tu primer keyframe.</div>
@@ -3417,13 +3417,24 @@
       const index = state.selectedPerson;
       const person = state.characters[index];
       if (!person || !person.keyframes || !person.keyframes.length) {
-        setKeyframeMessage('No hay efectos insertados para borrar en ' + (person ? person.label : 'este personaje') + '.', 'warn');
+        setKeyframeMessage('No hay efecto ni key para borrar en ' + (person ? person.label : 'este personaje') + '.', 'warn');
         return;
       }
       if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
       stopAnimation(false);
       clearEffectPreview(true);
       const selected = getSelectedKeyframe();
+
+      if (selected && selected.personIndex === index && !selected.key.effectId) {
+        const removedTime = selected.key.time;
+        person.keyframes = person.keyframes.filter(function(key) { return key.id !== selected.key.id; });
+        state.animation.selectedKeyId = null;
+        updateKeyframePanel();
+        setKeyframeMessage('Key grabada borrada de ' + person.label + ' en ' + formatKeyTime(removedTime) + '.', 'ok');
+        markDirty();
+        return;
+      }
+
       let effectId = selected && selected.personIndex === index && selected.key.effectId ? selected.key.effectId : '';
       if (!effectId) {
         const groups = {};
@@ -3440,7 +3451,7 @@
         effectId = (currentGroup || latestGroup || {}).id || '';
       }
       if (!effectId) {
-        setKeyframeMessage('No encontré un efecto insertado para borrar. Los keyframes manuales se borran con “Borrar Key”.', 'warn');
+        setKeyframeMessage('Toca un diamante para borrar una key grabada, o coloca el tiempo sobre un efecto para borrarlo.', 'warn');
         return;
       }
       let removedName = '';
