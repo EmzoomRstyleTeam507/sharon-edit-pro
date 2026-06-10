@@ -775,6 +775,25 @@
       padding: 0 2px;
     }
 
+
+    .upload-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .upload-toggle-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #831843;
+      font-weight: 950;
+      font-size: .86rem;
+      white-space: nowrap;
+    }
+
     .clean-row,
     #film-controls .clean-row,
     .mic-control-card .row {
@@ -2402,6 +2421,7 @@
         opacity: 1,
         keyframes: [],
         visible: true,
+        showUploadedImages: true,
         audioLinked: index === 0,
         dragging: false
       };
@@ -2843,6 +2863,7 @@
       ensureSelectedPersonIsEnabled();
       const index = state.selectedPerson;
       const person = state.characters[index];
+      const showPersonOnScreen = person.visible !== false;
       const closedStatus = person.closedName ? escapeHtml(person.closedName) : '';
       const openStatus = person.openName ? escapeHtml(person.openName) : '';
       els.personEditor.innerHTML = `
@@ -2859,7 +2880,16 @@
         </div>
 
         <div class="inner-option-card upload-option-card">
-          <div class="mini-card-title">🖼️ Imágenes del personaje</div>
+          <div class="upload-title-row">
+            <div class="mini-card-title">🖼️ Imágenes del personaje</div>
+            <label class="upload-toggle-wrap">
+              <span>Mostrar personaje</span>
+              <span class="switch">
+                <input id="person-images-toggle" type="checkbox" ${showPersonOnScreen ? 'checked' : ''} aria-label="Mostrar ${person.label} en pantalla" />
+                <span class="slider"></span>
+              </span>
+            </label>
+          </div>
           <div class="row clean-row">
             <label>${person.label} boca cerrada</label>
             <div class="file-card ${person.closedName ? 'has-loaded-image' : ''}">
@@ -2916,8 +2946,18 @@
       const yValue = document.getElementById('person-y-value');
       const scaleValue = document.getElementById('person-scale-value');
 
-      closedInput.addEventListener('change', function() { loadPersonImage(index, 'closed', closedInput, closedStatusEl); });
-      openInput.addEventListener('change', function() { loadPersonImage(index, 'open', openInput, openStatusEl); });
+      const imagesToggle = document.getElementById('person-images-toggle');
+      if (imagesToggle) {
+        imagesToggle.addEventListener('change', function() {
+          person.visible = imagesToggle.checked;
+          renderPersonEditor();
+          renderAudioSwitches();
+          updateRecordStatus();
+          markDirty();
+        });
+      }
+      if (closedInput) closedInput.addEventListener('change', function() { loadPersonImage(index, 'closed', closedInput, closedStatusEl); });
+      if (openInput) openInput.addEventListener('change', function() { loadPersonImage(index, 'open', openInput, openStatusEl); });
       els.personEditor.querySelectorAll('[data-person-image-delete]').forEach(function(button) {
         button.addEventListener('click', function(event) {
           event.preventDefault();
@@ -3427,10 +3467,12 @@
 
       if (selected && selected.personIndex === index && !selected.key.effectId) {
         const removedTime = selected.key.time;
-        person.keyframes = person.keyframes.filter(function(key) { return key.id !== selected.key.id; });
+        const before = person.keyframes.length;
+        person.keyframes = person.keyframes.filter(function(key) { return Boolean(key.effectId); });
+        const removed = before - person.keyframes.length;
         state.animation.selectedKeyId = null;
         updateKeyframePanel();
-        setKeyframeMessage('Key grabada borrada de ' + person.label + ' en ' + formatKeyTime(removedTime) + '.', 'ok');
+        setKeyframeMessage('Key grabada completa borrada de ' + person.label + ' (' + removed + ' keys). Inicio: ' + formatKeyTime(removedTime) + '.', 'ok');
         markDirty();
         return;
       }
@@ -3451,6 +3493,15 @@
         effectId = (currentGroup || latestGroup || {}).id || '';
       }
       if (!effectId) {
+        const normalKeys = person.keyframes.filter(function(key) { return !key.effectId; });
+        if (normalKeys.length) {
+          person.keyframes = person.keyframes.filter(function(key) { return Boolean(key.effectId); });
+          state.animation.selectedKeyId = null;
+          updateKeyframePanel();
+          setKeyframeMessage('Key grabada completa borrada de ' + person.label + ' (' + normalKeys.length + ' keys).', 'ok');
+          markDirty();
+          return;
+        }
         setKeyframeMessage('Toca un diamante para borrar una key grabada, o coloca el tiempo sobre un efecto para borrarlo.', 'warn');
         return;
       }
