@@ -1637,15 +1637,40 @@
       transform: scale(1.04);
     }
 
+    .keyframe-track-wrap {
+      position: relative;
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      border-radius: 999px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(236,72,153,.45) transparent;
+    }
+
+    .keyframe-track-wrap::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .keyframe-track-wrap::-webkit-scrollbar-thumb {
+      background: rgba(236,72,153,.36);
+      border-radius: 999px;
+    }
+
     .keyframe-track {
       position: relative;
       height: 38px;
+      min-width: 100%;
       border-radius: 999px;
       background: linear-gradient(90deg, #f1f5f9, #fff7fb);
       border: 1px solid rgba(148,163,184,.24);
       overflow: hidden;
       cursor: pointer;
       touch-action: none;
+      box-sizing: border-box;
+    }
+
+    .keyframe-track.selecting {
+      cursor: crosshair;
     }
 
     .keyframe-track::before {
@@ -1666,6 +1691,23 @@
       opacity: .55;
       pointer-events: none;
       z-index: 2;
+    }
+
+    .keyframe-selection-range {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 999px;
+      background: rgba(236,72,153,.16);
+      border: 1px dashed rgba(236,72,153,.58);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+      pointer-events: none;
+      z-index: 1;
+      display: none;
+    }
+
+    .keyframe-selection-range.active {
+      display: block;
     }
 
     .keyframe-marker {
@@ -2530,8 +2572,14 @@
         spaceTapTimer: 0,
         spaceTapDelay: 260,
         selectedKeyId: null,
+        selectedKeyIds: [],
+        selectedRange: null,
         selectedKeyPerson: 0,
         dragKey: null,
+        selectionBox: null,
+        timelineZoom: 1,
+        timelineScrollLeft: 0,
+        syncingTimelineScroll: false,
         ignoreNextTrackClick: false,
         lastUiAt: 0,
         recording: {
@@ -4368,9 +4416,28 @@ function addOrUpdateKeyframe() {
     }
 
     function deleteSelectedKeyframe() {
+      const selectedIds = (state.animation.selectedKeyIds || []).slice();
+      if (selectedIds.length) {
+        const personIndex = Number(state.animation.selectedKeyPerson);
+        const person = state.characters[personIndex];
+        if (!person) {
+          clearMultiKeySelection(false);
+          updateKeyframePanel();
+          return;
+        }
+        const before = (person.keyframes || []).length;
+        person.keyframes = (person.keyframes || []).filter(function(key) { return !selectedIds.includes(key.id); });
+        const removed = before - person.keyframes.length;
+        clearMultiKeySelection(false);
+        updateKeyframePanel();
+        setKeyframeMessage((removed > 1 ? removed + ' keys eliminados de ' : 'Keyframe eliminado de ') + person.label + '.', 'ok');
+        markDirty();
+        return;
+      }
+
       const selected = getSelectedKeyframe();
       if (!selected) {
-        setKeyframeMessage('Primero toca un diamante para borrarlo.', 'warn');
+        setKeyframeMessage('Primero toca un diamante o sombrea keys para borrarlas.', 'warn');
         return;
       }
       const person = state.characters[selected.personIndex];
@@ -4391,9 +4458,93 @@ function addOrUpdateKeyframe() {
       return null;
     }
 
-    function selectKeyframe(personIndex, keyId, shouldApply) {
-      state.animation.selectedKeyId = keyId;
+    function clearMultiKeySelection(keepPrimary) {
+      state.animation.selectedKeyIds = [];
+      state.animation.selectedRange = null;
+      if (!keepPrimary) state.animation.selectedKeyId = null;
+    }
+
+    function getSelectedKeyIdsSet() {
+      const ids = (state.animation.selectedKeyIds || []).slice();
+      if (state.animation.selectedKeyId && !ids.includes(state.animation.selectedKeyId)) ids.push(state.animation.selectedKeyId);
+      return new Set(ids);
+    }
+
+    function isKeySelected(keyId) {
+      if (!keyId) return false;
+      return getSelectedKeyIdsSet().has(keyId);
+    }
+
+    function syncSelectedRangeFromIds() {
+      const ids = (state.animation.selectedKeyIds || []).slice();
+      const personIndex = Number(state.animation.selectedKeyPerson);
+      if (!ids.length || !state.characters[personIndex]) {
+        state.animation.selectedRange = null;
+        return;
+      }
+      const times = (state.characters[personIndex].keyframes || [])
+        .filter(function(key) { return ids.includes(key.id); })
+        .map(function(key) { return Number(key.time || 0); });
+      if (!times.length) {
+        state.animation.selectedRange = null;
+        return;
+      }
+      state.animation.selectedRange = {
+        personIndex: personIndex,
+        startTime: Math.min.apply(null, times),
+        endTime: Math.max.apply(null, times)
+      };
+    }
+
+    function setMultiKeySelection(personIndex, keyIds, primaryKeyId) {
+      const ids = Array.from(new Set((keyIds || []).filter(Boolean)));
       state.animation.selectedKeyPerson = personIndex;
+      state.animation.selectedKeyIds = ids;
+      state.animation.selectedKeyId = primaryKeyId || ids[0] || null;
+      syncSelectedRangeFromIds();
+    }
+
+    function getTimelinePixelWidth(duration) {
+      return Math.max(320, Math.round(duration * 64 * clamp(Number(state.animation.timelineZoom) || 1, 0.6, 8)));
+    }
+
+    function syncTimelineScroll(sourceWrap) {
+      const timeline = els.keyframeTimeline;
+      if (!timeline || state.animation.syncingTimelineScroll) return;
+      state.animation.syncingTimelineScroll = true;
+      const nextLeft = sourceWrap ? sourceWrap.scrollLeft : (Number(state.animation.timelineScrollLeft) || 0);
+      state.animation.timelineScrollLeft = nextLeft;
+      timeline.querySelectorAll('.keyframe-track-wrap').forEach(function(wrap) {
+        if (sourceWrap && wrap === sourceWrap) return;
+        wrap.scrollLeft = nextLeft;
+      });
+      requestAnimationFrame(function() {
+        state.animation.syncingTimelineScroll = false;
+      });
+    }
+
+    function applyTimelineZoom(nextZoom, anchorClientX, wrap) {
+      const clampedZoom = clamp(Number(nextZoom) || 1, 0.6, 8);
+      const prevZoom = clamp(Number(state.animation.timelineZoom) || 1, 0.6, 8);
+      if (Math.abs(clampedZoom - prevZoom) < 0.001) return;
+      const duration = getTimelineDuration();
+      const oldWidth = getTimelinePixelWidth(duration);
+      const oldScrollLeft = wrap ? wrap.scrollLeft : Number(state.animation.timelineScrollLeft) || 0;
+      let focusRatio = 0.5;
+      if (wrap && anchorClientX != null) {
+        const rect = wrap.getBoundingClientRect();
+        focusRatio = clamp((anchorClientX - rect.left) / Math.max(1, rect.width), 0, 1);
+      }
+      const focusPixel = oldScrollLeft + (wrap ? wrap.clientWidth * focusRatio : 0);
+      const focusTime = duration ? focusPixel / Math.max(1, oldWidth) : 0;
+      state.animation.timelineZoom = clampedZoom;
+      const newWidth = getTimelinePixelWidth(duration);
+      state.animation.timelineScrollLeft = Math.max(0, (focusTime * newWidth) - ((wrap ? wrap.clientWidth : 0) * focusRatio));
+      updateKeyframePanel();
+    }
+
+    function selectKeyframe(personIndex, keyId, shouldApply) {
+      setMultiKeySelection(personIndex, [keyId], keyId);
       const key = (state.characters[personIndex].keyframes || []).find(function(item) { return item.id === keyId; });
       if (key) {
         state.selectedPerson = personIndex;
@@ -4581,9 +4732,12 @@ function stopAnimation(showMessage) {
       renderKeyframeTimeline();
       const selected = getSelectedKeyframe();
       if (els.keyframeSelectedInfo) {
-        els.keyframeSelectedInfo.textContent = selected
-          ? 'Key seleccionado: ' + state.characters[selected.personIndex].label + ' en ' + formatKeyTime(selected.key.time) + '. Arrastra el diamante para moverlo.'
-          : 'Toca un diamante para seleccionarlo o borrarlo.';
+        const multiCount = (state.animation.selectedKeyIds || []).length;
+        els.keyframeSelectedInfo.textContent = multiCount > 1
+          ? multiCount + ' keys sombreados en ' + state.characters[state.animation.selectedKeyPerson].label + '. Arrastra uno para moverlos juntos o bórralos todos.'
+          : (selected
+              ? 'Key seleccionado: ' + state.characters[selected.personIndex].label + ' en ' + formatKeyTime(selected.key.time) + '. Arrastra el diamante para moverlo.'
+              : 'Arrastra sobre la línea para sombrear varias keys, muévelas o bórralas. Rueda del mouse: zoom.');
       }
       updateKeyframeRecordButton();
       if (state.animation.recording && state.animation.recording.active) {
@@ -4636,6 +4790,7 @@ function stopAnimation(showMessage) {
       const duration = getTimelineDuration();
       const playheadLeft = clamp((state.animation.currentTime / duration) * 100, 0, 100);
       const activeIndexes = getActiveTimelinePersonIndexes();
+      const trackWidth = getTimelinePixelWidth(duration);
       els.keyframeTimeline.innerHTML = '';
 
       activeIndexes.forEach(function(index) {
@@ -4651,14 +4806,39 @@ function stopAnimation(showMessage) {
         label.textContent = person.label;
         label.title = 'Línea de tiempo de ' + person.label;
 
+        const wrap = document.createElement('div');
+        wrap.className = 'keyframe-track-wrap';
+        wrap.setAttribute('data-person-index', String(index));
+        wrap.scrollLeft = Number(state.animation.timelineScrollLeft) || 0;
+        wrap.addEventListener('scroll', function() { syncTimelineScroll(wrap); }, { passive: true });
+        wrap.addEventListener('wheel', function(event) {
+          if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+          event.preventDefault();
+          const nextZoom = (Number(state.animation.timelineZoom) || 1) * (event.deltaY < 0 ? 1.12 : 0.89);
+          applyTimelineZoom(nextZoom, event.clientX, wrap);
+        }, { passive: false });
+
         const track = document.createElement('div');
         track.className = 'keyframe-track';
         track.setAttribute('data-person-index', String(index));
+        track.style.width = trackWidth + 'px';
 
         const playhead = document.createElement('div');
         playhead.className = 'keyframe-playhead';
         playhead.style.left = playheadLeft + '%';
         track.appendChild(playhead);
+
+        const hasRange = state.animation.selectedRange && Number(state.animation.selectedRange.personIndex) === index;
+        const selectionRange = document.createElement('div');
+        selectionRange.className = 'keyframe-selection-range';
+        if (hasRange) {
+          const left = clamp((Number(state.animation.selectedRange.startTime || 0) / duration) * 100, 0, 100);
+          const right = clamp((Number(state.animation.selectedRange.endTime || 0) / duration) * 100, 0, 100);
+          selectionRange.classList.add('active');
+          selectionRange.style.left = left + '%';
+          selectionRange.style.width = Math.max(0, right - left) + '%';
+        }
+        track.appendChild(selectionRange);
 
         if (!keys.length) {
           const empty = document.createElement('div');
@@ -4671,7 +4851,7 @@ function stopAnimation(showMessage) {
           const marker = document.createElement('button');
           marker.type = 'button';
           marker.className = 'keyframe-marker';
-          marker.classList.toggle('selected', key.id === state.animation.selectedKeyId);
+          marker.classList.toggle('selected', isKeySelected(key.id));
           marker.style.left = clamp((Number(key.time || 0) / duration) * 100, 0, 100) + '%';
           marker.title = person.label + ' - ' + formatKeyTime(key.time);
           marker.setAttribute('aria-label', 'Keyframe ' + person.label + ' en ' + formatKeyTime(key.time));
@@ -4687,35 +4867,15 @@ function stopAnimation(showMessage) {
           track.appendChild(marker);
         });
 
-        track.addEventListener('click', function(event) {
-          if (state.animation.ignoreNextTrackClick) {
-            event.preventDefault();
-            event.stopPropagation();
-            state.animation.ignoreNextTrackClick = false;
-            return;
-          }
-          if (event.target.closest && event.target.closest('.keyframe-marker')) return;
-          const rect = track.getBoundingClientRect();
-          const ratio = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
-          const nextTime = ratio * duration;
-          state.animation.selectedKeyId = null;
-          state.animation.selectedKeyPerson = index;
-          if (state.selectedPerson !== index) {
-            state.selectedPerson = index;
-            bringPersonToFront(index);
-            renderPersonButtons();
-            renderPersonEditor();
-            renderEffectsPanel();
-          }
-          setKeyframeTime(nextTime, true);
-          updateKeyframePanel();
-          setKeyframeMessage('Inicio elegido para ' + person.label + ': ' + formatKeyTime(state.animation.currentTime) + '. Puedes grabar o reproducir desde ahí.', 'ok');
-        });
+        track.addEventListener('pointerdown', beginTrackSelection);
 
+        wrap.appendChild(track);
         row.appendChild(label);
-        row.appendChild(track);
+        row.appendChild(wrap);
         els.keyframeTimeline.appendChild(row);
       });
+
+      syncTimelineScroll();
 
       const selectedPerson = state.characters[state.selectedPerson];
       const selectedKeys = selectedPerson ? ((selectedPerson.keyframes || []).length) : 0;
@@ -4723,11 +4883,108 @@ function stopAnimation(showMessage) {
         return total + ((state.characters[personIndex].keyframes || []).length);
       }, 0);
       if (els.keyframeTimelineSummary && selectedPerson) {
-        els.keyframeTimelineSummary.innerHTML = selectedPerson.label + ': ' + selectedKeys + ' keys <span class="keyframe-active-note">· líneas activas: ' + activeIndexes.length + ' · total: ' + totalActive + '</span>';
+        const shaded = (state.animation.selectedKeyIds || []).length;
+        els.keyframeTimelineSummary.innerHTML = selectedPerson.label + ': ' + selectedKeys + ' keys <span class="keyframe-active-note">· líneas activas: ' + activeIndexes.length + ' · total: ' + totalActive + ' · zoom: ' + Math.round((Number(state.animation.timelineZoom) || 1) * 100) + '%'+ (shaded ? ' · sombreados: ' + shaded : '') + '</span>';
       }
     }
 
-    
+    function beginTrackSelection(event) {
+      if (event.target.closest && event.target.closest('.keyframe-marker')) return;
+      const track = event.currentTarget;
+      const wrap = track.parentElement;
+      const personIndex = Number(track.dataset.personIndex);
+      const rect = track.getBoundingClientRect();
+      const ratio = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+      const selectionEl = track.querySelector('.keyframe-selection-range');
+      track.classList.add('selecting');
+      state.animation.selectionBox = {
+        personIndex: personIndex,
+        pointerId: event.pointerId,
+        track: track,
+        wrap: wrap,
+        selectionEl: selectionEl,
+        rectLeft: rect.left,
+        rectWidth: Math.max(1, rect.width),
+        startRatio: ratio,
+        currentRatio: ratio,
+        startX: event.clientX,
+        moved: false
+      };
+      try { track.setPointerCapture(event.pointerId); } catch (error) {}
+      document.addEventListener('pointermove', moveTrackSelection, { passive: false });
+      document.addEventListener('pointerup', endTrackSelection, { once: true });
+      document.addEventListener('pointercancel', endTrackSelection, { once: true });
+    }
+
+    function moveTrackSelection(event) {
+      const selection = state.animation.selectionBox;
+      if (!selection) return;
+      if (selection.pointerId != null && event.pointerId != null && selection.pointerId !== event.pointerId) return;
+      event.preventDefault();
+      selection.currentRatio = clamp((event.clientX - selection.rectLeft) / selection.rectWidth, 0, 1);
+      if (Math.abs(event.clientX - selection.startX) > 6) selection.moved = true;
+      if (!selection.moved) return;
+      const left = Math.min(selection.startRatio, selection.currentRatio) * 100;
+      const width = Math.abs(selection.currentRatio - selection.startRatio) * 100;
+      if (selection.selectionEl) {
+        selection.selectionEl.classList.add('active');
+        selection.selectionEl.style.left = left + '%';
+        selection.selectionEl.style.width = width + '%';
+      }
+    }
+
+    function endTrackSelection(event) {
+      const selection = state.animation.selectionBox;
+      if (!selection) return;
+      if (selection.track) selection.track.classList.remove('selecting');
+      document.removeEventListener('pointermove', moveTrackSelection);
+      state.animation.selectionBox = null;
+
+      const personIndex = Number(selection.personIndex);
+      const person = state.characters[personIndex];
+      if (!person) {
+        updateKeyframePanel();
+        return;
+      }
+
+      if (!selection.moved) {
+        const nextTime = selection.startRatio * getTimelineDuration();
+        clearMultiKeySelection(false);
+        state.animation.selectedKeyPerson = personIndex;
+        if (state.selectedPerson !== personIndex) {
+          state.selectedPerson = personIndex;
+          bringPersonToFront(personIndex);
+          renderPersonButtons();
+          renderPersonEditor();
+          renderEffectsPanel();
+        }
+        setKeyframeTime(nextTime, true);
+        updateKeyframePanel();
+        setKeyframeMessage('Inicio elegido para ' + person.label + ': ' + formatKeyTime(state.animation.currentTime) + '. Puedes grabar o reproducir desde ahí.', 'ok');
+        return;
+      }
+
+      const duration = getTimelineDuration();
+      const minTime = Math.min(selection.startRatio, selection.currentRatio) * duration;
+      const maxTime = Math.max(selection.startRatio, selection.currentRatio) * duration;
+      const selectedIds = (person.keyframes || [])
+        .filter(function(key) { return Number(key.time || 0) >= minTime && Number(key.time || 0) <= maxTime; })
+        .map(function(key) { return key.id; });
+      state.selectedPerson = personIndex;
+      bringPersonToFront(personIndex);
+      if (selectedIds.length) {
+        setMultiKeySelection(personIndex, selectedIds, selectedIds[0]);
+        setKeyframeTime(minTime, false);
+        updateKeyframePanel();
+        setKeyframeMessage(selectedIds.length + ' keys sombreados en ' + person.label + '. Arrastra uno para moverlos juntos.', 'ok');
+      } else {
+        clearMultiKeySelection(false);
+        updateKeyframePanel();
+        setKeyframeMessage('No se encontró ninguna key dentro del sombreado de ' + person.label + '.', 'warn');
+      }
+      markDirty();
+    }
+
 function beginDragKeyframe(event) {
       event.preventDefault();
       event.stopPropagation();
@@ -4736,9 +4993,28 @@ function beginDragKeyframe(event) {
       const keyId = marker.dataset.keyId;
       const track = marker.closest('.keyframe-track');
       const rect = track.getBoundingClientRect();
+      const duration = getTimelineDuration();
+      const person = state.characters[personIndex];
+      const selectedIds = (state.animation.selectedKeyIds || []).filter(function(id) {
+        return (person.keyframes || []).some(function(key) { return key.id === id; });
+      });
+      const useGroup = selectedIds.length > 1 && selectedIds.includes(keyId);
+      const dragIds = useGroup ? selectedIds.slice() : [keyId];
+      const originalTimes = {};
+      dragIds.forEach(function(id) {
+        const found = (person.keyframes || []).find(function(item) { return item.id === id; });
+        if (found) originalTimes[id] = Number(found.time || 0);
+      });
+      const originalValues = Object.values(originalTimes);
+
       state.animation.dragKey = {
         personIndex: personIndex,
         keyId: keyId,
+        keyIds: dragIds,
+        groupMode: useGroup,
+        originalTimes: originalTimes,
+        minOriginalTime: originalValues.length ? Math.min.apply(null, originalValues) : 0,
+        maxOriginalTime: originalValues.length ? Math.max.apply(null, originalValues) : 0,
         track: track,
         marker: marker,
         pointerId: event.pointerId,
@@ -4746,22 +5022,31 @@ function beginDragKeyframe(event) {
         moved: false,
         rectLeft: rect.left,
         rectWidth: Math.max(1, rect.width),
-        duration: getTimelineDuration()
+        duration: duration
       };
-      const key = (state.characters[personIndex].keyframes || []).find(function(item) { return item.id === keyId; });
-      state.animation.selectedKeyId = keyId;
-      state.animation.selectedKeyPerson = personIndex;
+
+      const key = (person.keyframes || []).find(function(item) { return item.id === keyId; });
+      if (useGroup) {
+        setMultiKeySelection(personIndex, dragIds, keyId);
+      } else {
+        setMultiKeySelection(personIndex, [keyId], keyId);
+      }
       state.selectedPerson = personIndex;
+      state.animation.selectedKeyPerson = personIndex;
+
       if (key) {
         bringPersonToFront(personIndex);
         setKeyframeTime(Number(key.time || 0), false);
         applyPersonState(personIndex, key, true);
       }
+
       marker.classList.add('selected');
       renderPersonButtons();
       renderPersonEditor();
       if (els.keyframeSelectedInfo && key) {
-        els.keyframeSelectedInfo.textContent = 'Key seleccionado: ' + state.characters[personIndex].label + ' en ' + formatKeyTime(key.time) + '. Arrástralo donde quieras.';
+        els.keyframeSelectedInfo.textContent = useGroup
+          ? dragIds.length + ' keys sombreados en ' + state.characters[personIndex].label + '. Arrástralos donde quieras.'
+          : 'Key seleccionado: ' + state.characters[personIndex].label + ' en ' + formatKeyTime(key.time) + '. Arrástralo donde quieras.';
       }
       try { marker.setPointerCapture(event.pointerId); } catch (error) {}
       document.addEventListener('pointermove', moveDraggedKeyframe, { passive: false });
@@ -4780,26 +5065,67 @@ function beginDragKeyframe(event) {
       const person = state.characters[drag.personIndex];
       const key = (person.keyframes || []).find(function(item) { return item.id === drag.keyId; });
       if (!key) return;
-      key.time = time;
-      state.animation.currentTime = time;
-      if (drag.marker) drag.marker.style.left = (ratio * 100) + '%';
+
+      if (drag.groupMode) {
+        const anchorStart = Number(drag.originalTimes[drag.keyId] || 0);
+        let delta = time - anchorStart;
+        delta = clamp(delta, -drag.minOriginalTime, drag.duration - drag.maxOriginalTime);
+        drag.keyIds.forEach(function(id) {
+          const movingKey = (person.keyframes || []).find(function(item) { return item.id === id; });
+          if (!movingKey) return;
+          movingKey.time = Number((Number(drag.originalTimes[id] || 0) + delta).toFixed(2));
+          const markerEl = drag.track.querySelector('.keyframe-marker[data-key-id="' + id + '"]');
+          if (markerEl) markerEl.style.left = clamp((Number(movingKey.time || 0) / drag.duration) * 100, 0, 100) + '%';
+        });
+        state.animation.currentTime = Number((anchorStart + delta).toFixed(2));
+        syncSelectedRangeFromIds();
+        const selectionEl = drag.track.querySelector('.keyframe-selection-range');
+        if (selectionEl && state.animation.selectedRange) {
+          const left = clamp((Number(state.animation.selectedRange.startTime || 0) / drag.duration) * 100, 0, 100);
+          const right = clamp((Number(state.animation.selectedRange.endTime || 0) / drag.duration) * 100, 0, 100);
+          selectionEl.classList.add('active');
+          selectionEl.style.left = left + '%';
+          selectionEl.style.width = Math.max(0, right - left) + '%';
+        }
+        if (els.keyframeSelectedInfo) {
+          els.keyframeSelectedInfo.textContent = drag.keyIds.length + ' keys sombreados en ' + person.label + '. Suelta para guardar en ' + formatKeyTime(state.animation.currentTime) + '.';
+        }
+        setKeyframeMessage('Moviendo ' + drag.keyIds.length + ' keys de ' + person.label + ' juntos.', 'live');
+      } else {
+        key.time = time;
+        state.animation.currentTime = time;
+        if (drag.marker) drag.marker.style.left = (ratio * 100) + '%';
+        syncSelectedRangeFromIds();
+        if (els.keyframeSelectedInfo) {
+          els.keyframeSelectedInfo.textContent = 'Key seleccionado: ' + person.label + ' en ' + formatKeyTime(time) + '. Suelta para guardar.';
+        }
+        setKeyframeMessage('Moviendo key de ' + person.label + ' a ' + formatKeyTime(time) + '.', 'live');
+      }
       updateTimelineOnly();
       syncTimeUiOnly();
-      if (els.keyframeSelectedInfo) {
-        els.keyframeSelectedInfo.textContent = 'Key seleccionado: ' + person.label + ' en ' + formatKeyTime(time) + '. Suelta para guardar.';
-      }
-      setKeyframeMessage('Moviendo key de ' + person.label + ' a ' + formatKeyTime(time) + '.', 'live');
     }
 
     function endDraggedKeyframe(event) {
       if (!state.animation.dragKey) return;
       const drag = state.animation.dragKey;
+      if (drag.pointerId != null && event && event.pointerId != null && drag.pointerId !== event.pointerId) return;
       const person = state.characters[drag.personIndex];
-      const key = (person.keyframes || []).find(function(item) { return item.id === drag.keyId; });
-      if (key) {
-        key.time = Number((Number(key.time || 0)).toFixed(2));
-        person.keyframes.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      let message = '';
+
+      drag.keyIds.forEach(function(id) {
+        const movingKey = (person.keyframes || []).find(function(item) { return item.id === id; });
+        if (movingKey) movingKey.time = Number((Number(movingKey.time || 0)).toFixed(2));
+      });
+      person.keyframes.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      syncSelectedRangeFromIds();
+
+      if (drag.groupMode) {
+        message = drag.keyIds.length + ' keys movidos en ' + person.label + '.';
+      } else {
+        const key = (person.keyframes || []).find(function(item) { return item.id === drag.keyId; });
+        if (key) message = 'Key de ' + person.label + ' movido a ' + formatKeyTime(key.time) + '.';
       }
+
       if (drag.moved) {
         state.animation.ignoreNextTrackClick = true;
         setTimeout(function() { state.animation.ignoreNextTrackClick = false; }, 180);
@@ -4807,7 +5133,7 @@ function beginDragKeyframe(event) {
       state.animation.dragKey = null;
       document.removeEventListener('pointermove', moveDraggedKeyframe);
       updateKeyframePanel();
-      if (key) setKeyframeMessage('Key de ' + person.label + ' movido a ' + formatKeyTime(key.time) + '.', 'ok');
+      if (message) setKeyframeMessage(message, 'ok');
       markDirty();
     }
 
@@ -4883,7 +5209,8 @@ function beginDragKeyframe(event) {
       els.btnKeyframePlayPerson.addEventListener('click', function() { playSelectedPerson(false); });
       els.btnKeyframePlayAll.addEventListener('click', playAllCharacters);
       els.btnKeyframeStop.addEventListener('click', function() { if (!stopKeyframeRecording(true)) stopAnimation(true); });
-      els.btnKeyframeDelete.title = 'Supr/Del: borrar el keyframe seleccionado';
+      els.btnKeyframeDelete.title = 'Supr/Del: borrar la key seleccionada o todas las sombreadas';
+      if (els.keyframeTimeline) els.keyframeTimeline.title = 'Arrastra sobre una línea para sombrear varias keys. Rueda del mouse para hacer zoom.';
       els.btnKeyframePlayPerson.title = 'Space: reproducir personaje seleccionado desde el tiempo elegido';
       els.btnKeyframePlayAll.title = 'Doble Space: reproducir todos desde el tiempo elegido';
       els.btnKeyframeStop.title = 'Space mientras reproduce: detener';
