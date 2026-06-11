@@ -1632,6 +1632,11 @@
       text-align: center;
     }
 
+    .keyframe-row.is-selected .keyframe-row-label {
+      color: #ec4899;
+      transform: scale(1.04);
+    }
+
     .keyframe-track {
       position: relative;
       height: 38px;
@@ -1716,8 +1721,7 @@
     .keyframe-transform-grid,
     .keyframe-status,
     .keyframe-selected-info,
-    .keyframe-timeline-title,
-    .keyframe-actions .btn-key-delete {
+    .keyframe-timeline-title {
       display: none !important;
     }
 
@@ -1729,7 +1733,7 @@
     }
 
     .keyframe-actions {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       margin-top: 0;
     }
 
@@ -1760,9 +1764,10 @@
       .key-person-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .keyframe-time-line { grid-template-columns: 1fr; }
       .keyframe-transform-grid { grid-template-columns: 1fr; }
-      .keyframe-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .keyframe-actions .btn-key-all { grid-column: span 2; }
-      .keyframe-actions .btn-key-stop { grid-column: span 2; }
+      .keyframe-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .keyframe-actions .btn-key-all { grid-column: span 1; }
+      .keyframe-actions .btn-key-stop { grid-column: span 1; }
+      .keyframe-actions .btn-key-delete-effect { grid-column: span 3; }
       .keyframe-row { grid-template-columns: 38px 1fr; }
     }
 
@@ -2296,7 +2301,7 @@
 
         <div class="keyframe-timeline-card">
           <div class="keyframe-timeline-title">
-            <span>💠 Línea activa</span>
+            <span>💠 Líneas activas</span>
             <span id="keyframe-timeline-summary">P1: 0 keys</span>
           </div>
           <div id="keyframe-timeline"></div>
@@ -2520,7 +2525,10 @@
         currentTime: 0,
         duration: 10,
         startedAt: 0,
+        playStartTime: 0,
         rafId: 0,
+        spaceTapTimer: 0,
+        spaceTapDelay: 260,
         selectedKeyId: null,
         selectedKeyPerson: 0,
         dragKey: null,
@@ -2530,6 +2538,7 @@
           active: false,
           personIndex: 0,
           startedAt: 0,
+          startTime: 0,
           rafId: 0,
           lastSampleAt: 0,
           lastUiAt: 0,
@@ -4171,8 +4180,8 @@
       const keys = person.keyframes || (person.keyframes = []);
       const pose = getCurrentPersonState(personIndex);
       const time = clamp(Number(elapsedSeconds) || 0, 0, 60);
-      const lastKey = keys.length ? keys[keys.length - 1] : null;
-      if (!force && lastKey && getPoseDistance(pose, lastKey) < 2.2) return lastKey;
+      const lastPose = state.animation.recording ? state.animation.recording.lastPose : null;
+      if (!force && lastPose && getPoseDistance(pose, lastPose) < 2.2) return null;
 
       let key = keys.find(function(item) { return Math.abs(Number(item.time || 0) - time) < 0.025; });
       if (!key) {
@@ -4198,7 +4207,8 @@
       return key;
     }
 
-    function updateKeyframeRecordButton() {
+    
+function updateKeyframeRecordButton() {
       if (!els.btnKeyframeAdd) return;
       const recording = Boolean(state.animation.recording && state.animation.recording.active);
       const person = state.characters[state.animation.recording.personIndex] || state.characters[state.selectedPerson];
@@ -4213,46 +4223,54 @@
       const person = state.characters[index];
       if (!person) return;
       stopAnimation(false);
-      person.keyframes = [];
+      const startTime = clamp(Number(state.animation.currentTime) || 0, 0, getTimelineDuration());
+      person.keyframes = (person.keyframes || []).filter(function(key) {
+        return Number(key.time || 0) < startTime - 0.025;
+      });
       state.animation.selectedKeyId = null;
       state.animation.selectedKeyPerson = index;
-      state.animation.currentTime = 0;
-      state.animation.duration = 10;
+      state.animation.currentTime = startTime;
+      state.animation.duration = Math.max(state.animation.duration || 10, Math.ceil(startTime + 1), getTimelineDuration());
       state.animation.recording.active = true;
       state.animation.recording.personIndex = index;
       state.animation.recording.startedAt = performance.now();
+      state.animation.recording.startTime = startTime;
       state.animation.recording.lastSampleAt = 0;
       state.animation.recording.lastUiAt = 0;
       state.animation.recording.lastPose = null;
-      pushRecordedKeyframe(index, 0, true);
+      pushRecordedKeyframe(index, startTime, true);
       updateKeyframeRecordButton();
-      setKeyframeMessage('Grabando ' + person.label + '. Ahora mueve el personaje; yo guardo los keys automáticamente.', 'live');
+      setKeyframeMessage('Grabando ' + person.label + ' desde ' + formatKeyTime(startTime) + '. Mueve el personaje; los keys empiezan desde ahí.', 'live');
       setKeyframeLiveLabel('Grabando ' + person.label);
       updateKeyframePanel();
       state.animation.recording.rafId = requestAnimationFrame(recordKeyframeLoop);
     }
 
-    function stopKeyframeRecording(showMessage) {
+    
+function stopKeyframeRecording(showMessage) {
       const recording = state.animation.recording;
       if (!recording || !recording.active) return false;
       const index = recording.personIndex;
       const person = state.characters[index];
+      const startTime = clamp(Number(recording.startTime) || 0, 0, 60);
       const elapsed = Math.max(0, (performance.now() - recording.startedAt) / 1000);
-      pushRecordedKeyframe(index, elapsed, true);
+      const finalTime = clamp(startTime + elapsed, 0, 60);
+      pushRecordedKeyframe(index, finalTime, true);
       if (recording.rafId) cancelAnimationFrame(recording.rafId);
       recording.rafId = 0;
       recording.active = false;
       recording.startedAt = 0;
+      recording.startTime = 0;
       recording.lastSampleAt = 0;
       recording.lastUiAt = 0;
       recording.lastPose = null;
       const keyCount = person && person.keyframes ? person.keyframes.length : 0;
-      state.animation.currentTime = Math.min(elapsed, getTimelineDuration());
+      state.animation.currentTime = Math.min(finalTime, getTimelineDuration());
       updateKeyframeRecordButton();
       updateKeyframePanel();
       if (showMessage !== false) {
         if (keyCount >= 2) {
-          setKeyframeMessage('Grabación lista: ' + person.label + ' tiene ' + keyCount + ' keys automáticos.', 'ok');
+          setKeyframeMessage('Grabación lista: ' + person.label + ' tiene ' + keyCount + ' keys. Inicio: ' + formatKeyTime(startTime) + '.', 'ok');
           setKeyframeLiveLabel('Listo ' + person.label);
         } else {
           setKeyframeMessage('Grabación guardada, pero mueve más el personaje para crear más keys.', 'warn');
@@ -4263,7 +4281,8 @@
       return true;
     }
 
-    function toggleKeyframeRecording() {
+    
+function toggleKeyframeRecording() {
       if (state.animation.recording && state.animation.recording.active) {
         stopKeyframeRecording(true);
       } else {
@@ -4275,13 +4294,15 @@
       const recording = state.animation.recording;
       if (!recording || !recording.active) return;
       const elapsed = Math.max(0, (now - recording.startedAt) / 1000);
+      const startTime = clamp(Number(recording.startTime) || 0, 0, 60);
+      const currentTime = clamp(startTime + elapsed, 0, 60);
       recording.personIndex = clamp(recording.personIndex, 0, state.characters.length - 1);
-      state.animation.currentTime = elapsed;
-      state.animation.duration = Math.max(10, Math.ceil(elapsed + 1));
+      state.animation.currentTime = currentTime;
+      state.animation.duration = Math.max(10, Math.ceil(currentTime + 1), getTimelineDuration());
 
       if (!recording.lastSampleAt || now - recording.lastSampleAt >= recording.sampleMs) {
         recording.lastSampleAt = now;
-        pushRecordedKeyframe(recording.personIndex, elapsed, false);
+        pushRecordedKeyframe(recording.personIndex, currentTime, false);
       }
 
       if (!recording.lastUiAt || now - recording.lastUiAt >= 120) {
@@ -4292,14 +4313,15 @@
       }
 
       markDirty();
-      if (elapsed >= recording.maxDuration) {
+      if (elapsed >= recording.maxDuration || currentTime >= 60) {
         stopKeyframeRecording(true);
         return;
       }
       recording.rafId = requestAnimationFrame(recordKeyframeLoop);
     }
 
-    function addOrUpdateKeyframe() {
+    
+function addOrUpdateKeyframe() {
       clearEffectPreview(true);
       const index = state.selectedPerson;
       const person = state.characters[index];
@@ -4390,7 +4412,9 @@
       if (!person) return false;
       const keys = (person.keyframes || []).slice().sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
       if (!keys.length) return false;
-      if (keys.length === 1 || currentTime <= Number(keys[0].time || 0)) {
+      const firstKeyTime = Number(keys[0].time || 0);
+      if (currentTime < firstKeyTime) return false;
+      if (keys.length === 1 || currentTime === firstKeyTime) {
         applyPersonState(personIndex, keys[0], syncUi && personIndex === state.selectedPerson);
         return true;
       }
@@ -4423,7 +4447,8 @@
       return true;
     }
 
-    function stopAnimation(showMessage) {
+    
+function stopAnimation(showMessage) {
       if (state.animation.rafId) cancelAnimationFrame(state.animation.rafId);
       state.animation.rafId = 0;
       state.animation.playing = false;
@@ -4460,22 +4485,27 @@
     function startAnimation(mode, personIndex, silent) {
       if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
       clearEffectPreview(true);
-      stopAnimation(false);
       const maxTime = getMaxKeyTimeFor(mode, personIndex);
       if (maxTime <= 0) {
         setKeyframeMessage('Los keyframes están en 0.00s. Mueve el tiempo a 1s o más y guarda otro key.', 'warn');
         return;
       }
+      const requestedStartTime = clamp(Number(state.animation.currentTime) || 0, 0, maxTime);
+      const startTime = requestedStartTime >= maxTime - 0.02 ? 0 : requestedStartTime;
+      stopAnimation(false);
       state.animation.playing = true;
       state.animation.mode = mode;
       state.animation.playPerson = personIndex;
       state.animation.startedAt = performance.now();
+      state.animation.playStartTime = startTime;
       state.animation.duration = Math.max(getTimelineDuration(), maxTime);
-      state.animation.currentTime = 0;
+      state.animation.currentTime = startTime;
       state.animation.lastUiAt = 0;
+      syncTimeUiOnly();
+      updateTimelineOnly();
       const label = mode === 'all'
-        ? 'Reproduciendo todos los personajes en simultáneo'
-        : 'Animando ' + state.characters[personIndex].label;
+        ? 'Reproduciendo todos desde ' + formatKeyTime(startTime)
+        : 'Animando ' + state.characters[personIndex].label + ' desde ' + formatKeyTime(startTime);
       if (!silent) setKeyframeMessage(label, 'live');
       setKeyframeLiveLabel(mode === 'all' ? 'Animando todos' : 'Animando ' + state.characters[personIndex].label);
       state.animation.rafId = requestAnimationFrame(animationFrameLoop);
@@ -4485,7 +4515,8 @@
       if (!state.animation.playing) return;
       const elapsed = (now - state.animation.startedAt) / 1000;
       const maxTime = getMaxKeyTimeFor(state.animation.mode, state.animation.playPerson);
-      const currentTime = Math.min(elapsed, maxTime);
+      const startTime = clamp(Number(state.animation.playStartTime) || 0, 0, maxTime);
+      const currentTime = Math.min(startTime + elapsed, maxTime);
       state.animation.currentTime = currentTime;
 
       if (state.animation.mode === 'person') {
@@ -4508,7 +4539,7 @@
       }
 
       markDirty();
-      if (elapsed >= maxTime) {
+      if (currentTime >= maxTime - 0.0001) {
         stopAnimation(false);
         setKeyframeMessage('Animación terminada.', 'ok');
         setKeyframeLiveLabel('Terminado');
@@ -4577,90 +4608,127 @@
         btn.addEventListener('click', function() {
           state.animation.selectedKeyId = null;
           selectPerson(index, true);
-          setKeyframeMessage('Preparando ' + person.label + '. Toca “Grabar Key” y mueve el personaje.', 'ok');
+          setKeyframeMessage('Preparando ' + person.label + '. Toca su línea para elegir inicio, luego “Grabar Key” y mueve el personaje.', 'ok');
         });
         els.keyframePersonButtons.appendChild(btn);
       });
+    }
+
+    function isTimelinePersonActive(person, index) {
+      if (!person || !isPersonEnabled(person)) return false;
+      if (index === state.selectedPerson) return true;
+      return Boolean(person.visible && (person.closed || person.open || (person.keyframes || []).length));
+    }
+
+    function getActiveTimelinePersonIndexes() {
+      const indexes = [];
+      state.characters.forEach(function(person, index) {
+        if (isTimelinePersonActive(person, index)) indexes.push(index);
+      });
+      if (!indexes.length && state.characters[state.selectedPerson] && isPersonEnabled(state.characters[state.selectedPerson])) {
+        indexes.push(state.selectedPerson);
+      }
+      return indexes;
     }
 
     function renderKeyframeTimeline() {
       if (!els.keyframeTimeline) return;
       const duration = getTimelineDuration();
       const playheadLeft = clamp((state.animation.currentTime / duration) * 100, 0, 100);
-      const index = state.selectedPerson;
-      const person = state.characters[index];
-      const keys = (person.keyframes || []).slice().sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
+      const activeIndexes = getActiveTimelinePersonIndexes();
       els.keyframeTimeline.innerHTML = '';
 
-      const row = document.createElement('div');
-      row.className = 'keyframe-row';
+      activeIndexes.forEach(function(index) {
+        const person = state.characters[index];
+        const keys = (person.keyframes || []).slice().sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
 
-      const label = document.createElement('div');
-      label.className = 'keyframe-row-label';
-      label.textContent = person.label;
+        const row = document.createElement('div');
+        row.className = 'keyframe-row';
+        row.classList.toggle('is-selected', index === state.selectedPerson);
 
-      const track = document.createElement('div');
-      track.className = 'keyframe-track';
-      track.setAttribute('data-person-index', String(index));
+        const label = document.createElement('div');
+        label.className = 'keyframe-row-label';
+        label.textContent = person.label;
+        label.title = 'Línea de tiempo de ' + person.label;
 
-      const playhead = document.createElement('div');
-      playhead.className = 'keyframe-playhead';
-      playhead.style.left = playheadLeft + '%';
-      track.appendChild(playhead);
+        const track = document.createElement('div');
+        track.className = 'keyframe-track';
+        track.setAttribute('data-person-index', String(index));
 
-      if (!keys.length) {
-        const empty = document.createElement('div');
-        empty.className = 'keyframe-empty-row';
-        empty.textContent = 'sin keys en ' + person.label;
-        track.appendChild(empty);
-      }
+        const playhead = document.createElement('div');
+        playhead.className = 'keyframe-playhead';
+        playhead.style.left = playheadLeft + '%';
+        track.appendChild(playhead);
 
-      keys.forEach(function(key) {
-        const marker = document.createElement('button');
-        marker.type = 'button';
-        marker.className = 'keyframe-marker';
-        marker.classList.toggle('selected', key.id === state.animation.selectedKeyId);
-        marker.style.left = clamp((Number(key.time || 0) / duration) * 100, 0, 100) + '%';
-        marker.title = person.label + ' - ' + formatKeyTime(key.time);
-        marker.setAttribute('aria-label', 'Keyframe ' + person.label + ' en ' + formatKeyTime(key.time));
-        marker.dataset.personIndex = String(index);
-        marker.dataset.keyId = key.id;
-        marker.addEventListener('click', function(event) {
-          event.preventDefault();
-          event.stopPropagation();
-          if (state.animation.ignoreNextTrackClick) return;
-          selectKeyframe(index, key.id, true);
-        });
-        marker.addEventListener('pointerdown', beginDragKeyframe);
-        track.appendChild(marker);
-      });
-
-      track.addEventListener('click', function(event) {
-        if (state.animation.ignoreNextTrackClick) {
-          event.preventDefault();
-          event.stopPropagation();
-          state.animation.ignoreNextTrackClick = false;
-          return;
+        if (!keys.length) {
+          const empty = document.createElement('div');
+          empty.className = 'keyframe-empty-row';
+          empty.textContent = 'toca aquí para iniciar ' + person.label;
+          track.appendChild(empty);
         }
-        if (event.target.closest && event.target.closest('.keyframe-marker')) return;
-        const rect = track.getBoundingClientRect();
-        const ratio = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
-        state.animation.selectedKeyId = null;
-        setKeyframeTime(ratio * duration, true);
-        setKeyframeMessage('Tiempo colocado en ' + formatKeyTime(state.animation.currentTime) + ' para ' + person.label + '.', 'ok');
+
+        keys.forEach(function(key) {
+          const marker = document.createElement('button');
+          marker.type = 'button';
+          marker.className = 'keyframe-marker';
+          marker.classList.toggle('selected', key.id === state.animation.selectedKeyId);
+          marker.style.left = clamp((Number(key.time || 0) / duration) * 100, 0, 100) + '%';
+          marker.title = person.label + ' - ' + formatKeyTime(key.time);
+          marker.setAttribute('aria-label', 'Keyframe ' + person.label + ' en ' + formatKeyTime(key.time));
+          marker.dataset.personIndex = String(index);
+          marker.dataset.keyId = key.id;
+          marker.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (state.animation.ignoreNextTrackClick) return;
+            selectKeyframe(index, key.id, true);
+          });
+          marker.addEventListener('pointerdown', beginDragKeyframe);
+          track.appendChild(marker);
+        });
+
+        track.addEventListener('click', function(event) {
+          if (state.animation.ignoreNextTrackClick) {
+            event.preventDefault();
+            event.stopPropagation();
+            state.animation.ignoreNextTrackClick = false;
+            return;
+          }
+          if (event.target.closest && event.target.closest('.keyframe-marker')) return;
+          const rect = track.getBoundingClientRect();
+          const ratio = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+          const nextTime = ratio * duration;
+          state.animation.selectedKeyId = null;
+          state.animation.selectedKeyPerson = index;
+          if (state.selectedPerson !== index) {
+            state.selectedPerson = index;
+            bringPersonToFront(index);
+            renderPersonButtons();
+            renderPersonEditor();
+            renderEffectsPanel();
+          }
+          setKeyframeTime(nextTime, true);
+          updateKeyframePanel();
+          setKeyframeMessage('Inicio elegido para ' + person.label + ': ' + formatKeyTime(state.animation.currentTime) + '. Puedes grabar o reproducir desde ahí.', 'ok');
+        });
+
+        row.appendChild(label);
+        row.appendChild(track);
+        els.keyframeTimeline.appendChild(row);
       });
 
-      row.appendChild(label);
-      row.appendChild(track);
-      els.keyframeTimeline.appendChild(row);
-
-      const totalAll = state.characters.reduce(function(total, item) { return total + (isPersonEnabled(item) ? ((item.keyframes || []).length) : 0); }, 0);
-      if (els.keyframeTimelineSummary) {
-        els.keyframeTimelineSummary.innerHTML = person.label + ': ' + keys.length + ' keys <span class="keyframe-active-note">· total: ' + totalAll + '</span>';
+      const selectedPerson = state.characters[state.selectedPerson];
+      const selectedKeys = selectedPerson ? ((selectedPerson.keyframes || []).length) : 0;
+      const totalActive = activeIndexes.reduce(function(total, personIndex) {
+        return total + ((state.characters[personIndex].keyframes || []).length);
+      }, 0);
+      if (els.keyframeTimelineSummary && selectedPerson) {
+        els.keyframeTimelineSummary.innerHTML = selectedPerson.label + ': ' + selectedKeys + ' keys <span class="keyframe-active-note">· líneas activas: ' + activeIndexes.length + ' · total: ' + totalActive + '</span>';
       }
     }
 
-    function beginDragKeyframe(event) {
+    
+function beginDragKeyframe(event) {
       event.preventDefault();
       event.stopPropagation();
       const marker = event.currentTarget;
@@ -4743,6 +4811,69 @@
       markDirty();
     }
 
+    function isTypingShortcutTarget(target) {
+      if (!target) return false;
+      const tag = String(target.tagName || '').toLowerCase();
+      if (tag === 'textarea' || tag === 'select') return true;
+      if (tag === 'input') return true;
+      return Boolean(target.isContentEditable || (target.closest && target.closest('[contenteditable="true"]')));
+    }
+
+    function clearKeyframeSpaceTapTimer() {
+      if (state.animation.spaceTapTimer) {
+        clearTimeout(state.animation.spaceTapTimer);
+        state.animation.spaceTapTimer = 0;
+      }
+    }
+
+    function playKeyframePersonFromKeyboard() {
+      clearKeyframeSpaceTapTimer();
+      if (state.animation.playing) {
+        stopAnimation(true);
+        return;
+      }
+      playSelectedPerson(false);
+    }
+
+    function handleKeyframeKeyboardShortcuts(event) {
+      if (isTypingShortcutTarget(event.target)) return;
+
+      const isDeleteKey = event.code === 'Delete' || event.key === 'Delete' || event.key === 'Del' || event.key === 'Supr';
+      if (isDeleteKey && !event.repeat) {
+        event.preventDefault();
+        event.stopPropagation();
+        deleteSelectedKeyframe();
+        return;
+      }
+
+      const isSpace = event.code === 'Space' || event.key === ' ' || event.key === 'Spacebar';
+      if (!isSpace || event.repeat) return;
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (state.animation.recording && state.animation.recording.active) {
+        stopKeyframeRecording(true);
+        return;
+      }
+
+      if (state.animation.playing) {
+        clearKeyframeSpaceTapTimer();
+        stopAnimation(true);
+        return;
+      }
+
+      if (state.animation.spaceTapTimer) {
+        clearKeyframeSpaceTapTimer();
+        playAllCharacters();
+        return;
+      }
+
+      state.animation.spaceTapTimer = setTimeout(function() {
+        state.animation.spaceTapTimer = 0;
+        playKeyframePersonFromKeyboard();
+      }, state.animation.spaceTapDelay || 260);
+    }
+
     function initKeyframePanel() {
       if (!els.keyframePanel) return;
       els.btnKeyframeAdd.addEventListener('click', toggleKeyframeRecording);
@@ -4752,6 +4883,11 @@
       els.btnKeyframePlayPerson.addEventListener('click', function() { playSelectedPerson(false); });
       els.btnKeyframePlayAll.addEventListener('click', playAllCharacters);
       els.btnKeyframeStop.addEventListener('click', function() { if (!stopKeyframeRecording(true)) stopAnimation(true); });
+      els.btnKeyframeDelete.title = 'Supr/Del: borrar el keyframe seleccionado';
+      els.btnKeyframePlayPerson.title = 'Space: reproducir personaje seleccionado desde el tiempo elegido';
+      els.btnKeyframePlayAll.title = 'Doble Space: reproducir todos desde el tiempo elegido';
+      els.btnKeyframeStop.title = 'Space mientras reproduce: detener';
+      document.addEventListener('keydown', handleKeyframeKeyboardShortcuts, true);
       els.keyframeTimeSlider.addEventListener('input', function() { setKeyframeTime(Number(els.keyframeTimeSlider.value), true); });
       els.keyframeTimeInput.addEventListener('change', function() { setKeyframeTime(Number(els.keyframeTimeInput.value), true); });
       els.keyframeScale.addEventListener('input', function() {
