@@ -794,6 +794,12 @@
       white-space: nowrap;
     }
 
+    .image-reset-size-btn {
+      width: 100%;
+      min-height: 38px;
+      border-radius: 15px;
+    }
+
     .clean-row,
     #film-controls .clean-row,
     .mic-control-card .row {
@@ -2417,6 +2423,7 @@
         x: 690 + (index % 5) * 115,
         y: 680 + Math.floor(index / 5) * 110,
         scale: 42,
+        originalScale: 42,
         rotation: 0,
         opacity: 1,
         keyframes: [],
@@ -2725,12 +2732,14 @@
       const file = input.files && input.files[0];
       if (!file) return;
       const person = state.characters[index];
+      const hadAnyImage = Boolean(person.closed || person.open);
       const reader = new FileReader();
       reader.onload = function() {
         const img = new Image();
         img.onload = function() {
           person[kind] = img;
           person[kind + 'Name'] = file.name;
+          if (!hadAnyImage) person.originalScale = Number(person.scale) || 42;
           statusEl.textContent = file.name;
           statusEl.classList.add('ok');
           input.value = '';
@@ -2754,11 +2763,21 @@
       if (!person || (kind !== 'closed' && kind !== 'open')) return;
       person[kind] = null;
       person[kind + 'Name'] = '';
+      if (!person.closed && !person.open) person.originalScale = 42;
       if (state.selectedPerson === index) resetMouthToClosed();
       renderPersonEditor();
       renderPersonButtons();
       renderAudioSwitches();
       updateRecordStatus();
+      markDirty();
+    }
+
+    function resetPersonImageSize(index) {
+      const person = state.characters[index];
+      if (!person || (!person.closed && !person.open)) return;
+      person.scale = clamp(Math.round(Number(person.originalScale) || 42), 5, 250);
+      updateKeyframePanel();
+      renderPersonEditor();
       markDirty();
     }
 
@@ -2890,6 +2909,7 @@
               </span>
             </label>
           </div>
+          <button id="btn-person-reset-size" class="btn-muted image-reset-size-btn" type="button" ${(person.closed || person.open) ? '' : 'disabled'}>↔️ Restablecer tamaño original</button>
           <div class="row clean-row">
             <label>${person.label} boca cerrada</label>
             <div class="file-card ${person.closedName ? 'has-loaded-image' : ''}">
@@ -2945,6 +2965,13 @@
       const xValue = document.getElementById('person-x-value');
       const yValue = document.getElementById('person-y-value');
       const scaleValue = document.getElementById('person-scale-value');
+      const resetSizeBtn = document.getElementById('btn-person-reset-size');
+
+      if (resetSizeBtn) {
+        resetSizeBtn.addEventListener('click', function() {
+          resetPersonImageSize(index);
+        });
+      }
 
       const imagesToggle = document.getElementById('person-images-toggle');
       if (imagesToggle) {
