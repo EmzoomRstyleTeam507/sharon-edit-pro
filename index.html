@@ -236,6 +236,47 @@
       pointer-events: none;
     }
 
+    /* Identificadores de P1-P10 visibles solo en el reproductor,
+       sin incrustarse en el canvas que se exporta al video. */
+    .character-label-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      overflow: hidden;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .character-label-layer[hidden],
+    .character-label[hidden] { display: none !important; }
+    .character-label {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -100%);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: rgba(15, 23, 42, .88);
+      border: 1px solid rgba(255, 255, 255, .78);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .32);
+      color: #fff;
+      font: 900 clamp(9px, 1.5vw, 13px)/1.15 system-ui, sans-serif;
+      white-space: nowrap;
+      letter-spacing: .02em;
+      transition: background .12s, border-color .12s;
+    }
+    .character-label.active {
+      z-index: 1;
+      color: #fff;
+      background: linear-gradient(135deg, #f72585, #9350e9);
+      border-color: #fff;
+      box-shadow: 0 0 0 2px rgba(255,255,255,.75), 0 4px 14px rgba(236,72,153,.52);
+    }
+    @media (max-width: 700px) {
+      .character-label { padding: 3px 6px; font-size: 10px; }
+    }
+
     .badge.left { left: 12px; }
     .badge.right { right: 12px; }
     .recording { color: #fecaca; display: none; animation: pulse 1s infinite; }
@@ -1568,7 +1609,6 @@
     }
 
     .keyframe-actions .btn-key-add { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
-    .keyframe-actions .btn-key-play { background: linear-gradient(135deg, #22c55e, #14b8a6); }
     .keyframe-actions .btn-key-all { background: linear-gradient(135deg, #f97316, #ec4899); }
     .keyframe-actions .btn-key-stop { background: linear-gradient(135deg, #ef4444, #be123c); }
     .keyframe-actions .btn-key-delete { background: #475569; }
@@ -1775,7 +1815,7 @@
     }
 
     .keyframe-actions {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       margin-top: 0;
     }
 
@@ -2036,7 +2076,289 @@
     }
 
 
-  </style>
+    /* Exportación compacta: un botón principal y progreso al exportar */
+    .recording-dock .export-scene-btn {
+      width: auto !important;
+      min-width: 142px !important;
+      height: 37px !important;
+      min-height: 37px !important;
+      flex: 0 0 auto !important;
+      padding: 0 15px !important;
+      border-radius: 999px !important;
+      display: inline-flex !important;
+      gap: 6px !important;
+      font-weight: 800;
+      font-size: .82rem !important;
+      white-space: nowrap;
+      background: linear-gradient(110deg, #f6339e, #fd5971) !important;
+    }
+    .recording-dock .export-cancel-btn,
+    .recording-dock .export-redownload-btn {
+      width: 36px !important;
+      height: 36px !important;
+      min-height: 36px !important;
+      flex: 0 0 36px !important;
+      display: inline-flex !important;
+      justify-content: center;
+      align-items: center;
+    }
+    .recording-dock .export-cancel-btn[hidden] { display: none !important; }
+    .recording-dock.export-active {
+      max-width: min(96%, 350px) !important;
+      width: auto !important;
+      border-radius: 18px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 8px 12px !important;
+      gap: 6px !important;
+    }
+    .recording-dock.export-active .record-status-text,
+    .recording-dock.export-ready .record-status-text {
+      display: block !important;
+      text-align: center;
+      padding: 0 !important;
+      max-width: 320px;
+      font-size: .75rem !important;
+      line-height: 1.3;
+      background: none;
+      border: 0;
+    }
+    .recording-dock.export-ready {
+      width: auto !important;
+      max-width: min(96%, 380px) !important;
+      border-radius: 16px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+      padding: 8px 10px !important;
+    }
+    .recording-dock.export-ready .record-status-text { max-width: 340px; }
+    .recording-dock .export-scene-btn:disabled { opacity: .68; cursor: wait; }
+    #btn-remove-film-bg[hidden], #btn-remove-film-bg-preview[hidden] { display: none !important; }
+    .canvas-remove-bg {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      z-index: 16;
+      width: 38px;
+      height: 38px;
+      min-height: 38px;
+      padding: 0;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(190, 18, 60, .95);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, .83);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .28);
+      font-size: 1.45rem;
+      line-height: 1;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .canvas-remove-bg:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ===== FlipaClip simplificado: 3 acciones, escenario amplio y pistas compactas ===== */
+    body.mode-film .stage-panel { gap: 5px; }
+    body.mode-film .keyframe-panel {
+      width: 100%; max-width: 980px; margin: 0 auto;
+      padding: 8px; border-radius: 18px;
+      background: #fff9fc; border: 1px solid #f8d5e5;
+      box-shadow: 0 5px 18px rgba(190,24,93,.07);
+    }
+    body.mode-film .keyframe-tools-card,
+    body.mode-film .keyframe-timeline-card {
+      padding: 0; margin: 0; border: 0;
+      box-shadow: none; background: transparent; border-radius: 0;
+    }
+    body.mode-film .keyframe-tools-card { margin-bottom: 7px; }
+    body.mode-film .keyframe-actions {
+      display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 7px; margin: 0; align-items: stretch;
+    }
+    body.mode-film .keyframe-actions > button,
+    body.mode-film .recording-dock .export-scene-btn {
+      width: 100% !important; height: 42px !important; min-height: 42px !important;
+      min-width: 0 !important; border-radius: 12px !important;
+      padding: 7px 8px !important; margin: 0 !important;
+      font-size: .83rem !important; font-weight: 900;
+      box-shadow: none !important; line-height: 1.15;
+      display: inline-flex !important; align-items: center; justify-content: center;
+      gap: 5px;
+    }
+    body.mode-film .keyframe-actions > button[hidden] { display: none !important; }
+    body.mode-film .keyframe-actions .btn-key-add { background: linear-gradient(135deg,#d936a1,#9857e7); }
+    body.mode-film .keyframe-actions .btn-key-all { background: linear-gradient(110deg,#f97638,#ec4899); }
+    body.mode-film .keyframe-actions .btn-key-all.is-stopping { background: linear-gradient(100deg,#e94966,#be123c); }
+    body.mode-film .keyframe-actions .recording-dock {
+      width: 100% !important; max-width: none !important; min-width: 0;
+      display: flex !important; flex-direction: column !important;
+      align-self: stretch !important; align-items: stretch !important;
+      padding: 0 !important; margin: 0 !important; gap: 0 !important;
+      border: 0 !important; border-radius: 12px !important;
+      background: transparent !important; box-shadow: none !important;
+      overflow: visible;
+    }
+    body.mode-film .keyframe-actions .record-actions {
+      width: 100%; display: flex !important; justify-content: stretch;
+      gap: 6px !important; margin: 0;
+    }
+    body.mode-film .keyframe-actions .recording-dock .export-scene-btn {
+      flex: 1 1 auto !important;
+      background: linear-gradient(110deg,#ed388e,#fa597e) !important;
+    }
+    body.mode-film .recording-dock.export-active .record-status-text,
+    body.mode-film .recording-dock.export-ready .record-status-text {
+      display: block !important; font-size: .68rem !important;
+    }
+    body.mode-film .recording-dock.export-active .record-actions {
+      gap: 2px !important;
+    }
+    body.mode-film .keyframe-actions .recording-dock .export-cancel-btn[hidden] { display: none !important; }
+    body.mode-film .keyframe-actions .recording-dock .export-cancel-btn:not([hidden]) {
+      width: 32px !important; min-width: 32px !important; flex: 0 0 32px !important;
+      height: 42px !important;
+    }
+    body.mode-film .keyframe-actions .recording-dock.export-active,
+    body.mode-film .keyframe-actions .recording-dock.export-ready {
+      max-width: none !important; gap: 3px !important; padding: 0 !important;
+      border-radius: 12px !important;
+    }
+    .flipa-context-actions[hidden] { display: none !important; }
+    .flipa-context-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 6px; margin-top: 7px; padding: 6px 8px;
+      background: #fff0f7; border: 1px solid #fad3e3;
+      border-radius: 11px; flex-wrap: wrap;
+    }
+    .flipa-key-caption { color: #a7195e; font-size: .73rem; font-weight: 900; }
+    .flipa-context-buttons { display: flex; gap: 6px; margin-left: auto; }
+    .flipa-context-buttons button {
+      min-height: 30px; padding: 5px 9px; border: 1px solid rgba(190,24,93,.19);
+      color: #9d174d; font-size: .72rem; font-weight: 900;
+      background: #fff; border-radius: 9px; cursor: pointer;
+    }
+    .flipa-context-buttons .btn-key-delete-effect { background: #fce7f3; }
+    .flipa-timeline-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 4px 7px; color: #831843; gap: 8px;
+    }
+    .flipa-timeline-title { font-size: .81rem; font-weight: 950; }
+    .flipa-timeline-meta { display: flex; align-items: center; gap: 8px; }
+    .flipa-active-person {
+      font-size: .69rem; font-weight: 900; color: #be185d;
+      background: #fce7f3; border-radius: 999px; padding: 4px 8px;
+    }
+    .flipa-current-time {
+      font-size: .74rem; font-weight: 850; color: #64748b;
+      font-variant-numeric: tabular-nums;
+    }
+    body.mode-film .keyframe-timeline-card {
+      padding: 8px 9px; border-radius: 13px;
+      border: 1px solid #f3d9e5; background: white;
+    }
+    body.mode-film .keyframe-row {
+      grid-template-columns: 32px minmax(0,1fr);
+      gap: 6px; margin: 0;
+    }
+    body.mode-film .keyframe-row + .keyframe-row { margin-top: 4px; }
+    body.mode-film .keyframe-row-label {
+      width: 32px; min-height: 27px; padding: 2px 1px;
+      border: 0; border-radius: 8px; background: transparent;
+      font-size: .74rem; font-weight: 950; cursor: pointer;
+      color: #8b6a81;
+    }
+    body.mode-film .keyframe-row.is-selected .keyframe-row-label {
+      color: #be185d; background: #fce7f3; transform: none;
+    }
+    body.mode-film .keyframe-track { height: 29px; border-radius: 10px; }
+    body.mode-film .keyframe-track-wrap { border-radius: 10px; }
+    body.mode-film .keyframe-marker {
+      width: 13px; height: 13px; border-radius: 3px;
+      box-shadow: 0 0 0 2px #fff, 0 2px 5px #fbcfe8;
+    }
+    body.mode-film .keyframe-marker.selected {
+      background: #141927; box-shadow: 0 0 0 2px #facc15;
+    }
+    body.mode-film .keyframe-playhead { background: #ec4899; opacity: .9; }
+    body.mode-film .keyframe-empty-row { font-size: .67rem; }
+    @media(max-width: 520px) {
+      body.mode-film .keyframe-panel { padding: 6px; border-radius: 13px; }
+      body.mode-film .keyframe-actions { gap: 4px; }
+      body.mode-film .keyframe-actions > button,
+      body.mode-film .recording-dock .export-scene-btn {
+        font-size: .70rem !important; padding: 4px !important;
+        min-height: 39px !important; height: 39px !important;
+      }
+      .flipa-timeline-head { padding-bottom: 5px; }
+      .flipa-current-time { font-size: .68rem; }
+      .flipa-context-actions { padding: 6px; }
+      .flipa-context-buttons button { font-size: .68rem; }
+    }
+  
+    /* Mini-secuencia de fondos: 5 fotogramas, sin paneles adicionales. */
+    .bg-sequence-settings {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 7px 10px;
+      margin: 10px 2px 8px; color: #831843; font-size: .77rem; font-weight: 750;
+    }
+    .bg-sequence-settings #bg-sequence-count { margin-right: auto; color: #be185d; }
+    .bg-sequence-settings label { margin: 0; font-size: .76rem; }
+    .bg-sequence-settings select {
+      width: auto; max-width: 205px; min-width: 145px;
+      padding: 7px 9px; border-radius: 10px; font-size: .75rem;
+    }
+    .bg-sequence-list {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px;
+    }
+    .bg-sequence-item {
+      position: relative; min-width: 0; aspect-ratio: 1;
+      border-radius: 12px; border: 2px solid #fbcfe8;
+      background: #fff0f7; overflow: hidden; cursor: pointer;
+      padding: 0; box-shadow: none; color: #9d174d;
+    }
+    .bg-sequence-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .bg-sequence-item.empty { border-style: dashed; display: grid; place-content: center; gap: 2px; }
+    .bg-sequence-item.empty .bg-empty-plus { font-size: 1.35rem; line-height: 1; }
+    .bg-sequence-item.empty span:last-child { font-size: .65rem; }
+    .bg-sequence-item.selected { border-color: #ec4899; box-shadow: 0 0 0 2px #fce7f3; }
+    .bg-sequence-item.playing { border-color: #06b6d4; box-shadow: 0 0 0 2px rgba(6,182,212,.3); }
+    .bg-sequence-num {
+      position: absolute; bottom: 3px; left: 4px; padding: 1px 5px;
+      border-radius: 999px; font-size: .62rem; font-weight: 900;
+      color: #fff; background: rgba(17,24,39,.75);
+    }
+    .bg-sequence-delete {
+      position: absolute; top: 3px; right: 3px; z-index: 2;
+      width: 19px; height: 19px; min-height: 19px;
+      border: 1px solid #fff; border-radius: 50%; background: #be123c;
+      color: #fff; font: 900 13px/1 system-ui; padding: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    }
+    .bg-sequence-help { margin: 8px 2px 0; font-size: .73rem; color: #9d5b80; line-height: 1.4; }
+    @media (max-width: 520px) {
+      .bg-sequence-list { gap: 4px; }
+      .bg-sequence-item { border-radius: 8px; }
+      .bg-sequence-delete { width: 17px; height: 17px; min-height: 17px; font-size: 12px; }
+      .bg-sequence-num { font-size: .58rem; }
+    }
+    /* Perspectiva 2.5D opcional: los controles avanzados se mantienen plegados. */
+    .person-3d-card { border: 1px solid #f4d0e4; border-radius: 14px; margin-top: 10px;
+      padding: 0 11px; background: #fff9fd; }
+    .person-3d-card > summary { padding: 12px 2px; cursor: pointer; font-weight: 900;
+      color: #9d174d; list-style-position: inside; }
+    .person-3d-controls { padding: 0 2px 11px; display: grid; gap: 9px; }
+    .person-3d-controls .person-3d-toggle { display: flex; align-items: center; gap: 8px;
+      font-weight: 800; font-size: .85rem; }
+    .person-3d-controls input[type="range"] { width: 100%; accent-color: #e83b99; }
+    .person-3d-controls .person-3d-row { display: grid; gap: 3px; font-size: .79rem; font-weight: 760; }
+    .person-3d-controls .person-3d-muted { font-size: .73rem; color: #785e76; line-height: 1.4; }
+    .person-3d-controls button { width: fit-content; min-height: 32px; padding: 5px 10px;
+      border: 1px solid #f5bdd7; border-radius: 9px; background: white; color: #9d174d; font-weight: 850; }
+    .effect-3d-preset-group { margin-top: 12px; border: 1px solid #f6cbdc;
+      border-radius: 12px; background: #fff8fc; padding: 2px 10px 9px; }
+    .effect-3d-preset-group summary { cursor: pointer; padding: 10px 0; font-size: .82rem;
+      font-weight: 900; color: #9d174d; }
+</style>
 </head>
 <body class="mode-film">
   <header>
@@ -2135,12 +2457,26 @@
           </div>
           <div class="row">
             <label>Fondo / escenario</label>
-            <div class="file-card">
-              <div class="file-title">Fondo</div>
-              <div id="status-film-bg" class="file-status"></div>
-              <input id="film-bg" type="file" accept="image/png,image/jpeg,image/webp" />
+            <div id="film-bg-file-card" class="file-card">
+              <div class="file-title">＋ Agregar fondos (hasta 5)</div>
+              <div id="status-film-bg" class="file-status">Puedes seleccionar varias imágenes a la vez</div>
+              <button id="btn-remove-film-bg" class="file-delete-btn" type="button" title="Eliminar el fondo seleccionado" aria-label="Eliminar fondo seleccionado" hidden>×</button>
+              <input id="film-bg" type="file" accept="image/png,image/jpeg,image/webp" multiple aria-label="Agregar hasta cinco fondos" />
             </div>
           </div>
+          <div class="bg-sequence-settings">
+            <span id="bg-sequence-count">0 de 5 fondos</span>
+            <label for="bg-sequence-speed">Velocidad</label>
+            <select id="bg-sequence-speed" aria-label="Tiempo que se muestra cada fondo">
+              <option value="0.15">Muy rápida · 0,15 s</option>
+              <option value="0.3">Rápida · 0,3 s</option>
+              <option value="0.5" selected>Normal · 0,5 s</option>
+              <option value="1">Lenta · 1 s</option>
+              <option value="2">Muy lenta · 2 s</option>
+            </select>
+          </div>
+          <div id="bg-sequence-list" class="bg-sequence-list" aria-label="Fondos en orden de reproducción"></div>
+          <p class="bg-sequence-help">Se reproducen en este orden y se repiten en bucle durante la escena. Toca una miniatura para verla o la X para quitarla.</p>
         </div>
 
         <div id="person-editor" class="section option-card person-editor-card film-detail-panel"></div>
@@ -2183,6 +2519,14 @@
               <button class="effect-action-btn" type="button" data-character-effect="blink">✨ Parpadear</button>
               <button class="effect-action-btn" type="button" data-character-effect="pop">💥 Pop</button>
             </div>
+            <details class="effect-3d-preset-group">
+              <summary>🧊 Efectos 3D (perspectiva)</summary>
+              <div class="effect-actions-grid">
+                <button class="effect-action-btn" type="button" data-character-effect="turn3d">🔄 Vuelta 3D</button>
+                <button class="effect-action-btn" type="button" data-character-effect="swing3d">↔️ Balanceo 3D</button>
+                <button class="effect-action-btn" type="button" data-character-effect="tilt3d">↕️ Inclinación 3D</button>
+              </div>
+            </details>
             <div class="effect-control-row">
               <button id="btn-effect-insert" class="effect-insert-btn" type="button" disabled>✅ Insertar</button>
               <span id="effect-preview-status" class="small effect-preview-status">Toca un efecto para probarlo. No se guarda hasta tocar Insertar.</span>
@@ -2266,28 +2610,14 @@
     <main class="stage-panel">
       <div class="canvas-wrap" id="canvas-wrap">
         <canvas id="canvas" width="1920" height="1080"></canvas>
+        <div id="character-label-layer" class="character-label-layer" aria-hidden="true"></div>
         <div id="recording-badge" class="badge left recording">🔴 Grabando</div>
         <div id="mouth-badge" class="badge right mouth-closed">Boca cerrada</div>
+        <button id="btn-remove-film-bg-preview" class="canvas-remove-bg" type="button" aria-label="Eliminar fondo de la escena" title="Eliminar fondo" hidden>×</button>
         <button id="btn-bg-lock" class="canvas-bg-lock locked" type="button" aria-pressed="true" title="Toca para desbloquear el fondo">🔒</button>
         <div id="bg-transform-hint" class="bg-transform-hint">Fondo bloqueado</div>
 
       </div>
-
-      <div class="recording-dock" aria-label="Controles de grabación">
-        <div class="recording-dock-head">
-          <div>
-            <strong>📹 Grabación profesional</strong>
-          </div>
-          <span id="format-status" class="small record-format"></span>
-        </div>
-        <div class="record-actions">
-          <button id="btn-record" class="btn-record-main icon-only" type="button" title="Grabar" aria-label="Grabar"><span class="record-dot" aria-hidden="true"></span><span class="sr-only">Grabar</span></button>
-          <button id="btn-stop" class="btn-stop-main icon-only" type="button" title="Detener" aria-label="Detener" disabled>⏹</button>
-          <button id="btn-download" class="btn-download-main icon-only" type="button" title="Descargar video" aria-label="Descargar video" disabled>↓</button>
-        </div>
-        <span id="record-status" class="small record-status-text">Listo para grabar.</span>
-      </div>
-
 
       <section id="keyframe-panel" class="keyframe-panel" aria-label="Panel de Keyframes">
         <div class="keyframe-titlebar">
@@ -2328,13 +2658,29 @@
             </label>
           </div>
 
-          <div class="keyframe-actions">
+          <div class="keyframe-actions" aria-label="Controles principales de animación">
             <button id="btn-keyframe-add" class="btn-key-add" type="button">⏺ Grabar Key</button>
-            <button id="btn-keyframe-delete" class="btn-key-delete" type="button">🗑️ Borrar Key</button>
-            <button id="btn-keyframe-play-person" class="btn-key-play" type="button">▶ P1</button>
-            <button id="btn-keyframe-play-all" class="btn-key-all" type="button">▶ Todos</button>
-            <button id="btn-keyframe-stop" class="btn-key-stop" type="button">⏹ Detener</button>
-            <button id="btn-keyframe-delete-effect" class="btn-key-effect-delete" type="button">🧹 Borrar efecto/key</button>
+            <button id="btn-keyframe-play-all" class="btn-key-all" type="button">▶ Reproducir</button>
+            <button id="btn-keyframe-stop" class="btn-key-stop" type="button" hidden>⏹ Detener</button>
+            <div id="recording-dock" class="recording-dock" aria-label="Exportar escena completa">
+              <div class="recording-dock-head">
+                <strong>🎞️ Exportación de video</strong>
+                <span id="format-status" class="small record-format"></span>
+              </div>
+              <div class="record-actions">
+                <button id="btn-record" class="btn-record-main export-scene-btn" type="button" title="Exportar toda la escena como video" aria-label="Exportar toda la escena"><span aria-hidden="true">⬇</span> Exportar</button>
+                <button id="btn-stop" class="btn-stop-main export-cancel-btn" type="button" title="Cancelar exportación" aria-label="Cancelar exportación" disabled hidden>✕</button>
+              </div>
+              <span id="record-status" class="small record-status-text" role="status" aria-live="polite">Listo para exportar.</span>
+            </div>
+          </div>
+
+          <div id="keyframe-context-actions" class="flipa-context-actions" hidden>
+            <span id="flipa-key-caption" class="flipa-key-caption">Key seleccionada</span>
+            <div class="flipa-context-buttons">
+              <button id="btn-keyframe-delete" class="btn-key-delete" type="button">🗑️ Borrar key</button>
+              <button id="btn-keyframe-delete-effect" class="btn-key-effect-delete" type="button">Borrar secuencia/efecto</button>
+            </div>
           </div>
 
           <div id="keyframe-status" class="keyframe-status">Listo. Selecciona P1 y guarda tu primer keyframe.</div>
@@ -2342,7 +2688,14 @@
         </div>
 
         <div class="keyframe-timeline-card">
-          <div class="keyframe-timeline-title">
+          <div class="flipa-timeline-head">
+            <span class="flipa-timeline-title">Secuencias</span>
+            <div class="flipa-timeline-meta">
+              <span id="flipa-active-person" class="flipa-active-person">P1 activo</span>
+              <output id="flipa-current-time" class="flipa-current-time" aria-label="Tiempo actual">0:00</output>
+            </div>
+          </div>
+          <div class="keyframe-timeline-title" hidden>
             <span>💠 Líneas activas</span>
             <span id="keyframe-timeline-summary">P1: 0 keys</span>
           </div>
@@ -2364,6 +2717,8 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
     const canvasWrap = document.getElementById('canvas-wrap');
+    const characterLabelLayer = document.getElementById('character-label-layer');
+    const characterLabelNodes = new Map();
     const IS_MOBILE_DEVICE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
     const RECORDING_FPS = 60;
     const RECORDING_VIDEO_BITS_PER_SECOND = IS_MOBILE_DEVICE ? 12000000 : 16000000;
@@ -2380,6 +2735,9 @@
       greenClosed: document.getElementById('green-closed'),
       greenOpen: document.getElementById('green-open'),
       filmBg: document.getElementById('film-bg'),
+      filmBgFileCard: document.getElementById('film-bg-file-card'),
+      btnRemoveFilmBg: document.getElementById('btn-remove-film-bg'),
+      btnRemoveFilmBgPreview: document.getElementById('btn-remove-film-bg-preview'),
       btnBgLock: document.getElementById('btn-bg-lock'),
       btnBgLockDetail: document.getElementById('btn-bg-lock-detail'),
       bgTransformHint: document.getElementById('bg-transform-hint'),
@@ -2388,6 +2746,9 @@
       statusGreenClosed: document.getElementById('status-green-closed'),
       statusGreenOpen: document.getElementById('status-green-open'),
       statusFilmBg: document.getElementById('status-film-bg'),
+      bgSequenceList: document.getElementById('bg-sequence-list'),
+      bgSequenceCount: document.getElementById('bg-sequence-count'),
+      bgSequenceSpeed: document.getElementById('bg-sequence-speed'),
       personButtons: document.getElementById('person-buttons'),
       personEditor: document.getElementById('person-editor'),
       audioPanel: document.getElementById('audio-panel'),
@@ -2411,8 +2772,8 @@
       talkSpeed: document.getElementById('talk-speed'),
       talkValue: document.getElementById('talk-value'),
       btnRecord: document.getElementById('btn-record'),
+      recordDock: document.getElementById('recording-dock'),
       btnStop: document.getElementById('btn-stop'),
-      btnDownload: document.getElementById('btn-download'),
       recordStatus: document.getElementById('record-status'),
       formatStatus: document.getElementById('format-status'),
       recordingBadge: document.getElementById('recording-badge'),
@@ -2433,7 +2794,6 @@
       btnKeyframeAdd: document.getElementById('btn-keyframe-add'),
       btnKeyframeUpdate: document.getElementById('btn-keyframe-update'),
       btnKeyframeDelete: document.getElementById('btn-keyframe-delete'),
-      btnKeyframePlayPerson: document.getElementById('btn-keyframe-play-person'),
       btnKeyframePlayAll: document.getElementById('btn-keyframe-play-all'),
       btnKeyframeStop: document.getElementById('btn-keyframe-stop'),
       btnKeyframeDeleteEffect: document.getElementById('btn-keyframe-delete-effect'),
@@ -2473,6 +2833,10 @@
         originalScale: 42,
         rotation: 0,
         opacity: 1,
+        effect3d: false,
+        tiltX: 0,
+        tiltY: 0,
+        depth3d: 0,
         keyframes: [],
         visible: true,
         showUploadedImages: true,
@@ -2529,6 +2893,12 @@
         greenOpen: null,
         filmBg: null
       },
+      backgroundSequence: {
+        frames: [],
+        selectedIndex: 0,
+        duration: 0.5,
+        lastDisplayedIndex: -1
+      },
       characters: Array.from({ length: MAX_FILM_CHARACTERS }, function(_, index) { return createCharacter(index); }),
       zOrder: Array.from({ length: MAX_FILM_CHARACTERS }, function(_, index) { return index; }),
       audio: {
@@ -2558,7 +2928,15 @@
         musicRecordConnected: false,
         url: null,
         mimeType: '',
-        extension: 'webm'
+        extension: 'webm',
+        autoStartedAnimation: false,
+        exporting: false,
+        cancelled: false,
+        exportRafId: 0,
+        exportDuration: 0,
+        exportStartedAt: 0,
+        lastProgressAt: 0,
+        exportMusicStarted: false
       },
       animation: {
         playing: false,
@@ -2602,6 +2980,7 @@
         effectName: '',
         keys: null,
         originalPose: null,
+        original3d: false,
         startedAt: 0,
         duration: 0
       },
@@ -2733,7 +3112,7 @@
         els.bgTransformHint.classList.toggle('show', state.mode === 'film' && !locked);
       }
 
-      if (els.filmBg) els.filmBg.disabled = false;
+      if (els.filmBg) els.filmBg.disabled = getFilmBackgroundFrames().length >= 5 || state.recording.exporting;
     }
 
     function stopBackgroundGestures() {
@@ -3008,6 +3387,23 @@
           </div>
           <span class="small help-note">También puedes mover ${person.label} arrastrándolo sobre el reproductor. En computadora, usa la ruedita del mouse sobre el personaje para acercar o alejar. En celular/tablet, pellizca con dos dedos encima del personaje para darle zoom.</span>
         </div>
+          <details class="person-3d-card" id="person-3d-details" ${person.effect3d ? 'open' : ''}>
+            <summary>🧊 Vista 3D de ${person.label}</summary>
+            <div class="person-3d-controls">
+              <label class="person-3d-toggle"><input type="checkbox" id="person-3d-enabled" ${person.effect3d ? 'checked' : ''} /> Activar perspectiva 3D</label>
+              <label class="person-3d-row">Giro lateral: <output id="person-3d-y-value">${Math.round(person.tiltY || 0)}°</output>
+                <input id="person-3d-y" type="range" min="-80" max="80" step="1" value="${Math.round(clamp(Number(person.tiltY)||0,-80,80))}" ${person.effect3d ? '' : 'disabled'} />
+              </label>
+              <label class="person-3d-row">Inclinar arriba / abajo: <output id="person-3d-x-value">${Math.round(person.tiltX || 0)}°</output>
+                <input id="person-3d-x" type="range" min="-80" max="80" step="1" value="${Math.round(clamp(Number(person.tiltX)||0,-80,80))}" ${person.effect3d ? '' : 'disabled'} />
+              </label>
+              <label class="person-3d-row">Profundidad: <output id="person-3d-depth-value">${Math.round(person.depth3d || 0)}%</output>
+                <input id="person-3d-depth" type="range" min="0" max="100" step="1" value="${Math.round(clamp(Number(person.depth3d)||0,0,100))}" ${person.effect3d ? '' : 'disabled'} />
+              </label>
+              <button id="person-3d-reset" type="button">↩ Restablecer 3D</button>
+              <span class="person-3d-muted">El personaje sigue siendo una imagen 2D con perspectiva. Para animar el giro, graba keys o abre Efectos de personajes → Efectos 3D.</span>
+            </div>
+          </details>
       `;
 
       renderPersonButtons();
@@ -3062,6 +3458,37 @@
       scaleInput.addEventListener('input', function() {
         person.scale = Number(scaleInput.value);
         scaleValue.textContent = String(person.scale);
+        markDirty();
+      });
+      const enable3d = document.getElementById('person-3d-enabled');
+      const threeDInputs = [
+        ['person-3d-y', 'person-3d-y-value', 'tiltY', '°'],
+        ['person-3d-x', 'person-3d-x-value', 'tiltX', '°'],
+        ['person-3d-depth', 'person-3d-depth-value', 'depth3d', '%']
+      ];
+      if (enable3d) enable3d.addEventListener('change', function() {
+        person.effect3d = enable3d.checked;
+        threeDInputs.forEach(function(item) { const input = document.getElementById(item[0]); if (input) input.disabled = !person.effect3d; });
+        markDirty();
+      });
+      threeDInputs.forEach(function(item) {
+        const input = document.getElementById(item[0]);
+        const value = document.getElementById(item[1]);
+        if (!input) return;
+        input.addEventListener('input', function() {
+          person[item[2]] = Number(input.value);
+          if (value) value.textContent = input.value + item[3];
+          markDirty();
+        });
+      });
+      document.getElementById('person-3d-reset').addEventListener('click', function() {
+        person.tiltX = 0; person.tiltY = 0; person.depth3d = 0;
+        threeDInputs.forEach(function(item) {
+          const input = document.getElementById(item[0]);
+          const value = document.getElementById(item[1]);
+          if (input) input.value = '0';
+          if (value) value.textContent = '0' + item[3];
+        });
         markDirty();
       });
       document.getElementById('btn-person-center').addEventListener('click', function() {
@@ -3145,7 +3572,10 @@
         y: Number(pose.y) || 0,
         scale: Number(pose.scale) || 42,
         rotation: Number(pose.rotation) || 0,
-        opacity: clamp(Number(pose.opacity == null ? 1 : pose.opacity), 0, 1)
+        opacity: clamp(Number(pose.opacity == null ? 1 : pose.opacity), 0, 1),
+        tiltX: Number(pose.tiltX) || 0,
+        tiltY: Number(pose.tiltY) || 0,
+        depth3d: Number(pose.depth3d) || 0
       };
     }
 
@@ -3170,7 +3600,10 @@
         rocket: 'cohete',
         roll: 'rodar',
         blink: 'parpadear',
-        pop: 'pop'
+        pop: 'pop',
+        turn3d: 'vuelta en perspectiva 3D',
+        swing3d: 'balanceo lateral 3D',
+        tilt3d: 'inclinación 3D'
       };
       return names[effectName] || 'efecto';
     }
@@ -3185,6 +3618,29 @@
       const move = Math.min(160, Math.max(80, Number(person.scale || 42) * 2.7));
       const smallMove = Math.min(95, Math.max(45, Number(person.scale || 42) * 1.55));
       const baseRotation = Number(base.rotation) || 0;
+      // La misma estructura de keys del editor admite rotaciones 3D.
+      if (effectName === 'turn3d') {
+        return [0, .22, .44, .66, .88].map(function(t, i) {
+          return makeEffectKey(start + t, Object.assign({}, base, {tiltY: (Number(base.tiltY)||0) + i * 90}));
+        });
+      }
+      if (effectName === 'swing3d') {
+        return [
+          makeEffectKey(start, base),
+          makeEffectKey(start + .3, Object.assign({}, base, {tiltY: -53, tiltX: -7})),
+          makeEffectKey(start + .6, Object.assign({}, base, {tiltY: 53, tiltX: 7})),
+          makeEffectKey(start + .9, Object.assign({}, base, {tiltY: -28, tiltX: -4})),
+          makeEffectKey(start + 1.2, base)
+        ];
+      }
+      if (effectName === 'tilt3d') {
+        return [
+          makeEffectKey(start, base),
+          makeEffectKey(start + .32, Object.assign({}, base, {tiltX: -48, depth3d: Math.max(Number(base.depth3d)||0, 20)})),
+          makeEffectKey(start + .64, Object.assign({}, base, {tiltX: 48, depth3d: Math.max(Number(base.depth3d)||0, 20)})),
+          makeEffectKey(start + .96, base)
+        ];
+      }
 
       if (effectName === 'jump') {
         return [
@@ -3407,7 +3863,10 @@
         y: lerp(Number(prev.y) || 0, Number(next.y) || 0, progress),
         scale: lerp(Number(prev.scale) || 42, Number(next.scale) || 42, progress),
         rotation: lerp(Number(prev.rotation) || 0, Number(next.rotation) || 0, progress),
-        opacity: lerp(Number(prev.opacity == null ? 1 : prev.opacity), Number(next.opacity == null ? 1 : next.opacity), progress)
+        opacity: lerp(Number(prev.opacity == null ? 1 : prev.opacity), Number(next.opacity == null ? 1 : next.opacity), progress),
+        tiltX: lerp(Number(prev.tiltX) || 0, Number(next.tiltX) || 0, progress),
+        tiltY: lerp(Number(prev.tiltY) || 0, Number(next.tiltY) || 0, progress),
+        depth3d: lerp(Number(prev.depth3d) || 0, Number(next.depth3d) || 0, progress)
       };
     }
 
@@ -3435,12 +3894,14 @@
       if (preview.rafId) cancelAnimationFrame(preview.rafId);
       preview.rafId = 0;
       if (restorePose && preview.originalPose && state.characters[preview.personIndex]) {
+        state.characters[preview.personIndex].effect3d = Boolean(preview.original3d);
         applyPersonState(preview.personIndex, preview.originalPose, true);
       }
       preview.active = false;
       preview.effectName = '';
       preview.keys = null;
       preview.originalPose = null;
+      preview.original3d = false;
       preview.startedAt = 0;
       preview.duration = 0;
       updateEffectPreviewUi();
@@ -3458,11 +3919,16 @@
       if (elapsed >= preview.duration) {
         preview.active = false;
         preview.rafId = 0;
+        if (state.characters[preview.personIndex]) state.characters[preview.personIndex].effect3d = Boolean(preview.original3d);
         if (preview.originalPose) applyPersonState(preview.personIndex, preview.originalPose, true);
         updateEffectPreviewUi();
         return;
       }
       preview.rafId = requestAnimationFrame(previewEffectFrame);
+    }
+
+    function is3dCharacterEffect(effectName) {
+      return effectName === 'turn3d' || effectName === 'swing3d' || effectName === 'tilt3d';
     }
 
     function previewCharacterEffect(effectName) {
@@ -3473,6 +3939,8 @@
       stopAnimation(false);
       clearEffectPreview(true);
       const originalPose = getCurrentPersonState(index);
+      const original3d = Boolean(person.effect3d);
+      if (is3dCharacterEffect(effectName)) person.effect3d = true;
       const effectKeys = buildCharacterEffectKeys(effectName, index, 0, originalPose);
       const duration = effectKeys.reduce(function(max, key) { return Math.max(max, Number(key.time || 0)); }, 0);
       state.effectPreview.active = true;
@@ -3480,6 +3948,7 @@
       state.effectPreview.effectName = effectName;
       state.effectPreview.keys = effectKeys;
       state.effectPreview.originalPose = originalPose;
+      state.effectPreview.original3d = original3d;
       state.effectPreview.startedAt = performance.now();
       state.effectPreview.duration = Math.max(0.35, duration);
       setKeyframeMessage('Prueba de ' + getCharacterEffectName(effectName) + ' en ' + person.label + '. Si te gusta, toca Insertar.', 'live');
@@ -3499,6 +3968,7 @@
       if (!person || !isPersonEnabled(person)) return;
       const effectName = preview.effectName;
       const originalPose = Object.assign({}, preview.originalPose || getCurrentPersonState(index));
+      if (is3dCharacterEffect(effectName)) person.effect3d = true;
       if (preview.rafId) cancelAnimationFrame(preview.rafId);
       preview.rafId = 0;
       preview.active = false;
@@ -3526,6 +3996,7 @@
       preview.effectName = '';
       preview.keys = null;
       preview.originalPose = null;
+      preview.original3d = false;
       preview.duration = 0;
       preview.startedAt = 0;
       updateEffectPreviewUi();
@@ -3609,12 +4080,196 @@
       previewCharacterEffect(effectName);
     }
 
+    function getFilmBackgroundFrames() {
+      return state.backgroundSequence.frames;
+    }
+
+    function getFilmBackgroundCycleDuration() {
+      const frames = getFilmBackgroundFrames();
+      return frames.length >= 2 ? frames.length * state.backgroundSequence.duration : 0;
+    }
+
+    function getFilmBackgroundIndexAtTime(time) {
+      const frames = getFilmBackgroundFrames();
+      if (!frames.length) return -1;
+      if (frames.length === 1) return 0;
+      const step = Math.max(0.05, Number(state.backgroundSequence.duration) || 0.5);
+      return Math.floor(Math.max(0, Number(time) || 0) / step + 0.0000001) % frames.length;
+    }
+
+    function isFilmBackgroundSequenceRunning() {
+      return Boolean(state.animation.playing || (state.animation.recording && state.animation.recording.active) || state.recording.exporting);
+    }
+
+    function getDisplayedFilmBackgroundIndex() {
+      return isFilmBackgroundSequenceRunning()
+        ? getFilmBackgroundIndexAtTime(state.animation.currentTime)
+        : Math.min(state.backgroundSequence.selectedIndex, getFilmBackgroundFrames().length - 1);
+    }
+
+    function getCurrentFilmBackgroundImage() {
+      const frame = getFilmBackgroundFrames()[getDisplayedFilmBackgroundIndex()];
+      return frame ? frame.img : state.images.filmBg;
+    }
+
+    function updateBackgroundSequenceIndicators() {
+      if (!els.bgSequenceList) return;
+      const visible = getDisplayedFilmBackgroundIndex();
+      if (state.backgroundSequence.lastDisplayedIndex === visible) return;
+      state.backgroundSequence.lastDisplayedIndex = visible;
+      els.bgSequenceList.querySelectorAll('[data-bg-index]').forEach(function(el) {
+        const index = Number(el.dataset.bgIndex);
+        el.classList.toggle('playing', isFilmBackgroundSequenceRunning() && index === visible);
+        el.classList.toggle('selected', !isFilmBackgroundSequenceRunning() && index === visible);
+      });
+    }
+
+    function renderBackgroundSequence() {
+      const frames = getFilmBackgroundFrames();
+      state.backgroundSequence.selectedIndex = frames.length
+        ? clamp(state.backgroundSequence.selectedIndex, 0, frames.length - 1) : 0;
+      state.images.filmBg = frames.length ? frames[0].img : null;
+      if (els.bgSequenceCount) els.bgSequenceCount.textContent = frames.length + ' de 5 fondos';
+      if (els.statusFilmBg) {
+        els.statusFilmBg.textContent = frames.length
+          ? frames.length + ' fondo(s) en secuencia · ' + (frames.length > 1 ? 'bucle activo' : 'imagen fija')
+          : 'Puedes seleccionar varias imágenes a la vez';
+        els.statusFilmBg.classList.toggle('ok', frames.length > 0);
+      }
+      if (els.filmBg) els.filmBg.disabled = frames.length >= 5 || state.recording.exporting;
+      if (!els.bgSequenceList) return;
+      els.bgSequenceList.textContent = '';
+      for (let i = 0; i < 5; i++) {
+        const frame = frames[i];
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'bg-sequence-item' + (frame ? '' : ' empty');
+        item.dataset.bgIndex = String(i);
+        if (frame) {
+          item.title = 'Ver fondo ' + (i + 1) + ': ' + frame.name;
+          const img = document.createElement('img');
+          img.src = frame.img.src;
+          img.alt = 'Fondo ' + (i + 1);
+          item.appendChild(img);
+          const number = document.createElement('span');
+          number.className = 'bg-sequence-num';
+          number.textContent = String(i + 1);
+          item.appendChild(number);
+          const deleteBtn = document.createElement('button');
+          deleteBtn.type = 'button';
+          deleteBtn.className = 'bg-sequence-delete';
+          deleteBtn.textContent = '×';
+          deleteBtn.title = 'Eliminar fondo ' + (i + 1);
+          deleteBtn.setAttribute('aria-label', 'Eliminar fondo ' + (i + 1));
+          deleteBtn.addEventListener('click', function(event) {
+            event.preventDefault(); event.stopPropagation();
+            removeFilmBackground(i);
+          });
+          item.appendChild(deleteBtn);
+          item.addEventListener('click', function() {
+            if (state.recording.exporting) return;
+            if (state.animation.playing) stopAnimation(false);
+            if (state.animation.recording.active) stopKeyframeRecording(true);
+            state.backgroundSequence.selectedIndex = i;
+            state.backgroundSequence.lastDisplayedIndex = -1;
+            updateBackgroundSequenceIndicators();
+            markDirty();
+          });
+        } else {
+          item.innerHTML = '<span class="bg-empty-plus">＋</span><span>Fondo ' + (i + 1) + '</span>';
+          item.title = 'Añadir fondos';
+          item.addEventListener('click', function() {
+            if (!state.recording.exporting && !els.filmBg.disabled) els.filmBg.click();
+          });
+        }
+        els.bgSequenceList.appendChild(item);
+      }
+      state.backgroundSequence.lastDisplayedIndex = -1;
+      updateBackgroundSequenceIndicators();
+      syncTimeUiOnly();
+    }
+
+    function loadFilmBackgrounds(input) {
+      const chosen = Array.from(input.files || []);
+      input.value = '';
+      if (!chosen.length || state.recording.exporting) return;
+      const slots = Math.max(0, 5 - getFilmBackgroundFrames().length);
+      if (!slots) return;
+      const allowed = chosen.filter(function(file) {
+        return file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/webp';
+      }).slice(0, slots);
+      if (!allowed.length) {
+        if (els.statusFilmBg) els.statusFilmBg.textContent = 'Selecciona imágenes PNG, JPG o WebP.';
+        return;
+      }
+      Promise.all(allowed.map(function(file) {
+        return new Promise(function(resolve) {
+          const reader = new FileReader();
+          reader.onerror = function() { resolve(null); };
+          reader.onload = function() {
+            const img = new Image();
+            img.onload = function() { resolve({ img: img, name: file.name }); };
+            img.onerror = function() { resolve(null); };
+            img.src = reader.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      })).then(function(results) {
+        const frames = getFilmBackgroundFrames();
+        const wasEmpty = frames.length === 0;
+        results.forEach(function(frame) { if (frame && frames.length < 5) frames.push(frame); });
+        if (wasEmpty && frames.length) resetFilmBackgroundTransform();
+        renderBackgroundSequence();
+        updateBackgroundLockUi();
+        updateRecordStatus();
+        if (chosen.length > slots && els.statusFilmBg) {
+          els.statusFilmBg.textContent = 'Máximo 5 fondos. Se agregaron los primeros ' + slots + '.';
+        }
+        markDirty();
+      });
+    }
+
+    function getFilmPlaybackEndTime(mode, personIndex) {
+      const keyEnd = getMaxKeyTimeFor(mode, personIndex);
+      return keyEnd > 0 ? keyEnd : getFilmBackgroundCycleDuration();
+    }
+
+    function updateBackgroundRemoveUi() {
+      const hasBg = getFilmBackgroundFrames().length > 0;
+      if (els.btnRemoveFilmBg) els.btnRemoveFilmBg.hidden = !hasBg;
+      if (els.btnRemoveFilmBgPreview) els.btnRemoveFilmBgPreview.hidden = !hasBg || state.mode !== 'film';
+      if (els.filmBgFileCard) els.filmBgFileCard.classList.toggle('has-loaded-image', hasBg);
+    }
+
+    function removeFilmBackground(index) {
+      if (state.recording.exporting) return;
+      const frames = getFilmBackgroundFrames();
+      if (!frames.length) return;
+      const target = Number.isInteger(index) ? index : getDisplayedFilmBackgroundIndex();
+      if (state.animation.playing) stopAnimation(false);
+      if (state.animation.recording.active) stopKeyframeRecording(true);
+      stopBackgroundGestures();
+      if (target < 0 || target >= frames.length) return;
+      frames.splice(target, 1);
+      state.backgroundSequence.selectedIndex = Math.min(Math.max(0, target), frames.length - 1);
+      if (!frames.length) {
+        state.filmBgLocked = true;
+        resetFilmBackgroundTransform();
+      }
+      if (els.filmBg) els.filmBg.value = '';
+      renderBackgroundSequence();
+      updateBackgroundLockUi();
+      updateRecordStatus();
+      markDirty();
+    }
+
     function updateRecordStatus() {
+      updateBackgroundRemoveUi();
       if (state.mode === 'green') {
         if (!state.images.greenClosed || !state.images.greenOpen) {
-          els.recordStatus.textContent = 'Sube las dos imágenes del avatar para grabar fondo verde.';
+          els.recordStatus.textContent = 'Sube las dos imágenes del avatar para exportar el video.';
         } else {
-          els.recordStatus.textContent = 'Listo. Activa micrófono para animar y grabar a ' + RECORDING_FPS + ' FPS con audio.';
+          els.recordStatus.textContent = 'Listo para exportar el video con el avatar.';
         }
         return;
       }
@@ -3622,10 +4277,16 @@
       const readyPeople = state.characters.filter(function(person) { return isPersonEnabled(person) && person.visible && person.closed; }).length;
       if (!state.images.filmBg) {
         els.recordStatus.textContent = 'Sube una imagen de fondo para el cortometraje.';
-      } else if (!readyPeople) {
-        els.recordStatus.textContent = 'Agrega al menos un personaje con imagen de boca cerrada.';
+      } else if (!readyPeople && getFilmBackgroundCycleDuration() <= 0) {
+        els.recordStatus.textContent = 'Agrega un personaje o al menos dos fondos para animar.';
       } else {
-        els.recordStatus.textContent = 'Listo para grabar cortometraje a ' + RECORDING_FPS + ' FPS con ' + readyPeople + ' personaje(s).';
+        const endTime = getFilmPlaybackEndTime('all', state.selectedPerson);
+        const hasRecordedEnd = getMaxKeyTimeFor('all', state.selectedPerson) > 0;
+        els.recordStatus.textContent = endTime > 0
+          ? (hasRecordedEnd
+              ? 'Escena lista (' + readyPeople + ' personaje(s)). Final en la última key: ' + formatKeyTime(endTime) + '.'
+              : 'Bucle de ' + getFilmBackgroundFrames().length + ' fondos listo. Duración de un ciclo: ' + formatKeyTime(endTime) + '.')
+          : 'Agrega una key después de 0:00 o al menos dos fondos.';
       }
     }
 
@@ -3726,6 +4387,43 @@
         cx: person.x,
         cy: person.y
       };
+    }
+
+    function updateCharacterLabels() {
+      if (!characterLabelLayer) return;
+      const showLabels = state.mode === 'film';
+      characterLabelLayer.hidden = !showLabels;
+      if (!showLabels) return;
+
+      state.characters.forEach(function(person, index) {
+        let label = characterLabelNodes.get(index);
+        if (!label) {
+          label = document.createElement('span');
+          label.className = 'character-label';
+          label.hidden = true;
+          characterLabelLayer.appendChild(label);
+          characterLabelNodes.set(index, label);
+        }
+        const box = getPersonBox(index);
+        if (!box) {
+          label.hidden = true;
+          return;
+        }
+
+        // La etiqueta sigue al personaje y permanece arriba aunque gire.
+        const angle = (Number(person.rotation) || 0) * Math.PI / 180;
+        const topOffset = (Math.abs(box.w * Math.sin(angle)) + Math.abs(box.h * Math.cos(angle))) / 2;
+        const labelX = clamp(100 * box.cx / canvas.width, 8, 92);
+        const labelY = clamp(100 * (box.cy - topOffset - 14) / canvas.height, 0, 100);
+        label.style.left = labelX + '%';
+        label.style.top = 'clamp(24px, ' + labelY + '%, calc(100% - 5px))';
+
+        const isActive = index === state.selectedPerson;
+        label.classList.toggle('active', isActive);
+        const text = isActive ? person.label + ' · ACTIVO' : person.label;
+        if (label.textContent !== text) label.textContent = text;
+        label.hidden = false;
+      });
     }
 
     function drawPlaceholder(lines) {
@@ -3839,6 +4537,52 @@
       if (wasOpen) markDirty();
     }
 
+    // Deformación por franjas con proyección de perspectiva. Al dibujarse en el canvas,
+    // la misma apariencia se incluye en captura/exportación sin plugins externos.
+    function drawCharacterWithPerspective(img, box, person) {
+      const yaw = (Number(person.tiltY) || 0) * Math.PI / 180;
+      const pitch = (Number(person.tiltX) || 0) * Math.PI / 180;
+      const depth = clamp(Number(person.depth3d) || 0, 0, 100);
+      const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+      const cosX = Math.cos(pitch), sinX = Math.sin(pitch);
+      const perspective = Math.max(720, 1900 - depth * 8);
+      const nearScale = 1 + depth * 0.003;
+      const w = box.w, h = box.h;
+      function project(x, y) {
+        const xx = x * cosY;
+        const z1 = -x * sinY;
+        const yy = y * cosX - z1 * sinX;
+        const zz = y * sinX + z1 * cosX;
+        const factor = clamp(perspective / Math.max(120, perspective + zz), 0.35, 2.7) * nearScale;
+        return {x: xx * factor, y: yy * factor};
+      }
+      if (Math.abs(sinY) < 0.0001 && Math.abs(sinX) < 0.0001 && cosY > 0 && cosX > 0) {
+        ctx.drawImage(img, -w * nearScale / 2, -h * nearScale / 2, w * nearScale, h * nearScale);
+        return;
+      }
+      const steps = 24;
+      // Brillo ligeramente menor en los perfiles y cuando se ve la cara posterior.
+      const brightness = Math.max(.68, 1 - .2 * Math.abs(sinY) - .10 * Math.abs(sinX) - (cosY < 0 ? .10 : 0));
+      ctx.filter = 'brightness(' + brightness.toFixed(3) + ')';
+      for (let i = 0; i < steps; i += 1) {
+        const x0 = w * (i / steps - .5);
+        const x1 = w * ((i + 1) / steps - .5);
+        const tl = project(x0, -h / 2);
+        const tr = project(x1, -h / 2);
+        const bl = project(x0, h / 2);
+        const sourceX = img.width * i / steps;
+        const sourceW = img.width / steps;
+        ctx.save();
+        ctx.transform((tr.x - tl.x) / sourceW, (tr.y - tl.y) / sourceW,
+          (bl.x - tl.x) / img.height, (bl.y - tl.y) / img.height, tl.x, tl.y);
+        // Ligero solapamiento evita costuras visibles entre columnas.
+        ctx.drawImage(img, sourceX, 0, sourceW + Math.min(0.5, img.width - sourceX - sourceW), img.height,
+          0, 0, sourceW + Math.min(0.5, img.width - sourceX - sourceW), img.height);
+        ctx.restore();
+      }
+      ctx.filter = 'none';
+    }
+
     function draw(now) {
       perf.rafId = 0;
       now = now || performance.now();
@@ -3860,8 +4604,10 @@
         if (img) drawCenteredImage(img);
         else drawPlaceholder(['Sube boca cerrada', 'y boca abierta']);
       } else {
-        if (state.images.filmBg) drawFilmBackground(state.images.filmBg);
+        const shownBackground = getCurrentFilmBackgroundImage();
+        if (shownBackground) drawFilmBackground(shownBackground);
         else drawPlaceholder(['Sube una imagen', 'de fondo']);
+        updateBackgroundSequenceIndicators();
 
         const drawOrder = state.zOrder || state.characters.map(function(_, personIndex) { return personIndex; });
         drawOrder.forEach(function(index) {
@@ -3874,11 +4620,23 @@
           ctx.globalAlpha = clamp(Number(person.opacity == null ? 1 : person.opacity), 0, 1);
           ctx.translate(person.x, person.y);
           ctx.rotate((Number(person.rotation) || 0) * Math.PI / 180);
-          ctx.drawImage(img, -box.w / 2, -box.h / 2, box.w, box.h);
+          if (person.effect3d) {
+            // Sombra suave para reforzar profundidad sin alterar el fondo ni otras pistas.
+            ctx.save();
+            ctx.fillStyle = 'rgba(15,23,42,' + (0.10 + clamp(Number(person.depth3d)||0,0,100)*.0016) + ')';
+            ctx.beginPath();
+            ctx.ellipse(0, box.h * .52 + 12, Math.max(10, box.w * .33), Math.max(3, box.h * .035), 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+            drawCharacterWithPerspective(img, box, person);
+          } else {
+            ctx.drawImage(img, -box.w / 2, -box.h / 2, box.w, box.h);
+          }
           ctx.restore();
         });
       }
 
+      updateCharacterLabels();
       perf.dirty = false;
       perf.lastDrawAt = now;
       if (shouldKeepAnimating()) requestDraw(false);
@@ -4110,7 +4868,10 @@
         y: Number(person.y) || 0,
         scale: Number(person.scale) || 42,
         rotation: Number(person.rotation) || 0,
-        opacity: clamp(Number(person.opacity == null ? 1 : person.opacity), 0, 1)
+        opacity: clamp(Number(person.opacity == null ? 1 : person.opacity), 0, 1),
+        tiltX: Number(person.tiltX) || 0,
+        tiltY: Number(person.tiltY) || 0,
+        depth3d: Number(person.depth3d) || 0
       };
     }
 
@@ -4122,6 +4883,9 @@
       person.scale = clamp(Number(pose.scale) || 42, 5, 250);
       person.rotation = clamp(Number(pose.rotation) || 0, -1440, 1440);
       person.opacity = clamp(Number(pose.opacity == null ? 1 : pose.opacity), 0, 1);
+      person.tiltX = clamp(Number(pose.tiltX) || 0, -720, 720);
+      person.tiltY = clamp(Number(pose.tiltY) || 0, -720, 720);
+      person.depth3d = clamp(Number(pose.depth3d) || 0, 0, 100);
       syncSelectedPersonControls(index);
       if (syncUi) syncKeyframeControlsFromPerson();
       markDirty();
@@ -4182,7 +4946,6 @@
       els.keyframeScaleValue.textContent = scale + '%';
       els.keyframeRotationValue.textContent = rotation + '°';
       els.keyframeOpacityValue.textContent = opacity + '%';
-      if (els.btnKeyframePlayPerson) els.btnKeyframePlayPerson.textContent = '▶ ' + state.characters[state.selectedPerson].label;
     }
 
     function setKeyframeTime(time, preview) {
@@ -4219,7 +4982,10 @@
       const dScale = Math.abs((Number(a.scale) || 0) - (Number(b.scale) || 0));
       const dRotation = Math.abs((Number(a.rotation) || 0) - (Number(b.rotation) || 0));
       const dOpacity = Math.abs((Number(a.opacity == null ? 1 : a.opacity)) - (Number(b.opacity == null ? 1 : b.opacity)));
-      return dPos + (dScale * 1.5) + (dRotation * 0.8) + (dOpacity * 120);
+      const d3d = Math.abs((Number(a.tiltX)||0) - (Number(b.tiltX)||0))
+        + Math.abs((Number(a.tiltY)||0) - (Number(b.tiltY)||0))
+        + Math.abs((Number(a.depth3d)||0) - (Number(b.depth3d)||0));
+      return dPos + (dScale * 1.5) + (dRotation * 0.8) + (dOpacity * 120) + d3d * 1.5;
     }
 
     function pushRecordedKeyframe(personIndex, elapsedSeconds, force) {
@@ -4242,6 +5008,9 @@
       key.scale = Number(pose.scale) || 42;
       key.rotation = Number(pose.rotation) || 0;
       key.opacity = clamp(Number(pose.opacity == null ? 1 : pose.opacity), 0, 1);
+      key.tiltX = Number(pose.tiltX) || 0;
+      key.tiltY = Number(pose.tiltY) || 0;
+      key.depth3d = Number(pose.depth3d) || 0;
       keys.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
       state.animation.selectedKeyId = key.id;
       state.animation.selectedKeyPerson = personIndex;
@@ -4250,7 +5019,10 @@
         y: key.y,
         scale: key.scale,
         rotation: key.rotation,
-        opacity: key.opacity
+        opacity: key.opacity,
+        tiltX: key.tiltX,
+        tiltY: key.tiltY,
+        depth3d: key.depth3d
       };
       return key;
     }
@@ -4263,6 +5035,17 @@ function updateKeyframeRecordButton() {
       els.btnKeyframeAdd.classList.toggle('recording', recording);
       els.btnKeyframeAdd.textContent = recording ? '⏹ Guardando ' + person.label : '⏺ Grabar Key';
       if (els.btnKeyframeAdd.disabled) els.btnKeyframeAdd.disabled = false;
+    }
+
+    // Durante una nueva toma, reproducir las pistas previas con el mismo reloj
+    // de la grabación. El personaje actual queda libre para moverlo manualmente.
+    function playExistingSequencesDuringRecording(recordingPersonIndex, currentTime) {
+      state.characters.forEach(function(person, index) {
+        if (index === recordingPersonIndex || !isPersonEnabled(person)) return;
+        if ((person.keyframes || []).length > 0) {
+          animatePersonAtTime(index, currentTime, false);
+        }
+      });
     }
 
     function startKeyframeRecording() {
@@ -4286,9 +5069,14 @@ function updateKeyframeRecordButton() {
       state.animation.recording.lastSampleAt = 0;
       state.animation.recording.lastUiAt = 0;
       state.animation.recording.lastPose = null;
+      // Preparar todas las secuencias anteriores en el mismo punto de inicio.
+      playExistingSequencesDuringRecording(index, startTime);
       pushRecordedKeyframe(index, startTime, true);
       updateKeyframeRecordButton();
-      setKeyframeMessage('Grabando ' + person.label + ' desde ' + formatKeyTime(startTime) + '. Mueve el personaje; los keys empiezan desde ahí.', 'live');
+      const otherSequences = state.characters.filter(function(other, otherIndex) {
+        return otherIndex !== index && isPersonEnabled(other) && (other.keyframes || []).length > 0;
+      }).length;
+      setKeyframeMessage('Grabando ' + person.label + ' desde ' + formatKeyTime(startTime) + '. ' + (otherSequences ? otherSequences + ' secuencia(s) anterior(es) reproduciéndose a la vez.' : 'Mueve el personaje para registrar su secuencia.'), 'live');
       setKeyframeLiveLabel('Grabando ' + person.label);
       updateKeyframePanel();
       state.animation.recording.rafId = requestAnimationFrame(recordKeyframeLoop);
@@ -4313,7 +5101,11 @@ function stopKeyframeRecording(showMessage) {
       recording.lastUiAt = 0;
       recording.lastPose = null;
       const keyCount = person && person.keyframes ? person.keyframes.length : 0;
-      state.animation.currentTime = Math.min(finalTime, getTimelineDuration());
+      // Al terminar cualquier grabación, todas las pistas vuelven al inicio.
+      resetKeyframePlaybackToStart();
+      state.backgroundSequence.selectedIndex = 0;
+      state.backgroundSequence.lastDisplayedIndex = -1;
+      updateBackgroundSequenceIndicators();
       updateKeyframeRecordButton();
       updateKeyframePanel();
       if (showMessage !== false) {
@@ -4347,6 +5139,10 @@ function toggleKeyframeRecording() {
       recording.personIndex = clamp(recording.personIndex, 0, state.characters.length - 1);
       state.animation.currentTime = currentTime;
       state.animation.duration = Math.max(10, Math.ceil(currentTime + 1), getTimelineDuration());
+
+      // Todas las pistas existentes avanzan al mismo tiempo que los nuevos keys.
+      // Nunca reproducir el personaje que se está grabando: lo maneja el usuario.
+      playExistingSequencesDuringRecording(recording.personIndex, currentTime);
 
       if (!recording.lastSampleAt || now - recording.lastSampleAt >= recording.sampleMs) {
         recording.lastSampleAt = now;
@@ -4388,6 +5184,7 @@ function addOrUpdateKeyframe() {
       key.scale = pose.scale;
       key.rotation = pose.rotation;
       key.opacity = pose.opacity;
+      key.tiltX = pose.tiltX; key.tiltY = pose.tiltY; key.depth3d = pose.depth3d;
       keys.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
       state.animation.selectedKeyId = key.id;
       state.animation.selectedKeyPerson = index;
@@ -4410,6 +5207,9 @@ function addOrUpdateKeyframe() {
       selected.key.scale = pose.scale;
       selected.key.rotation = pose.rotation;
       selected.key.opacity = pose.opacity;
+      selected.key.tiltX = pose.tiltX;
+      selected.key.tiltY = pose.tiltY;
+      selected.key.depth3d = pose.depth3d;
       state.characters[selected.personIndex].keyframes.sort(function(a, b) { return Number(a.time || 0) - Number(b.time || 0); });
       updateKeyframePanel();
       setKeyframeMessage('Keyframe seleccionado actualizado en ' + state.characters[selected.personIndex].label + '.', 'ok');
@@ -4592,7 +5392,10 @@ function addOrUpdateKeyframe() {
         y: lerp(Number(prev.y) || 0, Number(next.y) || 0, progress),
         scale: lerp(Number(prev.scale) || 42, Number(next.scale) || 42, progress),
         rotation: lerp(Number(prev.rotation) || 0, Number(next.rotation) || 0, progress),
-        opacity: lerp(Number(prev.opacity == null ? 1 : prev.opacity), Number(next.opacity == null ? 1 : next.opacity), progress)
+        opacity: lerp(Number(prev.opacity == null ? 1 : prev.opacity), Number(next.opacity == null ? 1 : next.opacity), progress),
+        tiltX: lerp(Number(prev.tiltX) || 0, Number(next.tiltX) || 0, progress),
+        tiltY: lerp(Number(prev.tiltY) || 0, Number(next.tiltY) || 0, progress),
+        depth3d: lerp(Number(prev.depth3d) || 0, Number(next.depth3d) || 0, progress)
       };
       applyPersonState(personIndex, pose, syncUi && personIndex === state.selectedPerson);
       return true;
@@ -4612,6 +5415,22 @@ function stopAnimation(showMessage) {
       markDirty();
     }
 
+    function resetKeyframePlaybackToStart() {
+      // El mismo tiempo 0 para todas las pistas y para el cabezal visible.
+      state.animation.currentTime = 0;
+      state.backgroundSequence.selectedIndex = 0;
+      state.backgroundSequence.lastDisplayedIndex = -1;
+      updateBackgroundSequenceIndicators();
+      state.characters.forEach(function(person, index) {
+        if (isPersonEnabled(person) && (person.keyframes || []).length) {
+          animatePersonAtTime(index, 0, index === state.selectedPerson);
+        }
+      });
+      syncTimeUiOnly();
+      updateTimelineOnly();
+      markDirty();
+    }
+
     function playSelectedPerson(silent) {
       const index = state.selectedPerson;
       const person = state.characters[index];
@@ -4625,8 +5444,8 @@ function stopAnimation(showMessage) {
 
     function playAllCharacters() {
       const animated = state.characters.filter(function(person) { return isPersonEnabled(person) && (person.keyframes || []).length >= 2; });
-      if (!animated.length) {
-        setKeyframeMessage('Guarda mínimo 2 keyframes en un personaje para reproducir todos.', 'warn');
+      if (!animated.length && getFilmBackgroundCycleDuration() <= 0) {
+        setKeyframeMessage('Graba keys o carga al menos 2 fondos para reproducir su secuencia.', 'warn');
         setKeyframeLiveLabel('Faltan keys');
         return;
       }
@@ -4636,7 +5455,7 @@ function stopAnimation(showMessage) {
     function startAnimation(mode, personIndex, silent) {
       if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
       clearEffectPreview(true);
-      const maxTime = getMaxKeyTimeFor(mode, personIndex);
+      const maxTime = getFilmPlaybackEndTime(mode, personIndex);
       if (maxTime <= 0) {
         setKeyframeMessage('Los keyframes están en 0.00s. Mueve el tiempo a 1s o más y guarda otro key.', 'warn');
         return;
@@ -4645,6 +5464,7 @@ function stopAnimation(showMessage) {
       const startTime = requestedStartTime >= maxTime - 0.02 ? 0 : requestedStartTime;
       stopAnimation(false);
       state.animation.playing = true;
+      syncFlipaClipPrimaryControls();
       state.animation.mode = mode;
       state.animation.playPerson = personIndex;
       state.animation.startedAt = performance.now();
@@ -4665,7 +5485,7 @@ function stopAnimation(showMessage) {
     function animationFrameLoop(now) {
       if (!state.animation.playing) return;
       const elapsed = (now - state.animation.startedAt) / 1000;
-      const maxTime = getMaxKeyTimeFor(state.animation.mode, state.animation.playPerson);
+      const maxTime = getFilmPlaybackEndTime(state.animation.mode, state.animation.playPerson);
       const startTime = clamp(Number(state.animation.playStartTime) || 0, 0, maxTime);
       const currentTime = Math.min(startTime + elapsed, maxTime);
       state.animation.currentTime = currentTime;
@@ -4709,6 +5529,32 @@ function stopAnimation(showMessage) {
       }
       if (els.keyframeTimeInput) els.keyframeTimeInput.value = Number(currentTime).toFixed(2);
       if (els.keyframeCurrentTime) els.keyframeCurrentTime.textContent = formatKeyTime(currentTime);
+      const readout = document.getElementById('flipa-current-time');
+      if (readout) readout.textContent = formatKeyTime(currentTime) + ' / ' + formatKeyTime(getFilmPlaybackEndTime('all', state.selectedPerson));
+    }
+
+    function syncFlipaClipPrimaryControls() {
+      const playing = Boolean(state.animation.playing);
+      const recording = Boolean(state.animation.recording && state.animation.recording.active);
+      if (els.btnKeyframePlayAll) {
+        els.btnKeyframePlayAll.textContent = playing || recording ? '⏹ Detener' : '▶ Reproducir';
+        els.btnKeyframePlayAll.classList.toggle('is-stopping', playing || recording);
+        els.btnKeyframePlayAll.setAttribute('aria-label', playing || recording ? 'Detener reproducción o grabación' : 'Reproducir todas las secuencias');
+      }
+      const selected = getSelectedKeyframe();
+      const context = document.getElementById('keyframe-context-actions');
+      const keyCaption = document.getElementById('flipa-key-caption');
+      const hasSelected = Boolean((state.animation.selectedKeyIds || []).length || selected);
+      if (context) context.hidden = !hasSelected || playing || recording;
+      if (keyCaption && selected) {
+        const multi = (state.animation.selectedKeyIds || []).length;
+        keyCaption.textContent = multi > 1 ? multi + ' keys seleccionadas' : state.characters[selected.personIndex].label + ' · ' + formatKeyTime(selected.key.time);
+      }
+      if (els.btnKeyframeDeleteEffect) {
+        els.btnKeyframeDeleteEffect.textContent = selected && selected.key.effectId ? 'Borrar efecto' : 'Borrar secuencia';
+      }
+      const activePill = document.getElementById('flipa-active-person');
+      if (activePill && state.characters[state.selectedPerson]) activePill.textContent = state.characters[state.selectedPerson].label + ' activo';
     }
 
     function updateTimelineOnly() {
@@ -4740,6 +5586,7 @@ function stopAnimation(showMessage) {
               : 'Arrastra sobre la línea para sombrear varias keys, muévelas o bórralas. Rueda del mouse: zoom.');
       }
       updateKeyframeRecordButton();
+      syncFlipaClipPrimaryControls();
       if (state.animation.recording && state.animation.recording.active) {
         setKeyframeLiveLabel('Grabando ' + state.characters[state.animation.recording.personIndex].label);
       } else if (!state.animation.playing) {
@@ -4801,10 +5648,17 @@ function stopAnimation(showMessage) {
         row.className = 'keyframe-row';
         row.classList.toggle('is-selected', index === state.selectedPerson);
 
-        const label = document.createElement('div');
+        const label = document.createElement('button');
+        label.type = 'button';
         label.className = 'keyframe-row-label';
         label.textContent = person.label;
-        label.title = 'Línea de tiempo de ' + person.label;
+        label.title = 'Seleccionar ' + person.label;
+        label.setAttribute('aria-label', 'Seleccionar personaje ' + person.label);
+        label.addEventListener('click', function() {
+          clearMultiKeySelection(false);
+          selectPerson(index, true);
+          updateKeyframePanel();
+        });
 
         const wrap = document.createElement('div');
         wrap.className = 'keyframe-track-wrap';
@@ -5206,12 +6060,22 @@ function beginDragKeyframe(event) {
       if (els.btnKeyframeUpdate) els.btnKeyframeUpdate.addEventListener('click', updateSelectedKeyframe);
       els.btnKeyframeDelete.addEventListener('click', deleteSelectedKeyframe);
       if (els.btnKeyframeDeleteEffect) els.btnKeyframeDeleteEffect.addEventListener('click', deleteInsertedEffect);
-      els.btnKeyframePlayPerson.addEventListener('click', function() { playSelectedPerson(false); });
-      els.btnKeyframePlayAll.addEventListener('click', playAllCharacters);
-      els.btnKeyframeStop.addEventListener('click', function() { if (!stopKeyframeRecording(true)) stopAnimation(true); });
+      function stopAndResetKeyframePlayback() {
+        const stoppedRecording = stopKeyframeRecording(true);
+        if (!stoppedRecording) stopAnimation(true);
+        resetKeyframePlaybackToStart();
+        syncFlipaClipPrimaryControls();
+      }
+      els.btnKeyframePlayAll.addEventListener('click', function() {
+        if (state.animation.playing || (state.animation.recording && state.animation.recording.active)) {
+          stopAndResetKeyframePlayback();
+        } else {
+          playAllCharacters();
+        }
+      });
+      els.btnKeyframeStop.addEventListener('click', stopAndResetKeyframePlayback);
       els.btnKeyframeDelete.title = 'Supr/Del: borrar la key seleccionada o todas las sombreadas';
       if (els.keyframeTimeline) els.keyframeTimeline.title = 'Arrastra sobre una línea para sombrear varias keys. Rueda del mouse para hacer zoom.';
-      els.btnKeyframePlayPerson.title = 'Space: reproducir personaje seleccionado desde el tiempo elegido';
       els.btnKeyframePlayAll.title = 'Doble Space: reproducir todos desde el tiempo elegido';
       els.btnKeyframeStop.title = 'Space mientras reproduce: detener';
       document.addEventListener('keydown', handleKeyframeKeyboardShortcuts, true);
@@ -5417,27 +6281,22 @@ function beginDragKeyframe(event) {
 
     function chooseMimeType() {
       if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+      // Se prioriza una combinación fiable de contenedor y códecs: algunos
+      // navegadores anuncian MP4 pero escriben VP9/Opus dentro del MP4.
       const types = [
-        'video/mp4;codecs="avc1.64002A,mp4a.40.2"',
-        'video/mp4;codecs="avc1.4D402A,mp4a.40.2"',
-        'video/mp4;codecs="avc1.42E02A,mp4a.40.2"',
-        'video/mp4;codecs="avc1.64001F,mp4a.40.2"',
-        'video/mp4;codecs="avc1.4D401F,mp4a.40.2"',
-        'video/mp4;codecs="avc1.42E01F,mp4a.40.2"',
-        'video/mp4;codecs=avc1.64002A,mp4a.40.2',
-        'video/mp4;codecs=avc1.4D402A,mp4a.40.2',
-        'video/mp4;codecs=avc1.42E02A,mp4a.40.2',
-        'video/mp4',
         'video/webm;codecs=vp9,opus',
         'video/webm;codecs=vp8,opus',
-        'video/webm'
+        'video/webm',
+        'video/mp4;codecs="avc1.42E01F,mp4a.40.2"',
+        'video/mp4;codecs="avc1.4D401F,mp4a.40.2"',
+        'video/mp4'
       ];
       return types.find(function(type) { return MediaRecorder.isTypeSupported(type); }) || '';
     }
 
     function describeFormat(mime) {
       const lower = (mime || '').toLowerCase();
-      if (lower.includes('mp4')) return 'MP4 H.264/AAC';
+      if (lower.includes('mp4')) return 'MP4';
       if (lower.includes('vp9')) return 'WebM VP9/Opus';
       if (lower.includes('vp8')) return 'WebM VP8/Opus';
       if (lower.includes('webm')) return 'WebM';
@@ -5448,7 +6307,7 @@ function beginDragKeyframe(event) {
       if (state.mode === 'green') {
         return Boolean(state.images.greenClosed && state.images.greenOpen);
       }
-      return Boolean(state.images.filmBg && state.characters.some(function(person) { return person.visible && person.closed; }));
+      return Boolean(getFilmBackgroundFrames().length && (getFilmBackgroundCycleDuration() > 0 || state.characters.some(function(person) { return person.visible && person.closed; })));
     }
 
     function cleanupRecordingAudioGraph() {
@@ -5534,109 +6393,236 @@ function beginDragKeyframe(event) {
       return parts.length ? ' con ' + parts.join(' y ') + '.' : ' sin audio.';
     }
 
+    // Exporta la composición completa sin tener que pulsar «Detener» manualmente.
+    // El navegador codifica canvas y audio en tiempo real mediante MediaRecorder.
+    function updateExportControls(active) {
+      els.btnRecord.disabled = active;
+      els.btnStop.disabled = !active;
+      els.btnStop.hidden = !active;
+      if (els.btnRemoveFilmBg) els.btnRemoveFilmBg.disabled = active;
+      if (els.btnRemoveFilmBgPreview) els.btnRemoveFilmBgPreview.disabled = active;
+      if (els.recordDock) els.recordDock.classList.toggle('export-active', active);
+      els.recordingBadge.style.display = active ? 'block' : 'none';
+      if (active) {
+        els.recordingBadge.textContent = '🎞️ Exportando';
+        if (els.recordDock) els.recordDock.classList.remove('export-ready');
+      }
+    }
+
+    function cleanUpExport() {
+      if (state.recording.exportRafId) cancelAnimationFrame(state.recording.exportRafId);
+      state.recording.exportRafId = 0;
+      state.recording.exporting = false;
+      if (state.recording.exportMusicStarted && els.musicAudio) {
+        els.musicAudio.pause();
+        try { els.musicAudio.currentTime = 0; } catch (error) {}
+        updateMusicUi();
+      }
+      state.recording.exportMusicStarted = false;
+      if (state.recording.stream) {
+        state.recording.stream.getTracks().forEach(function(track) { try { track.stop(); } catch (error) {} });
+        state.recording.stream = null;
+      }
+      cleanupRecordingAudioGraph();
+      state.recording.recorder = null;
+      resetKeyframePlaybackToStart();
+      updateExportControls(false);
+      requestDraw(true);
+    }
+
+    function exportSceneFrame(now) {
+      const exp = state.recording;
+      exp.exportRafId = 0;
+      if (!exp.exporting || !isRecordingActive()) return;
+      const elapsed = Math.min(Math.max(0, (now - exp.exportStartedAt) / 1000), exp.exportDuration);
+      state.animation.currentTime = elapsed;
+      if (state.mode === 'film') {
+        state.characters.forEach(function(person, index) {
+          if (isPersonEnabled(person) && (person.keyframes || []).length) {
+            animatePersonAtTime(index, elapsed, index === state.selectedPerson);
+          }
+        });
+      }
+      markDirty();
+      if (!exp.lastProgressAt || now - exp.lastProgressAt >= 220 || elapsed >= exp.exportDuration) {
+        exp.lastProgressAt = now;
+        const progress = Math.min(100, Math.floor(100 * elapsed / exp.exportDuration));
+        els.recordStatus.textContent = 'Exportando ' + progress + '% · ' + formatMusicTime(elapsed) + ' / ' + formatMusicTime(exp.exportDuration) + ' · Mantén esta pestaña abierta';
+        syncTimeUiOnly();
+        updateTimelineOnly();
+      }
+      if (elapsed >= exp.exportDuration) {
+        // Conservar el último fotograma antes de finalizar la codificación.
+        perf.lastDrawAt = 0;
+        draw(now);
+        exp.exportRafId = requestAnimationFrame(function() { stopRecording(); });
+      } else {
+        exp.exportRafId = requestAnimationFrame(exportSceneFrame);
+      }
+    }
+
     async function startRecording() {
+      const exp = state.recording;
+      if (exp.exporting || isRecordingActive()) return;
       if (!canRecordCurrentMode()) {
         alert(state.mode === 'green'
           ? 'Primero sube las dos imágenes: boca cerrada y boca abierta.'
-          : 'Primero sube el fondo y al menos un personaje con imagen de boca cerrada.');
+          : 'Primero sube un fondo y un personaje, o al menos dos fondos para animar.');
         return;
       }
-
       if (!canvas.captureStream || !window.MediaRecorder) {
-        alert('Este navegador no soporta grabación de canvas. Prueba con Chrome, Edge o Safari actualizado.');
+        alert('Tu navegador no permite exportar video directamente. Prueba con Chrome o Edge actualizado.');
         return;
       }
 
-      state.recording.chunks = [];
-      if (state.recording.url) URL.revokeObjectURL(state.recording.url);
-      state.recording.url = null;
-      els.btnDownload.disabled = true;
-
-      const canvasStream = canvas.captureStream(RECORDING_FPS);
-      const videoTracks = canvasStream.getVideoTracks();
-      const mainVideoTrack = videoTracks[0];
-      if (mainVideoTrack && mainVideoTrack.applyConstraints) {
-        try {
-          mainVideoTrack.applyConstraints({ frameRate: { ideal: RECORDING_FPS, max: RECORDING_FPS } }).catch(function() {});
-        } catch (error) {}
+      // No usar getTimelineDuration(): añade margen de edición y redondea segundos.
+      // Con keys, terminar en la última; solo con fondos, exportar un ciclo completo.
+      exp.exportDuration = state.mode === 'film' ? getFilmPlaybackEndTime('all', state.selectedPerson) : 10;
+      if (state.mode === 'film' && exp.exportDuration <= 0) {
+        els.recordStatus.textContent = 'Agrega una key después de 0:00 o al menos dos fondos para animar.';
+        return;
       }
-      cleanupRecordingAudioGraph();
-      const tracks = [].concat(videoTracks);
-      const mixedAudioStream = await createRecordingAudioStream();
-      if (mixedAudioStream) tracks.push.apply(tracks, mixedAudioStream.getAudioTracks());
-      state.recording.stream = new MediaStream(tracks);
-
-      const mimeType = chooseMimeType();
-      const options = { videoBitsPerSecond: RECORDING_VIDEO_BITS_PER_SECOND };
-      if (mimeType) options.mimeType = mimeType;
+      exp.exporting = true;
+      exp.cancelled = false;
+      exp.exportStartedAt = 0;
+      exp.lastProgressAt = 0;
+      exp.exportMusicStarted = false;
+      exp.chunks = [];
+      updateExportControls(true);
+      els.recordStatus.textContent = 'Preparando video y audio...';
 
       try {
-        state.recording.recorder = new MediaRecorder(state.recording.stream, options);
-      } catch (error) {
-        console.error(error);
-        alert('No se pudo iniciar la grabación con este navegador.');
-        if (state.recording.stream) state.recording.stream.getTracks().forEach(function(track) { track.stop(); });
-        cleanupRecordingAudioGraph();
-        return;
-      }
+        // Una exportación siempre comienza en 0:00 con TODAS las secuencias.
+        if (state.animation.recording && state.animation.recording.active) stopKeyframeRecording(true);
+        stopAnimation(false);
+        clearEffectPreview(true);
+        resetKeyframePlaybackToStart();
+        perf.lastDrawAt = 0;
+        draw(performance.now());
 
-      state.recording.mimeType = state.recording.recorder.mimeType || mimeType || 'video/webm';
-      state.recording.extension = state.recording.mimeType.toLowerCase().includes('mp4') ? 'mp4' : 'webm';
-      const label = describeFormat(state.recording.mimeType);
-
-      if (state.recording.extension === 'mp4') {
-        els.formatStatus.textContent = '✅ MP4 H.264/AAC compatible con Premiere Pro a ' + RECORDING_FPS + ' FPS.';
-        els.formatStatus.className = 'small ok-text';
-      } else {
-        els.formatStatus.textContent = '⚠️ Este navegador no permite MP4 H.264/AAC compatible con Premiere. Se grabará en ' + label + '.';
-        els.formatStatus.className = 'small warn-text';
-      }
-
-      state.recording.recorder.ondataavailable = function(event) {
-        if (event.data && event.data.size > 0) state.recording.chunks.push(event.data);
-      };
-
-      state.recording.recorder.onstop = function() {
-        if (state.recording.stream) {
-          state.recording.stream.getVideoTracks().forEach(function(track) { track.stop(); });
-          state.recording.stream = null;
+        if (state.music.url && els.musicAudio) {
+          els.musicAudio.pause();
+          try { els.musicAudio.currentTime = 0; } catch (error) {}
         }
-        cleanupRecordingAudioGraph();
 
-        if (!state.recording.chunks.length) {
-          els.recordStatus.textContent = 'No se generó video. Graba unos segundos más.';
-          els.btnRecord.disabled = false;
-          els.btnStop.disabled = true;
-          els.recordingBadge.style.display = 'none';
+        const canvasStream = canvas.captureStream(RECORDING_FPS);
+        const videoTracks = canvasStream.getVideoTracks();
+        if (!videoTracks.length) throw new Error('No se pudo capturar el video del reproductor.');
+        exp.stream = canvasStream;
+
+        cleanupRecordingAudioGraph();
+        const mixedAudioStream = await createRecordingAudioStream();
+        if (!exp.exporting) {
+          canvasStream.getTracks().forEach(function(track) { track.stop(); });
+          cleanupRecordingAudioGraph();
           return;
         }
+        const tracks = videoTracks.concat(mixedAudioStream ? mixedAudioStream.getAudioTracks() : []);
+        exp.stream = new MediaStream(tracks);
 
-        const blob = new Blob(state.recording.chunks, { type: state.recording.mimeType || 'video/webm' });
-        state.recording.url = URL.createObjectURL(blob);
-        els.btnDownload.disabled = false;
-        els.btnRecord.disabled = false;
-        els.btnStop.disabled = true;
-        els.recordingBadge.style.display = 'none';
-        els.recordStatus.textContent = '✅ Video listo. Descargando...';
-        setTimeout(downloadVideo, 150);
-      };
+        const mimeType = chooseMimeType();
+        const options = { videoBitsPerSecond: RECORDING_VIDEO_BITS_PER_SECOND };
+        if (mimeType) options.mimeType = mimeType;
+        try {
+          exp.recorder = new MediaRecorder(exp.stream, options);
+        } catch (error) {
+          // Algunos navegadores anuncian MP4 sin permitir iniciar una sesión.
+          exp.recorder = new MediaRecorder(exp.stream, { videoBitsPerSecond: RECORDING_VIDEO_BITS_PER_SECOND });
+        }
+        exp.mimeType = exp.recorder.mimeType || mimeType || 'video/webm';
+        exp.extension = exp.mimeType.toLowerCase().includes('mp4') ? 'mp4' : 'webm';
+        const label = describeFormat(exp.mimeType);
+        els.formatStatus.textContent = exp.extension === 'mp4' ? 'MP4' : 'WebM (según compatibilidad del navegador)';
+        els.formatStatus.className = 'small record-format';
 
-      state.recording.recorder.start(1000);
-      els.btnRecord.disabled = true;
-      els.btnStop.disabled = false;
-      els.recordingBadge.style.display = 'block';
-      requestDraw(true);
-      els.recordStatus.textContent = 'Grabando a ' + RECORDING_FPS + ' FPS en ' + label + getRecordingAudioLabel();
+        exp.recorder.ondataavailable = function(event) {
+          if (event.data && event.data.size > 0) exp.chunks.push(event.data);
+        };
+        exp.recorder.onerror = function(event) {
+          console.error('Error exportando video:', event.error || event);
+          exp.cancelled = true;
+          els.recordStatus.textContent = 'Error al exportar. Intenta nuevamente.';
+          stopRecording();
+        };
+        exp.recorder.onstop = function() {
+          const cancelled = exp.cancelled;
+          const data = exp.chunks.slice();
+          cleanUpExport();
+          if (cancelled) {
+            els.recordStatus.textContent = 'Exportación cancelada. Puedes intentarlo de nuevo.';
+            if (els.recordDock) els.recordDock.classList.add('export-ready');
+            return;
+          }
+          if (!data.length) {
+            els.recordStatus.textContent = 'No se pudo generar el archivo de video. Intenta nuevamente.';
+            if (els.recordDock) els.recordDock.classList.add('export-ready');
+            return;
+          }
+          const blob = new Blob(data, { type: exp.mimeType || 'video/webm' });
+          if (!blob.size) {
+            els.recordStatus.textContent = 'El archivo está vacío. Intenta nuevamente.';
+            return;
+          }
+          if (exp.url) URL.revokeObjectURL(exp.url);
+          exp.url = URL.createObjectURL(blob);
+          els.recordStatus.textContent = '✅ Escena exportada en ' + label + '. Descarga automática iniciada.';
+          if (els.recordDock) els.recordDock.classList.add('export-ready');
+          downloadVideo();
+        };
+
+        exp.recorder.start(500);
+        // El audio incluido se reproduce desde su comienzo al exportar.
+        if (state.music.url && els.musicAudio) {
+          exp.exportMusicStarted = true;
+          try {
+            await resumeMusicAudioGraph();
+            if (exp.exporting && isRecordingActive()) await els.musicAudio.play();
+          } catch (error) {
+            console.warn('No se pudo reproducir la música durante la exportación:', error);
+            els.recordStatus.textContent = 'Exportando (no se pudo iniciar la música)...';
+          }
+        }
+        if (!exp.exporting || !isRecordingActive()) return;
+        exp.exportStartedAt = performance.now();
+        exp.exportRafId = requestAnimationFrame(exportSceneFrame);
+      } catch (error) {
+        console.error('Error preparando exportación:', error);
+        exp.cancelled = true;
+        if (exp.recorder && exp.recorder.state !== 'inactive') {
+          stopRecording();
+        } else {
+          cleanUpExport();
+          els.recordStatus.textContent = 'No se pudo exportar: ' + (error.message || 'error desconocido') + '.';
+        }
+      }
     }
 
     function stopRecording() {
-      const recorder = state.recording.recorder;
+      const exp = state.recording;
+      if (exp.exportRafId) cancelAnimationFrame(exp.exportRafId);
+      exp.exportRafId = 0;
+      const recorder = exp.recorder;
       if (recorder && recorder.state !== 'inactive') {
-        try { recorder.requestData(); } catch (error) {}
-        recorder.stop();
         els.btnStop.disabled = true;
-        els.recordStatus.textContent = 'Procesando video...';
-        markDirty();
+        els.recordStatus.textContent = exp.cancelled ? 'Cancelando...' : 'Finalizando archivo de video...';
+        try { recorder.requestData(); } catch (error) {}
+        try { recorder.stop(); } catch (error) {
+          cleanUpExport();
+          els.recordStatus.textContent = 'Error al finalizar el video.';
+        }
+      }
+    }
+
+    function cancelExport() {
+      const exp = state.recording;
+      if (!exp.exporting) return;
+      exp.cancelled = true;
+      if (!exp.recorder || exp.recorder.state === 'inactive') {
+        cleanUpExport();
+        els.recordStatus.textContent = 'Exportación cancelada.';
+        if (els.recordDock) els.recordDock.classList.add('export-ready');
+      } else {
+        stopRecording();
       }
     }
 
@@ -5647,14 +6633,14 @@ function beginDragKeyframe(event) {
       }
       const a = document.createElement('a');
       const prefix = state.mode === 'film' ? 'cortometraje_10_personajes_' : 'avatar_fondo_verde_';
-      const formatName = state.recording.extension === 'mp4' ? 'mp4_h264' : 'webm';
+      const formatName = state.recording.extension === 'mp4' ? 'mp4' : 'webm';
       a.href = state.recording.url;
       a.download = prefix + formatName + '_' + RECORDING_FPS + 'fps_' + Date.now() + '.' + state.recording.extension;
       a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       setTimeout(function() { a.remove(); }, 250);
-      els.recordStatus.textContent = '✅ Si no bajó solo, toca de nuevo “Descargar video”.';
+      els.recordStatus.textContent = '✅ Video exportado. Descarga automática iniciada.';
     }
 
     function updateSliderLabels() {
@@ -5683,6 +6669,14 @@ function beginDragKeyframe(event) {
       if (xValue) xValue.textContent = String(Math.round(person.x));
       if (yValue) yValue.textContent = String(Math.round(person.y));
       if (scaleValue) scaleValue.textContent = String(Math.round(person.scale));
+      [['person-3d-y','person-3d-y-value','tiltY','°'],
+        ['person-3d-x','person-3d-x-value','tiltX','°'],
+        ['person-3d-depth','person-3d-depth-value','depth3d','%']].forEach(function(row) {
+          const input = document.getElementById(row[0]);
+          const output = document.getElementById(row[1]);
+          if (input && document.activeElement !== input) input.value = String(clamp(Number(person[row[2]])||0, Number(input.min), Number(input.max)));
+          if (output) output.textContent = String(Math.round(Number(person[row[2]])||0)) + row[3];
+        });
     }
 
     function setPersonPosition(index, x, y) {
@@ -5786,7 +6780,7 @@ function beginDragKeyframe(event) {
       const transform = ensureFilmBackgroundTransform();
       transform.x = x;
       transform.y = y;
-      clampFilmBackgroundTransform(state.images.filmBg);
+      clampFilmBackgroundTransform(getCurrentFilmBackgroundImage());
       markDirty();
     }
 
@@ -5800,7 +6794,7 @@ function beginDragKeyframe(event) {
       transform.x = anchor.x - (anchor.x - transform.x) * ratio;
       transform.y = anchor.y - (anchor.y - transform.y) * ratio;
       transform.scale = targetScale;
-      clampFilmBackgroundTransform(state.images.filmBg);
+      clampFilmBackgroundTransform(getCurrentFilmBackgroundImage());
       markDirty();
     }
 
@@ -5841,7 +6835,7 @@ function beginDragKeyframe(event) {
       transform.x = state.bgPinch.startX + (center.x - state.bgPinch.startCenterX);
       transform.y = state.bgPinch.startY + (center.y - state.bgPinch.startCenterY);
       transform.scale = clamp(state.bgPinch.startScale * (distance / state.bgPinch.startDistance), 1, 5);
-      clampFilmBackgroundTransform(state.images.filmBg);
+      clampFilmBackgroundTransform(getCurrentFilmBackgroundImage());
       markDirty();
     }
 
@@ -6023,7 +7017,25 @@ function beginDragKeyframe(event) {
 
     els.greenClosed.addEventListener('change', function() { loadGeneralImageFromInput(els.greenClosed, els.statusGreenClosed, 'greenClosed'); });
     els.greenOpen.addEventListener('change', function() { loadGeneralImageFromInput(els.greenOpen, els.statusGreenOpen, 'greenOpen'); });
-    els.filmBg.addEventListener('change', function() { loadGeneralImageFromInput(els.filmBg, els.statusFilmBg, 'filmBg'); });
+    els.filmBg.addEventListener('change', function() { loadFilmBackgrounds(els.filmBg); });
+    if (els.bgSequenceSpeed) els.bgSequenceSpeed.addEventListener('change', function() {
+      state.backgroundSequence.duration = Math.max(0.1, Number(els.bgSequenceSpeed.value) || 0.5);
+      state.backgroundSequence.lastDisplayedIndex = -1;
+      updateBackgroundSequenceIndicators();
+      updateRecordStatus();
+      syncTimeUiOnly();
+      markDirty();
+    });
+    renderBackgroundSequence();
+    [els.btnRemoveFilmBg, els.btnRemoveFilmBgPreview].forEach(function(button) {
+      if (!button) return;
+      button.addEventListener('pointerdown', function(event) { event.stopPropagation(); });
+      button.addEventListener('click', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        removeFilmBackground();
+      });
+    });
     function handleBackgroundLockButton(event) {
       if (event) {
         event.preventDefault();
@@ -6055,8 +7067,13 @@ function beginDragKeyframe(event) {
     els.btnMic.addEventListener('click', toggleMicrophone);
     els.btnCalibrate.addEventListener('click', calibrateSilence);
     els.btnRecord.addEventListener('click', startRecording);
-    els.btnStop.addEventListener('click', stopRecording);
-    els.btnDownload.addEventListener('click', downloadVideo);
+    els.btnStop.addEventListener('click', cancelExport);
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden && state.recording.exporting) {
+        cancelExport();
+        els.recordStatus.textContent = 'Exportación cancelada: mantén la pestaña visible hasta que termine.';
+      }
+    });
 
     els.sensitivity.addEventListener('input', updateSliderLabels);
     els.silenceDelay.addEventListener('input', updateSliderLabels);
